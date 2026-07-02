@@ -20,7 +20,9 @@
             --dark-light: #1e293b; --dark-lighter: #334155;
             --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1);
             --text-primary: #f8fafc; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
-            --radius-full: 9999px;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,82 +40,104 @@
                         radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 1) 100%);
         }
 
-        #app-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+        #app-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 15px; position: relative; z-index: 1; }
 
-        /* HEADER */
+        /* 📌 HEADER SECTION */
         .header-section { padding: 30px 0 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.1); }
+        .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.1); }
         .main-title { font-size: clamp(1.2rem, 4vw, 2.8rem); font-weight: 800; background: linear-gradient(135deg, var(--primary-light), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* LIVE TOTAL */
-        .live-total-container { display: flex; justify-content: center; margin-bottom: 40px; }
-        .live-total { display: inline-flex; align-items: center; gap: 15px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--glass-border); padding: 20px 40px; border-radius: var(--radius-full); font-size: 1.8rem; font-weight: 700; backdrop-filter: blur(20px); }
-        .live-total .amount { color: var(--accent); transition: all 0.3s ease; }
+        /* 📌 LIVE TOTAL */
+        .live-total-container { display: flex; justify-content: center; margin-bottom: 30px; }
+        .live-total { display: inline-flex; align-items: center; gap: 10px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--glass-border); padding: 15px 30px; border-radius: var(--radius-full); font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 700; backdrop-filter: blur(20px); }
+        .live-total .amount { color: var(--accent); transition: all 0.5s ease; }
 
         /* 📌 SCRATCH CARDS SECTION */
-        .scratch-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 60px; }
-        .scratch-instruction { text-align: center; margin-bottom: 25px; z-index: 20; position: relative; }
-        .scratch-instruction h3 { font-size: 1.2rem; background: var(--glass); padding: 15px 30px; border-radius: var(--radius-full); border: 1px solid var(--glass-border); }
+        .scratch-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; }
+        .scratch-instruction { text-align: center; margin-bottom: 25px; z-index: 20; position: relative; width: 100%; }
+        .scratch-instruction h3 { font-size: clamp(0.9rem, 2vw, 1.2rem); background: var(--glass); padding: 12px 20px; border-radius: var(--radius-full); border: 1px solid var(--glass-border); display: inline-block;}
 
         .scratch-cards-container {
-            display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; 
-            max-width: 800px; width: 100%; position: relative; min-height: 350px;
-            align-items: center;
+            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; 
+            max-width: 600px; width: 100%; position: relative; min-height: 400px;
+            align-items: center; padding: 20px 0;
         }
 
-        /* Card Setup: Removed box styling, added pure drop-shadow for PNG outline */
         .scratch-card-new {
-            width: 180px; height: 140px; position: relative; 
-            cursor: pointer; 
-            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4)); /* Glow underneath the PNG only */
-            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+            width: 160px; height: 120px; position: relative; 
+            cursor: pointer; filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4)); 
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s ease;
             z-index: 2;
         }
-        
-        .scratch-card-new:hover { 
-            transform: translateY(-5px); 
-            filter: drop-shadow(0 15px 25px rgba(99, 102, 241, 0.5)); 
-        }
+        .scratch-card-new:hover { transform: translateY(-5px); filter: drop-shadow(0 15px 25px rgba(99, 102, 241, 0.5)); }
 
-        /* Images fitting perfectly without cutoff */
-        .img-revealed, .img-unrevealed {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            object-fit: contain; pointer-events: none;
-        }
-        
+        .img-revealed, .img-unrevealed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         .img-revealed { z-index: 1; }
         .img-unrevealed { z-index: 3; }
 
-        /* The Price Text */
         .scratch-result-text {
-            position: absolute; 
-            bottom: 18%; /* Positioned on the white area */
-            left: 50%; transform: translateX(-50%);
-            width: 100%; text-align: center;
-            font-size: 1.6rem; font-weight: 800; color: #ef4444; 
+            position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%);
+            width: 100%; text-align: center; font-size: 1.1rem; font-weight: 800; color: #ef4444; 
             z-index: 2; opacity: 0;
-            transition: opacity 0.5s ease;
         }
 
-        /* 📌 NEW WIPE ANIMATION */
         @keyframes cleanWipe {
             0% { clip-path: inset(0 0 0 0); filter: blur(0); }
-            100% { clip-path: inset(0 0 0 100%); filter: blur(1px); }
+            100% { clip-path: inset(0 0 0 100%); filter: blur(2px); }
         }
 
-        /* TEMPORARY RESET BUTTON */
-        .temp-reset-btn {
-            margin-top: 30px; padding: 12px 30px; background: var(--danger); color: white;
-            border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none;
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); transition: 0.3s; position: relative; z-index: 20;
-        }
+        /* 📌 SETTINGS BUTTONS & SLIDER MODAL */
+        .btn-container { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; z-index: 20; position: relative; }
+        
+        .custom-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--glass); color: var(--text-secondary); border: 1px solid var(--glass-border); padding: 12px 28px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .custom-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--primary); color: var(--text-primary); transform: translateY(-2px); }
+        .highlighted-btn { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
+        .highlighted-btn:hover { background: linear-gradient(135deg, var(--accent), var(--secondary)); color: white; border-color: transparent; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+
+        .temp-reset-btn { padding: 10px 25px; background: var(--danger); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); transition: 0.3s; }
         .temp-reset-btn:hover { background: #dc2626; transform: translateY(-2px); }
 
-        @media (max-width: 768px) {
-            .scratch-card-new { width: 130px; height: 100px; }
-            .scratch-result-text { font-size: 1.2rem; bottom: 15%; }
-            .scratch-cards-container { min-height: 250px; }
+        .slider-container { margin: 25px 0; }
+        input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; background: var(--dark-lighter); border-radius: var(--radius-full); outline: none; margin: 15px 0; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); cursor: pointer; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); border: 3px solid white; transition: transform 0.2s; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .slider-value { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-light), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 15px 0; }
+        .slider-labels { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.8rem; margin-top: 5px; }
+
+        /* 📌 CALENDAR TRACKER SECTION */
+        .calendar-section { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); padding: 35px; margin-bottom: 40px; backdrop-filter: blur(20px); box-shadow: var(--shadow-lg); width: 100%; }
+        .calendar-section h2 { text-align: center; color: var(--text-primary); margin-bottom: 25px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .calendar-section h2 i { color: var(--accent); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+        .day-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 12px 5px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70px; }
+        .day-card .date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; font-weight: 600; }
+        .day-card .amount { font-size: 0.95rem; font-weight: 700; color: var(--text-secondary); }
+        .day-card.completed { background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); border-color: var(--success); }
+        .day-card.completed .amount { color: var(--success); }
+
+        /* 📌 GENERAL MODALS */
+        .my-modal { display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); justify-content: center; align-items: center; padding: 20px; animation: fadeIn 0.3s ease; }
+        .my-modal.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .my-modal-content { background: linear-gradient(135deg, var(--dark-light), var(--dark)); padding: 40px; border-radius: var(--radius-xl); text-align: center; border: 1px solid var(--glass-border); min-width: 320px; max-width: 500px; width: 100%; color: var(--text-primary); box-shadow: var(--shadow-xl), 0 0 50px rgba(99, 102, 241, 0.3); position: relative; }
+        .my-modal-content::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent)); }
+        
+        .action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border: none; border-radius: var(--radius-full); font-size: 1rem; cursor: pointer; font-weight: 600; font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif; transition: all 0.3s ease; }
+        .action-btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .action-btn.secondary { background: var(--glass); color: var(--text-secondary); border: 1px solid var(--glass-border); }
+
+        .welcome-input-wrapper { margin: 15px 0 25px 0; position: relative; }
+        .welcome-input-wrapper i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.2rem; }
+        .welcome-input { width: 100%; padding: 18px 20px 18px 50px; border-radius: var(--radius-full); border: 2px solid var(--primary); background: rgba(0,0,0,0.2); color: white; font-size: 1.2rem; outline: none; }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .scratch-cards-container { gap: 10px; min-height: 350px; }
+            .scratch-card-new { width: 110px; height: 85px; }
+            .scratch-result-text { font-size: 0.8rem; bottom: 16%; }
+            .calendar-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .my-modal-content { padding: 25px 20px; width: 95%; }
         }
     </style>
 </head>
@@ -121,18 +145,52 @@
 
     <div class="bg-animation"></div>
 
-    <div id="app-wrapper">
+    <!-- 📌 WELCOME MODAL -->
+    <div id="welcomeModal" class="my-modal">
+        <div class="my-modal-content">
+            <h2 class="main-title" style="font-size: 2.2rem; margin-bottom: 10px;">ආයුබෝවන්! 👋</h2>
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px;">දිනපතා ඉතිරි කිරීමේ අභියෝගය ආරම්භ කිරීමට ඔබගේ නම ඇතුළත් කරන්න.</p>
+            
+            <div class="welcome-input-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="newUserName" class="welcome-input" placeholder="ඔබගේ නම">
+            </div>
+            
+            <button class="action-btn primary" style="width: 100%; padding: 16px; font-size: 1.1rem;" onclick="saveUserName()">
+                ආරම්භ කරමු <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 📌 SETTINGS MODAL (MAX AMOUNT SLIDER) -->
+    <div id="maxAmountModal" class="my-modal">
+        <div class="my-modal-content">
+            <h2 style="margin-bottom: 10px;">උපරිම අගය සකසන්න</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">කාඩ්පතකින් ලැබිය හැකි උපරිම අගය තෝරා ගන්න (100 - 900)</p>
+            <div class="slider-container">
+                <input type="range" id="amountSlider" min="100" max="900" step="100" value="900" oninput="updateSliderText(this.value)">
+                <div class="slider-value" id="sliderValDisplay">900</div>
+                <div class="slider-labels"><span>100</span><span>500</span><span>900</span></div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                <button class="action-btn primary" onclick="saveMaxAmount()"><i class="fas fa-check"></i> සුරකින්න</button>
+                <button class="action-btn secondary" onclick="closeMaxAmountModal()"><i class="fas fa-times"></i> අවලංගු කරන්න</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-wrapper" style="opacity: 0; transition: opacity 0.5s ease;">
         <div class="header-section">
             <div class="header-left">
                 <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/dsc_logo.png" alt="DSC Logo" class="logo-img">
                 <div class="title-group">
                     <h1 class="main-title">Daily Saving Challenge</h1>
-                    <p class="sub-heading" style="color:var(--text-secondary)">දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය</p>
+                    <p style="color:var(--text-secondary); font-size:0.9rem; font-weight:500;">දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය</p>
                 </div>
             </div>
         </div>
 
-        <div class="user-greeting">
+        <div style="text-align: center; margin-bottom: 25px;">
             <h2>Hi, <span id="displayUserName" style="color:var(--accent)">User</span> 👋</h2>
         </div>
 
@@ -151,114 +209,185 @@
             </div>
             
             <div class="scratch-cards-container" id="scratchCardsContainer">
-                
-                <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
-                    <div class="scratch-result-text"></div>
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
-                </div>
-                
-                <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
-                    <div class="scratch-result-text"></div>
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
-                </div>
-                
-                <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
-                    <div class="scratch-result-text"></div>
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
-                </div>
-                
-                <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
-                    <div class="scratch-result-text"></div>
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
-                </div>
-                
-                <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
-                    <div class="scratch-result-text"></div>
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
-                </div>
-                
-                <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
-                    <div class="scratch-result-text"></div>
-                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
-                </div>
-                
+                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
+                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
+                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
+                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
+                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
+                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
             </div>
 
-            <!-- Temporary Reset Button -->
-            <button id="tempResetBtn" class="temp-reset-btn" onclick="resetCards()">Reset Cards (Temp)</button>
+            <!-- 📌 BUTTONS UNDER CARDS -->
+            <div class="btn-container">
+                <button class="custom-btn highlighted-btn" onclick="openMaxAmountModal()">
+                    <i class="fas fa-cog"></i>
+                    <b>උපරිම ඉතුරුම් අගය වෙනස් කරමු</b>
+                </button>
+                <button id="tempResetBtn" class="temp-reset-btn" onclick="resetCards()">Reset Cards (Temp)</button>
+            </div>
+        </div>
+
+        <!-- 📌 CALENDAR SECTION -->
+        <div class="calendar-section" id="calendarCaptureArea">
+            <h2><i class="fas fa-calendar-alt"></i> මගේ ඉතිරි කිරීමේ සටහන (මේ මාසයේ)</h2>
+            <div class="calendar-grid" id="calendarGrid"></div>
         </div>
 
     </div>
 
     <script>
+        let localUserName = localStorage.getItem('dsc_userName') || '';
+        let trackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
+        
+        // Load global max amount from local storage (default is 900)
+        let globalMaxAmount = parseInt(localStorage.getItem('dsc_maxAmount')) || 900;
         let isAnimating = false;
 
+        function initializeApp() {
+            if (!localUserName) {
+                document.getElementById('welcomeModal').classList.add('active');
+            } else {
+                document.getElementById('app-wrapper').style.opacity = '1';
+                document.getElementById('displayUserName').innerText = localUserName;
+                renderCalendar();
+            }
+        }
+
+        function saveUserName() {
+            const nameInput = document.getElementById('newUserName').value.trim();
+            if(nameInput === "") return alert("කරුණාකර ඔබගේ නම ඇතුළත් කරන්න!");
+            localStorage.setItem('dsc_userName', nameInput);
+            localUserName = nameInput;
+            document.getElementById('welcomeModal').classList.remove('active');
+            document.getElementById('displayUserName').innerText = localUserName;
+            document.getElementById('app-wrapper').style.opacity = '1';
+            renderCalendar();
+        }
+
+        // 📌 SETTINGS MODAL LOGIC
+        function openMaxAmountModal() {
+            document.getElementById('amountSlider').value = globalMaxAmount;
+            document.getElementById('sliderValDisplay').innerText = globalMaxAmount;
+            document.getElementById('maxAmountModal').classList.add('active');
+        }
+
+        function closeMaxAmountModal() {
+            document.getElementById('maxAmountModal').classList.remove('active');
+        }
+
+        function updateSliderText(val) {
+            document.getElementById('sliderValDisplay').innerText = val;
+        }
+
+        function saveMaxAmount() {
+            globalMaxAmount = parseInt(document.getElementById('amountSlider').value);
+            localStorage.setItem('dsc_maxAmount', globalMaxAmount);
+            closeMaxAmountModal();
+        }
+
+        // 📌 CALENDAR LOGIC
+        function getTodayString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            const todayDate = new Date();
+            const year = todayDate.getFullYear();
+            const month = todayDate.getMonth();
+            const todayStr = getTodayString();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const card = document.createElement('div');
+                card.className = 'day-card';
+                let amountHtml = '-';
+
+                if (trackingData[dayStr]) {
+                    card.classList.add('completed');
+                    amountHtml = `Rs. ${trackingData[dayStr]}`;
+                } else if (dayStr < todayStr) {
+                    card.style.opacity = "0.5";
+                    amountHtml = '<i class="fas fa-times"></i>';
+                } else if (dayStr === todayStr) {
+                    card.style.borderColor = "var(--primary)";
+                    amountHtml = "අද";
+                }
+
+                card.innerHTML = `<div class="date">${i}</div><div class="amount">${amountHtml}</div>`;
+                grid.appendChild(card);
+            }
+        }
+
+        // 📌 SCRATCH CARD LOGIC
         function scratchCard(clickedCard) {
-            // Prevent multiple clicks during animation or if already scratched
             if (isAnimating || clickedCard.style.pointerEvents === 'none') return;
             isAnimating = true;
 
-            const randomMultiplier = Math.floor(Math.random() * 90);
+            // Generate Random Amount strictly based on the Maximum Value set by user
+            // e.g., if globalMaxAmount = 500, steps = 40. Math.random * 41 -> 0 to 40. Multiplied by 10 -> 0 to 400. Plus 100 -> 100 to 500.
+            const steps = (globalMaxAmount - 100) / 10;
+            const randomMultiplier = Math.floor(Math.random() * (steps + 1));
             const total = (randomMultiplier * 10) + 100; 
 
             const container = document.getElementById('scratchCardsContainer');
             const allCards = container.querySelectorAll('.scratch-card-new');
             
-            // Calculate Center of Container
             const containerRect = container.getBoundingClientRect();
             const centerX = containerRect.left + containerRect.width / 2;
             const centerY = containerRect.top + containerRect.height / 2;
 
-            // 1. Smoothly Move all cards (Active to Center & Enlarge, Others to Center & Shrink/Hide)
+            const isMobile = window.innerWidth <= 480;
+            const scaleFactor = isMobile ? 2.0 : 2.5; 
+
             allCards.forEach(card => {
                 const rect = card.getBoundingClientRect();
                 const cardCenterX = rect.left + rect.width / 2;
                 const cardCenterY = rect.top + rect.height / 2;
                 
-                // Calculate distance to move to the exact center
                 const moveX = centerX - cardCenterX;
                 const moveY = centerY - cardCenterY;
 
-                card.style.pointerEvents = 'none'; // Disable hover/clicks
+                card.style.pointerEvents = 'none'; 
+                card.style.transition = 'transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease, filter 1.5s ease';
 
                 if (card === clickedCard) {
-                    // Main Card: Move to center, scale up, stay on top
                     card.querySelector('.scratch-result-text').innerText = `Rs. ${total}`;
-                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.6)`;
+                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(${scaleFactor})`;
                     card.style.zIndex = '10';
-                    card.style.filter = 'drop-shadow(0 0 30px rgba(245, 158, 11, 0.6))';
+                    card.style.filter = 'drop-shadow(0 0 40px rgba(245, 158, 11, 0.7))';
                 } else {
-                    // Other Cards: Move to center, scale down, hide under main card
-                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(0.3)`;
+                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(0.2)`;
                     card.style.opacity = '0';
                     card.style.zIndex = '1';
                 }
             });
 
-            // 2. Wait for cards to reach the center (800ms)
             setTimeout(() => {
-                // Apply Wipe Animation to the Cover Image
                 const cover = clickedCard.querySelector('.img-unrevealed');
-                cover.style.animation = 'cleanWipe 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+                cover.style.animation = 'cleanWipe 2s cubic-bezier(0.25, 1, 0.5, 1) forwards';
 
-                // 3. Wait for Wipe Animation to finish (1200ms) before showing Price & Total
                 setTimeout(() => {
-                    clickedCard.querySelector('.scratch-result-text').style.opacity = '1';
+                    const textEl = clickedCard.querySelector('.scratch-result-text');
+                    textEl.style.transition = 'opacity 1s ease';
+                    textEl.style.opacity = '1';
                     
-                    // Update main total ONLY after price is fully revealed
                     document.getElementById('liveAmount').innerText = `Rs. ${total}`;
                     
+                    // Save progress locally
+                    const todayStr = getTodayString();
+                    trackingData[todayStr] = total;
+                    localStorage.setItem('dsc_tracking', JSON.stringify(trackingData));
+                    renderCalendar();
+
                     document.getElementById('tempResetBtn').style.display = 'inline-block';
                     isAnimating = false;
-                }, 1200);
-
-            }, 800); 
+                }, 2000);
+            }, 1500); 
         }
 
         // 📌 TEMPORARY RESET FUNCTION
@@ -269,19 +398,18 @@
             const allCards = container.querySelectorAll('.scratch-card-new');
 
             allCards.forEach(card => {
-                // Clear inline styles
+                card.style.transition = 'transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease';
                 card.style.transform = '';
                 card.style.zIndex = '';
                 card.style.opacity = '';
                 card.style.filter = '';
-                card.style.pointerEvents = 'auto'; // Re-enable clicks
+                card.style.pointerEvents = 'auto'; 
                 
-                // Reset Cover Image
                 const cover = card.querySelector('.img-unrevealed');
                 cover.style.animation = 'none';
                 
-                // Reset Text
                 const textEl = card.querySelector('.scratch-result-text');
+                textEl.style.transition = 'none';
                 textEl.style.opacity = '0';
                 textEl.innerText = '';
             });
@@ -289,6 +417,8 @@
             document.getElementById('liveAmount').innerText = `Rs. 0`;
             document.getElementById('tempResetBtn').style.display = 'none';
         }
+
+        document.addEventListener("DOMContentLoaded", initializeApp);
     </script>
 </body>
 </html>
