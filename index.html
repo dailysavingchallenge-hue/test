@@ -14,24 +14,12 @@
 
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --accent: #f59e0b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #0f172a;
-            --dark-light: #1e293b;
-            --dark-lighter: #334155;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
+            --primary: #6366f1; --primary-light: #818cf8; --primary-dark: #4f46e5;
+            --secondary: #ec4899; --accent: #f59e0b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #0f172a;
+            --dark-light: #1e293b; --dark-lighter: #334155;
+            --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
             --radius-full: 9999px;
         }
 
@@ -39,11 +27,8 @@
 
         body {
             font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            background: var(--dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.6;
+            background: var(--dark); color: var(--text-primary);
+            min-height: 100vh; overflow-x: hidden; line-height: 1.6;
         }
 
         .bg-animation {
@@ -63,84 +48,72 @@
 
         /* LIVE TOTAL */
         .live-total-container { display: flex; justify-content: center; margin-bottom: 40px; }
-        .live-total { display: inline-flex; align-items: center; gap: 15px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--glass-border); padding: 20px 40px; border-radius: var(--radius-xl); font-size: 1.8rem; font-weight: 700; backdrop-filter: blur(20px); }
-        .live-total .amount { color: var(--accent); }
+        .live-total { display: inline-flex; align-items: center; gap: 15px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--glass-border); padding: 20px 40px; border-radius: var(--radius-full); font-size: 1.8rem; font-weight: 700; backdrop-filter: blur(20px); }
+        .live-total .amount { color: var(--accent); transition: all 0.3s ease; }
 
-        /* 📌 NEW IMAGE SCRATCH CARDS SECTION */
-        .scratch-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
-        .scratch-instruction { text-align: center; margin-bottom: 25px; }
+        /* 📌 SCRATCH CARDS SECTION */
+        .scratch-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 60px; }
+        .scratch-instruction { text-align: center; margin-bottom: 25px; z-index: 20; position: relative; }
         .scratch-instruction h3 { font-size: 1.2rem; background: var(--glass); padding: 15px 30px; border-radius: var(--radius-full); border: 1px solid var(--glass-border); }
 
         .scratch-cards-container {
-            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; max-width: 800px; width: 100%; transition: all 0.5s ease;
+            display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; 
+            max-width: 800px; width: 100%; position: relative; min-height: 350px;
+            align-items: center;
         }
 
+        /* Card Setup: Removed box styling, added pure drop-shadow for PNG outline */
         .scratch-card-new {
-            width: 180px; height: 130px; position: relative; border-radius: var(--radius-lg); 
-            cursor: pointer; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            width: 180px; height: 140px; position: relative; 
+            cursor: pointer; 
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4)); /* Glow underneath the PNG only */
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+            z-index: 2;
         }
         
-        .scratch-card-new:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4); }
-
-        /* The Revealed Image (White Background) */
-        .img-revealed {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;
+        .scratch-card-new:hover { 
+            transform: translateY(-5px); 
+            filter: drop-shadow(0 15px 25px rgba(99, 102, 241, 0.5)); 
         }
 
-        /* The Price Text over the white area */
+        /* Images fitting perfectly without cutoff */
+        .img-revealed, .img-unrevealed {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: contain; pointer-events: none;
+        }
+        
+        .img-revealed { z-index: 1; }
+        .img-unrevealed { z-index: 3; }
+
+        /* The Price Text */
         .scratch-result-text {
-            position: absolute; bottom: 15%; left: 0; width: 100%; text-align: center;
-            font-size: 2.2rem; font-weight: 800; color: #ef4444; z-index: 2; opacity: 0;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: opacity 0.5s ease 1s;
+            position: absolute; 
+            bottom: 18%; /* Positioned on the white area */
+            left: 50%; transform: translateX(-50%);
+            width: 100%; text-align: center;
+            font-size: 1.6rem; font-weight: 800; color: #ef4444; 
+            z-index: 2; opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        /* The Unrevealed Image (Gray Background) */
-        .img-unrevealed {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 3;
-            transition: all 1.5s ease-in-out;
-        }
-
-        /* State: Active (Scratched) */
-        .scratch-cards-container.has-active { max-width: 900px; }
-        
-        .scratch-card-new.active {
-            width: 320px; height: 230px; order: -1; margin-bottom: 20px; cursor: default;
-            box-shadow: 0 0 40px rgba(245, 158, 11, 0.6);
-        }
-        .scratch-card-new.active:hover { transform: none; }
-
-        /* The Slow Scratching Animation */
-        .scratch-card-new.active .img-unrevealed {
-            animation: scratchEffect 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-        }
-        .scratch-card-new.active .scratch-result-text { opacity: 1; }
-
-        @keyframes scratchEffect {
-            0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); filter: blur(0); opacity: 1; }
-            20% { clip-path: polygon(0 0, 80% 10%, 100% 100%, 20% 90%); }
-            50% { clip-path: polygon(20% 0, 60% 30%, 80% 80%, 30% 60%); filter: blur(2px); opacity: 0.8;}
-            80% { clip-path: polygon(40% 40%, 60% 40%, 60% 60%, 40% 60%); filter: blur(5px); opacity: 0.4; transform: scale(1.1); }
-            100% { clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%); filter: blur(10px); opacity: 0; transform: scale(1.2); display: none; }
-        }
-
-        /* State: Disabled (Other Cards) */
-        .scratch-card-new.disabled {
-            width: 120px; height: 85px; opacity: 0.5; filter: grayscale(80%); pointer-events: none; margin: 0 5px;
+        /* 📌 NEW WIPE ANIMATION */
+        @keyframes cleanWipe {
+            0% { clip-path: inset(0 0 0 0); filter: blur(0); }
+            100% { clip-path: inset(0 0 0 100%); filter: blur(1px); }
         }
 
         /* TEMPORARY RESET BUTTON */
         .temp-reset-btn {
-            margin-top: 20px; padding: 12px 30px; background: var(--danger); color: white;
+            margin-top: 30px; padding: 12px 30px; background: var(--danger); color: white;
             border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none;
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); transition: 0.3s; position: relative; z-index: 20;
         }
         .temp-reset-btn:hover { background: #dc2626; transform: translateY(-2px); }
 
         @media (max-width: 768px) {
-            .scratch-card-new { width: 140px; height: 100px; }
-            .scratch-card-new.active { width: 280px; height: 200px; }
-            .scratch-result-text { font-size: 1.8rem; }
+            .scratch-card-new { width: 130px; height: 100px; }
+            .scratch-result-text { font-size: 1.2rem; bottom: 15%; }
+            .scratch-cards-container { min-height: 250px; }
         }
     </style>
 </head>
@@ -151,7 +124,6 @@
     <div id="app-wrapper">
         <div class="header-section">
             <div class="header-left">
-                <!-- 📌 LOGO IMAGE UPDATED HERE -->
                 <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/dsc_logo.png" alt="DSC Logo" class="logo-img">
                 <div class="title-group">
                     <h1 class="main-title">Daily Saving Challenge</h1>
@@ -180,42 +152,36 @@
             
             <div class="scratch-cards-container" id="scratchCardsContainer">
                 
-                <!-- Card 1 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
                 
-                <!-- Card 2 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
                 
-                <!-- Card 3 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
                 
-                <!-- Card 4 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
                 
-                <!-- Card 5 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
                 
-                <!-- Card 6 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
                     <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
@@ -231,53 +197,93 @@
     </div>
 
     <script>
-        // 📌 SCRATCH CARD LOGIC
+        let isAnimating = false;
+
         function scratchCard(clickedCard) {
-            
-            // "දිනකට එකයි" සීමාව දැනට Testing සඳහා අක්‍රිය කර ඇත
-            
-            // Generate Random Amount: Multiple of 10, between 100 and 990
+            // Prevent multiple clicks during animation or if already scratched
+            if (isAnimating || clickedCard.style.pointerEvents === 'none') return;
+            isAnimating = true;
+
             const randomMultiplier = Math.floor(Math.random() * 90);
             const total = (randomMultiplier * 10) + 100; 
 
             const container = document.getElementById('scratchCardsContainer');
             const allCards = container.querySelectorAll('.scratch-card-new');
-
-            container.classList.add('has-active');
             
+            // Calculate Center of Container
+            const containerRect = container.getBoundingClientRect();
+            const centerX = containerRect.left + containerRect.width / 2;
+            const centerY = containerRect.top + containerRect.height / 2;
+
+            // 1. Smoothly Move all cards (Active to Center & Enlarge, Others to Center & Shrink/Hide)
             allCards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                
+                // Calculate distance to move to the exact center
+                const moveX = centerX - cardCenterX;
+                const moveY = centerY - cardCenterY;
+
+                card.style.pointerEvents = 'none'; // Disable hover/clicks
+
                 if (card === clickedCard) {
-                    card.classList.add('active');
+                    // Main Card: Move to center, scale up, stay on top
                     card.querySelector('.scratch-result-text').innerText = `Rs. ${total}`;
+                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.6)`;
+                    card.style.zIndex = '10';
+                    card.style.filter = 'drop-shadow(0 0 30px rgba(245, 158, 11, 0.6))';
                 } else {
-                    card.classList.add('disabled');
+                    // Other Cards: Move to center, scale down, hide under main card
+                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(0.3)`;
+                    card.style.opacity = '0';
+                    card.style.zIndex = '1';
                 }
             });
 
-            document.getElementById('liveAmount').innerText = `Rs. ${total}`;
-
-            // Show temporary reset button after scratching
+            // 2. Wait for cards to reach the center (800ms)
             setTimeout(() => {
-                document.getElementById('tempResetBtn').style.display = 'inline-block';
-            }, 2000); 
+                // Apply Wipe Animation to the Cover Image
+                const cover = clickedCard.querySelector('.img-unrevealed');
+                cover.style.animation = 'cleanWipe 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+
+                // 3. Wait for Wipe Animation to finish (1200ms) before showing Price & Total
+                setTimeout(() => {
+                    clickedCard.querySelector('.scratch-result-text').style.opacity = '1';
+                    
+                    // Update main total ONLY after price is fully revealed
+                    document.getElementById('liveAmount').innerText = `Rs. ${total}`;
+                    
+                    document.getElementById('tempResetBtn').style.display = 'inline-block';
+                    isAnimating = false;
+                }, 1200);
+
+            }, 800); 
         }
 
         // 📌 TEMPORARY RESET FUNCTION
         function resetCards() {
+            if (isAnimating) return;
+            
             const container = document.getElementById('scratchCardsContainer');
             const allCards = container.querySelectorAll('.scratch-card-new');
 
-            container.classList.remove('has-active');
-
             allCards.forEach(card => {
-                card.classList.remove('active', 'disabled');
-                card.querySelector('.scratch-result-text').innerText = '';
+                // Clear inline styles
+                card.style.transform = '';
+                card.style.zIndex = '';
+                card.style.opacity = '';
+                card.style.filter = '';
+                card.style.pointerEvents = 'auto'; // Re-enable clicks
                 
-                // Hack to reset CSS animation on the unrevealed image
-                const unrevealedImg = card.querySelector('.img-unrevealed');
-                unrevealedImg.style.animation = 'none';
-                unrevealedImg.offsetHeight; /* trigger reflow */
-                unrevealedImg.style.animation = null; 
+                // Reset Cover Image
+                const cover = card.querySelector('.img-unrevealed');
+                cover.style.animation = 'none';
+                
+                // Reset Text
+                const textEl = card.querySelector('.scratch-result-text');
+                textEl.style.opacity = '0';
+                textEl.innerText = '';
             });
 
             document.getElementById('liveAmount').innerText = `Rs. 0`;
