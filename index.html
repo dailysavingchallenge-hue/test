@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- 📌 Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -74,7 +75,6 @@
             display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; max-width: 800px; width: 100%; transition: all 0.5s ease;
         }
 
-        /* Set dimensions based on your landscape images */
         .scratch-card-new {
             width: 180px; height: 130px; position: relative; border-radius: var(--radius-lg); 
             cursor: pointer; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
@@ -91,7 +91,7 @@
         /* The Price Text over the white area */
         .scratch-result-text {
             position: absolute; bottom: 15%; left: 0; width: 100%; text-align: center;
-            font-size: 2rem; font-weight: 800; color: #ef4444; z-index: 2; opacity: 0;
+            font-size: 2.2rem; font-weight: 800; color: #ef4444; z-index: 2; opacity: 0;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: opacity 0.5s ease 1s;
         }
 
@@ -137,13 +137,10 @@
         }
         .temp-reset-btn:hover { background: #dc2626; transform: translateY(-2px); }
 
-        /* Action Buttons */
-        .action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border: none; border-radius: var(--radius-full); font-size: 1rem; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
-        .action-btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        
         @media (max-width: 768px) {
             .scratch-card-new { width: 140px; height: 100px; }
             .scratch-card-new.active { width: 280px; height: 200px; }
+            .scratch-result-text { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -154,6 +151,8 @@
     <div id="app-wrapper">
         <div class="header-section">
             <div class="header-left">
+                <!-- 📌 LOGO IMAGE UPDATED HERE -->
+                <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/dsc_logo.png" alt="DSC Logo" class="logo-img">
                 <div class="title-group">
                     <h1 class="main-title">Daily Saving Challenge</h1>
                     <p class="sub-heading" style="color:var(--text-secondary)">දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය</p>
@@ -173,44 +172,59 @@
             </div>
         </div>
 
+        <!-- 📌 SCRATCH CARDS SECTION -->
         <div class="scratch-section">
             <div class="scratch-instruction" id="scratchInstruction">
                 <h3>අද දවසේ ඉතුරු කරන්න ඕන මුදල දැනගැනීමට කාඩ් එකක් සූරලා බලන්න</h3>
             </div>
             
             <div class="scratch-cards-container" id="scratchCardsContainer">
+                
+                <!-- Card 1 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="IMAGE_2_LINK_HERE" class="img-revealed" alt="White Background">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
-                    <img src="IMAGE_1_LINK_HERE" class="img-unrevealed" alt="Gray Cover">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
+                
+                <!-- Card 2 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="IMAGE_2_LINK_HERE" class="img-revealed" alt="White Background">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
-                    <img src="IMAGE_1_LINK_HERE" class="img-unrevealed" alt="Gray Cover">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
+                
+                <!-- Card 3 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="IMAGE_2_LINK_HERE" class="img-revealed" alt="White Background">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
-                    <img src="IMAGE_1_LINK_HERE" class="img-unrevealed" alt="Gray Cover">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
+                
+                <!-- Card 4 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="IMAGE_2_LINK_HERE" class="img-revealed" alt="White Background">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
-                    <img src="IMAGE_1_LINK_HERE" class="img-unrevealed" alt="Gray Cover">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
+                
+                <!-- Card 5 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="IMAGE_2_LINK_HERE" class="img-revealed" alt="White Background">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
-                    <img src="IMAGE_1_LINK_HERE" class="img-unrevealed" alt="Gray Cover">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
+                
+                <!-- Card 6 -->
                 <div class="scratch-card-new" onclick="scratchCard(this)">
-                    <img src="IMAGE_2_LINK_HERE" class="img-revealed" alt="White Background">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed" alt="White Background">
                     <div class="scratch-result-text"></div>
-                    <img src="IMAGE_1_LINK_HERE" class="img-unrevealed" alt="Gray Cover">
+                    <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed" alt="Gray Cover">
                 </div>
+                
             </div>
 
+            <!-- Temporary Reset Button -->
             <button id="tempResetBtn" class="temp-reset-btn" onclick="resetCards()">Reset Cards (Temp)</button>
         </div>
 
@@ -219,13 +233,9 @@
     <script>
         // 📌 SCRATCH CARD LOGIC
         function scratchCard(clickedCard) {
-            // "දිනකට එකයි" සීමාව දැනට Testing සඳහා අක්‍රිය කර ඇත (Commented out)
-            /* if (hasScratchedTodayLocal) {
-                alert("ඔබ අද දිනට අදාලව කාඩ්පතක් සූරා අවසන්!");
-                return;
-            }
-            */
-
+            
+            // "දිනකට එකයි" සීමාව දැනට Testing සඳහා අක්‍රිය කර ඇත
+            
             // Generate Random Amount: Multiple of 10, between 100 and 990
             const randomMultiplier = Math.floor(Math.random() * 90);
             const total = (randomMultiplier * 10) + 100; 
@@ -238,7 +248,6 @@
             allCards.forEach(card => {
                 if (card === clickedCard) {
                     card.classList.add('active');
-                    // Update text inside the active card
                     card.querySelector('.scratch-result-text').innerText = `Rs. ${total}`;
                 } else {
                     card.classList.add('disabled');
@@ -250,7 +259,7 @@
             // Show temporary reset button after scratching
             setTimeout(() => {
                 document.getElementById('tempResetBtn').style.display = 'inline-block';
-            }, 2000); // Button appears after animation ends
+            }, 2000); 
         }
 
         // 📌 TEMPORARY RESET FUNCTION
