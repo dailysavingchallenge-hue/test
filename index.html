@@ -46,48 +46,6 @@
             color: var(--text-muted); pointer-events: none; 
         }
 
-        /* 🏆 Achievers Banner Styles */
-        .achievers-banner-container {
-            display: none; 
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(236, 72, 153, 0.15));
-            border: 1px solid var(--accent);
-            border-radius: var(--radius-xl);
-            padding: 20px;
-            margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
-            animation: fadeInScale 0.5s ease-out forwards;
-        }
-        .achievers-banner-title {
-            color: var(--accent);
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .achievers-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-        .achiever-badge {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 15px;
-            border-radius: var(--radius-full);
-            font-size: 0.9rem;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .achiever-badge span { color: var(--success); font-weight: 700; }
-        @keyframes fadeInScale { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
-
         /* 🌟 Grand Stat Card (Last Saver) */
         .grand-stat-card {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(0,0,0,0.4));
@@ -125,7 +83,7 @@
 </head>
 <body>
 
-    <!-- Hidden Google Translate Element (Used only for Blogger Posts) -->
+    <!-- Hidden Google Translate Element -->
     <div id="google_translate_element" style="display:none;"></div>
 
     <div class="bg-animation"></div>
@@ -141,8 +99,8 @@
             <!-- 🌐 Quick Language Toggle on Modal -->
             <div id="authLangToggleContainer" style="position: absolute; top: 15px; right: 15px; z-index: 10; display: none;">
                 <div class="lang-toggle" style="gap: 5px; margin: 0;">
-                    <button class="lang-btn btn-si" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('si')">සිං</button>
-                    <button class="lang-btn btn-en" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('en')">EN</button>
+                    <button class="lang-btn btn-si" style="padding: 5px 10px; font-size: 0.8rem;" onclick="changeLanguage('si')">සිං</button>
+                    <button class="lang-btn btn-en" style="padding: 5px 10px; font-size: 0.8rem;" onclick="changeLanguage('en')">EN</button>
                 </div>
             </div>
 
@@ -253,13 +211,6 @@
         <div class="main-content-flex">
             <!-- 🔹 TAB 1: HOME -->
             <div id="view-home" class="view-section active notranslate">
-                
-                <!-- 🏆 DAILY ACHIEVERS BANNER (HOME) -->
-                <div id="homeAchieversBanner" class="achievers-banner-container">
-                    <div class="achievers-banner-title"><i class="fas fa-trophy"></i> <span data-i18n="achievers_title">Today's Champions</span> <i class="fas fa-trophy"></i></div>
-                    <div class="achievers-list" id="homeAchieversList"></div>
-                </div>
-
                 <div class="live-total-container">
                     <div class="live-total">
                         <i class="fas fa-piggy-bank"></i>
@@ -282,6 +233,7 @@
                         <i class="fas fa-cog"></i> <span data-i18n="change_wheel_btn">Change Outer Wheel Values</span>
                     </button>
                 </div>
+                
                 <div id="homeTargetWinNote" class="target-win-note">
                     <h2>🎉 <span data-i18n="target_achieved_msg">Congratulations! You've achieved your target!</span> 🎉</h2>
                     <p data-i18n="win_note_desc">Today is a special day! Your dedication has paid off.</p>
@@ -297,37 +249,27 @@
             </div>
 
             <!-- 🔹 TAB 2: CALENDAR -->
-            <div id="view-calendar" class="view-section notranslate">
-                
-                <!-- 🏆 DAILY ACHIEVERS BANNER (CALENDAR) -->
-                <div id="calendarAchieversBanner" class="achievers-banner-container" style="margin-bottom: 20px;">
-                    <div class="achievers-banner-title"><i class="fas fa-trophy"></i> <span data-i18n="achievers_title">Today's Champions</span> <i class="fas fa-trophy"></i></div>
-                    <div class="achievers-list" id="calendarAchieversList"></div>
-                </div>
-
-                <!-- Capture Area strictly for calendar table -->
-                <div id="calendarCaptureArea">
-                    <div class="calendar-section">
-                        <h2><i class="fas fa-calendar-alt"></i> <span data-i18n="calendar_title">My Savings Record</span></h2>
-                        <div class="calendar-grid" id="calendarGrid"></div>
-                        <div class="monthly-total-box">
-                            <button id="showTotalBtn" class="action-btn secondary" style="width: auto; padding: 12px 30px;" onclick="showMonthlyTotal()">
-                                <i class="fas fa-eye"></i> <span data-i18n="show_total_btn">Show This Month's Total</span>
+            <div id="view-calendar" class="view-section notranslate" id="calendarCaptureArea">
+                <div class="calendar-section">
+                    <h2><i class="fas fa-calendar-alt"></i> <span data-i18n="calendar_title">My Savings Record</span></h2>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                    <div class="monthly-total-box">
+                        <button id="showTotalBtn" class="action-btn secondary" style="width: auto; padding: 12px 30px;" onclick="showMonthlyTotal()">
+                            <i class="fas fa-eye"></i> <span data-i18n="show_total_btn">Show This Month's Total</span>
+                        </button>
+                        <div id="totalAmountContainer" class="monthly-total-display" style="display:none;">
+                            <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom:5px;" data-i18n="month_total_title">Total Savings This Month</div>
+                            <div class="total-amount" id="monthTotalAmount">$0</div>
+                        </div>
+                        <div id="calendarDownloadArea" style="text-align: center; margin-top: 15px; display: none; width: 100%;">
+                            <button class="action-btn primary" onclick="downloadCalendar()">
+                                <i class="fas fa-download"></i> <span data-i18n="download_calendar">Download This Month's Record</span>
                             </button>
-                            <div id="totalAmountContainer" class="monthly-total-display" style="display:none;">
-                                <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom:5px;" data-i18n="month_total_title">Total Savings This Month</div>
-                                <div class="total-amount" id="monthTotalAmount">$0</div>
-                            </div>
-                            <div id="calendarDownloadArea" style="text-align: center; margin-top: 15px; display: none; width: 100%;">
-                                <button class="action-btn primary" onclick="downloadCalendar()">
-                                    <i class="fas fa-download"></i> <span data-i18n="download_calendar">Download This Month's Record</span>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 📌 ORIGINAL TARGET DISPLAY LOCATION (Under Calendar) -->
+                <!-- 📌 ORIGINAL TARGET DISPLAY LOCATION -->
                 <div id="targetDisplayCalendar" class="target-card"></div>
 
                 <!-- Last Saver Grand Card -->
@@ -339,7 +281,7 @@
 
             <!-- 🔹 TAB 3: HUB (ARTICLE LIST) -->
             <div id="view-hub" class="view-section">
-                <!-- Financial Advice Intro Text (notranslate to use our hardcoded languages) -->
+                <!-- Financial Advice Intro Text -->
                 <div class="settings-card notranslate" style="background: rgba(0,0,0,0.3); border: 1px solid var(--accent); margin-bottom: 25px;">
                     <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-lightbulb"></i> <span data-i18n="advice_title">Master Your Money</span></h2>
                     <div class="long-text-content" id="adviceFullText" data-i18n="advice_full_text">
@@ -349,7 +291,6 @@
 
                 <h2 class="section-title notranslate"><i class="fas fa-book-open"></i> <span data-i18n="blog_title">Financial Advice & Articles</span></h2>
                 
-                <!-- NEW GRID LAYOUT CONTAINER (This will be translated by Google Translate) -->
                 <div id="blogGrid">
                     <p id="noArticlesMsg" class="notranslate" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">Fetching articles...</p>
                 </div>
@@ -385,8 +326,8 @@
                     <div id="settingsLangContainer" style="display: none;">
                         <h4 style="margin: 15px 0 10px; font-size: 0.95rem; color: var(--text-secondary);" data-i18n="select_lang">Language</h4>
                         <div class="lang-toggle">
-                            <button class="lang-btn btn-si" onclick="setLanguage('si')">Sinhala</button>
-                            <button class="lang-btn btn-en" onclick="setLanguage('en')">English</button>
+                            <button class="lang-btn btn-si" onclick="changeLanguage('si')">Sinhala</button>
+                            <button class="lang-btn btn-en" onclick="changeLanguage('en')">English</button>
                         </div>
                     </div>
                 </div>
@@ -461,7 +402,6 @@
         <div class="nav-item" id="nav-explore" onclick="switchView('hub', this)">
             <i class="fas fa-book-open"></i><span data-i18n="nav_explore">Explore</span>
         </div>
-        <!-- Re-added About Us -->
         <div class="nav-item" onclick="window.location.href='about.html'">
             <i class="fas fa-info-circle"></i><span data-i18n="nav_about">About Us</span>
         </div>
@@ -559,7 +499,7 @@
                 regional_settings: "Regional Settings", profile_settings: "User Profile", new_password_placeholder: "New Password", save_profile: "Save Changes",
                 calendar_title: "My Savings Record", month_total_title: "Total Savings This Month", show_total_btn: "Show This Month's Total", download_calendar: "Download This Month's Record",
                 stats_participants: "Total Participants:", stats_winner: "Last Saver", purpose_title: "Purpose of the Challenge", purpose_full_text: purposeEn,
-                advice_title: "Master Your Money", advice_full_text: adviceEn, achievers_title: "Today's Champions",
+                advice_title: "Master Your Money", advice_full_text: adviceEn, 
                 blog_title: "Financial Advice & Articles", view_all: "View All Articles", nav_about: "About Us",
                 footer_rights: "All Rights Reserved.", modal_setup_title: "Setup Wheel", modal_setup_sub: "Select Max Value", modal_save: "Save", modal_cancel: "Cancel",
                 card_subtitle: "Amount to save today", card_close: "Close", nav_home: "Home", nav_calendar: "Calendar", nav_explore: "Explore", nav_settings: "Settings",
@@ -582,7 +522,7 @@
                 regional_settings: "කලාපීය සැකසුම්", profile_settings: "ගිණුමේ සැකසුම් (Profile)", new_password_placeholder: "අලුත් මුරපදය (New Password)", save_profile: "සුරකින්න",
                 calendar_title: "මගේ ඉතිරි කිරීමේ සටහන", month_total_title: "මේ මාසයේ මුළු ඉතිරිය", show_total_btn: "මේ මාසයේ මුළු ඉතිරිය පෙන්වන්න", download_calendar: "මේ මාසේ සටහන ඩවුන්ලෝඩ් කරගමු",
                 stats_participants: "සහභාගී වූ ගණන:", stats_winner: "අවසන් ඉතුරුම්කරු", purpose_title: "අභියෝගයේ අරමුන", purpose_full_text: purposeSi,
-                advice_title: "ඔබේ මුදල් නිවැරදිව හසුරුවමු", advice_full_text: adviceSi, achievers_title: "අද දවසේ ජයග්‍රාහකයින්",
+                advice_title: "ඔබේ මුදල් නිවැරදිව හසුරුවමු", advice_full_text: adviceSi, 
                 blog_title: "මූල්‍ය උපදෙස් සහ ලිපි", view_all: "සියලුම ලිපි බලන්න", nav_about: "අපි ගැන",
                 footer_rights: "සියලුම හිමිකම් ඇවිරිණි.", modal_setup_title: "ලොකු රවුම සකසන්න", modal_setup_sub: "උපරිම අගය තෝරා ගන්න", modal_save: "සුරකින්න", modal_cancel: "අවලංගු කරන්න",
                 card_subtitle: "අද ඔයාට ඉතුරු කරනන් වෙන මුදල", card_close: "වසන්න", nav_home: "මුල් පිටුව", nav_calendar: "දින දර්ශනය", nav_explore: "තොරතුරු", nav_settings: "සැකසුම්",
@@ -614,6 +554,7 @@
 
         let userCurrency = localStorage.getItem('dsc_currency') || null;
         let currentLang = localStorage.getItem('dsc_lang') || 'en';
+        let currentBloggerLabel = currentLang === 'si' ? 'Sin' : 'En'; 
 
         function formatAmount(amount) {
             if (!currencyDB[userCurrency]) return amount;
@@ -656,11 +597,7 @@
             localStorage.setItem('dsc_lang', currentLang);
             
             populateCurrencyDropdown();
-            setLanguage(currentLang);
-            buildWheelUI();
-            checkTodaySpin();
-            renderCalendar();
-            renderTargetUI();
+            applyLanguageSettings();
         }
 
         function populateCurrencyDropdown() {
@@ -678,22 +615,24 @@
             applyRegionalSettings();
         }
 
-        let currentBloggerLabel = 'En'; // Default Label for Blogger
+        // Action when user clicks Si / En button
+        function changeLanguage(langCode) {
+            if (userCurrency !== "LKR" && langCode !== 'en') langCode = 'en';
+            if (localStorage.getItem('dsc_lang') !== langCode) {
+                localStorage.setItem('dsc_lang', langCode);
+                window.location.reload(); // Hard refresh to perfectly reload UI and Blog content
+            }
+        }
 
-        let translateRetryCount = 0;
-        function setLanguage(lang) {
-            if (userCurrency !== "LKR" && lang !== 'en') lang = 'en';
+        function applyLanguageSettings() {
+            // Apply active classes to buttons
+            document.querySelectorAll('.btn-si').forEach(btn => btn.classList.toggle('active', currentLang === 'si'));
+            document.querySelectorAll('.btn-en').forEach(btn => btn.classList.toggle('active', currentLang === 'en'));
             
-            let previousLang = currentLang;
-            currentLang = lang; 
-            localStorage.setItem('dsc_lang', lang);
-            
-            document.querySelectorAll('.btn-si').forEach(btn => btn.classList.toggle('active', lang === 'si'));
-            document.querySelectorAll('.btn-en').forEach(btn => btn.classList.toggle('active', lang === 'en'));
-            
+            // Update Text
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n'); 
-                if (translations[currentLang][key]) el.innerHTML = translations[currentLang][key]; 
+                if (translations[currentLang][key]) el.innerHTML = translations[currentLang][key];
             });
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
@@ -702,31 +641,19 @@
             const submitBtnText = document.getElementById('authSubmitText');
             if(submitBtnText) submitBtnText.innerText = translations[currentLang][authMode === 'login' ? 'tab_login' : 'tab_signup'];
 
+            // UI Fixes
             if (currentUserData || isLocalMode) { renderCalendar(); checkTodaySpin(); renderTargetUI(); }
             
             const noArticles = document.getElementById('noArticlesMsg'); if (noArticles) noArticles.innerText = translations[currentLang].js_no_articles;
             const loadMoreBtn = document.getElementById('loadMoreBtnActual'); if (loadMoreBtn) loadMoreBtn.innerText = translations[currentLang].js_load_more;
             document.querySelectorAll('.read-more-text').forEach(el => el.innerText = translations[currentLang].js_read_more);
 
-            // 📌 Blogger Label Logic (Fetch new category based on language)
-            let newLabel = lang === 'si' ? 'Sin' : 'En';
-            if (newLabel !== currentBloggerLabel || fetchedArticles.length === 0) {
-                currentBloggerLabel = newLabel;
-                fetchedArticles = [];
-                currentStartIndex = 1;
-                const blogGrid = document.getElementById('blogGrid');
-                if (blogGrid) {
-                    blogGrid.innerHTML = ''; // Force clear immediately
-                    blogGrid.innerHTML = `<p id="noArticlesMsg" class="notranslate" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">${translations[currentLang].js_loading}</p>`;
-                }
-                loadBloggerPosts(1);
-            }
-
-            // Trigger Google Translate for Blog content
-            translateRetryCount = 0;
-            triggerGoogleTranslate(lang);
+            buildWheelUI();
+            triggerGoogleTranslate(currentLang);
+            loadBloggerPosts(1);
         }
 
+        let translateRetryCount = 0;
         function triggerGoogleTranslate(langCode) {
             const select = document.querySelector('.goog-te-combo');
             if (select) {
@@ -835,36 +762,6 @@
             }
         });
 
-        // 📌 Listen for today's achievers
-        function fetchDailyAchievers() {
-            const todayStr = getTodayString();
-            database.ref('dailyAchievers/' + todayStr).on('value', (snapshot) => {
-                const achievers = snapshot.val();
-                renderAchieversBanner(achievers);
-            });
-        }
-
-        function renderAchieversBanner(achievers) {
-            const homeBanner = document.getElementById('homeAchieversBanner');
-            const calBanner = document.getElementById('calendarAchieversBanner');
-            const homeList = document.getElementById('homeAchieversList');
-            const calList = document.getElementById('calendarAchieversList');
-
-            if (achievers) {
-                let html = '';
-                Object.values(achievers).forEach(ach => {
-                    html += `<div class="achiever-badge notranslate"><i class="fas fa-star" style="color:#fbbf24;"></i> ${ach.name} <span>(${formatAmount(ach.target)})</span></div>`;
-                });
-                if(homeList) homeList.innerHTML = html; 
-                if(calList) calList.innerHTML = html;
-                if(homeBanner) homeBanner.style.display = 'block'; 
-                if(calBanner) calBanner.style.display = 'block';
-            } else {
-                if(homeBanner) homeBanner.style.display = 'none'; 
-                if(calBanner) calBanner.style.display = 'none';
-            }
-        }
-
         let authMode = 'login'; 
         function switchAuthTab(mode) {
             authMode = mode; 
@@ -956,7 +853,7 @@
         }
 
         // =========================================
-        // 📌 BLOGGER (HEADLESS CMS) - REFINED GRID
+        // 📌 BLOGGER (HEADLESS CMS)
         // =========================================
         const myBloggerURL = "https://dailysavingchallengelk.blogspot.com";
         let fetchedArticles = []; 
@@ -965,15 +862,15 @@
         let isFetchingPosts = false;
 
         function loadBloggerPosts(startIndex = 1) {
+            if(isFetchingPosts) return;
             isFetchingPosts = true;
             
-            // Remove old script to cleanly fetch new label data
             const oldScript = document.getElementById('bloggerFetchScript');
             if(oldScript) oldScript.remove();
 
             const script = document.createElement('script');
             script.id = 'bloggerFetchScript';
-            // Fetching posts using Blogger JSON feed (With Label Filter and Cache Buster)
+            // Fetching posts using Blogger JSON feed based on the active label
             script.src = `${myBloggerURL}/feeds/posts/default/-/${currentBloggerLabel}?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}&t=${new Date().getTime()}`;
             document.body.appendChild(script);
         }
@@ -996,7 +893,6 @@
                 return; 
             }
 
-            // If it's a fresh language load, clean the grid completely
             if (currentStartIndex === 1 && fetchedArticles.length === 0) {
                 blogGrid.innerHTML = '';
             }
@@ -1007,7 +903,6 @@
                 const title = entry.title.$t;
                 const postId = entry.id.$t.split('post-')[1]; 
                 
-                // --- IMAGE EXTRACTION LOGIC ---
                 let imgUrl = 'https://via.placeholder.com/400x250/1e293b/cbd5e1?text=Daily+Saving+Challenge'; 
                 
                 if (entry.media$thumbnail) {
@@ -1030,7 +925,6 @@
                     </div>`;
             });
 
-            // Add Load More button if we fetched a full page
             if (entries.length === postsPerPage) {
                 blogGrid.innerHTML += `
                     <div id="loadMoreContainer" style="grid-column: 1 / -1; margin-top: 15px;">
@@ -1096,7 +990,6 @@
 
         function initializeApp() { 
             initCurrencyAndLang(); 
-            fetchDailyAchievers();
             setTimeout(checkDirectArticleLink, 500); 
         }
         document.addEventListener("DOMContentLoaded", initializeApp);
@@ -1230,11 +1123,12 @@
         function renderTargetUI() {
             if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null };
             
-            // Check tracking data carefully
+            // Check tracking data robustly
             let totalSaved = 0;
-            if (trackingData) {
+            if (trackingData && typeof trackingData === 'object') {
                 totalSaved = Object.values(trackingData).reduce((sum, val) => sum + val, 0); 
             }
+            
             const today = getTodayString();
             
             let canEdit = false; let daysLeft = 0;
@@ -1243,15 +1137,6 @@
             } else if (userTarget.setDate) {
                 const diffDays = Math.floor((new Date(today).getTime() - new Date(userTarget.setDate).getTime()) / (1000 * 60 * 60 * 24));
                 if (diffDays >= 30) canEdit = true; else daysLeft = 30 - diffDays;
-            }
-
-            const winNote = document.getElementById('homeTargetWinNote');
-            if (userTarget.amount > 0 && userTarget.achievedDate === today) { 
-                document.body.classList.add('theme-gold'); 
-                if(winNote) winNote.style.display = 'block'; 
-            } else { 
-                document.body.classList.remove('theme-gold'); 
-                if(winNote) winNote.style.display = 'none'; 
             }
 
             let html = '';
@@ -1279,7 +1164,7 @@
                 html += `<button class="action-btn highlighted-btn mt-15 notranslate" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span>${translations[currentLang].target_add_btn}</span></button>`; 
             }
             
-            // Render Target in both required sections
+            // Render Target exactly under Calendar and on Settings
             const calCont = document.getElementById('targetDisplayCalendar'); 
             const setCont = document.getElementById('targetDisplaySettings');
             if(calCont) calCont.innerHTML = html; 
@@ -1356,15 +1241,6 @@
                 const total = (baseOuter[outIndex] * cData.multOuter) + (baseInner[inIndex] * cData.multInner); 
                 const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = localUserName || (currentUserData ? currentUserData.name : "User"); let photoToDisplay = "";
                 if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null }; const totalSavedNow = Object.values(trackingData).reduce((sum, val) => sum + val, 0);
-                
-                // --- 🏆 TARGET ACHIEVER LOGIC ---
-                if (userTarget.amount > 0 && totalSavedNow >= userTarget.amount && !userTarget.achievedDate) { 
-                    userTarget.achievedDate = todayStr; 
-                    database.ref('dailyAchievers/' + todayStr).push({
-                        name: userNameToDisplay,
-                        target: userTarget.amount
-                    });
-                }
                 
                 if (isLocalMode) { localStorage.setItem('dsc_tracking', JSON.stringify(trackingData)); localStorage.setItem('dsc_target', JSON.stringify(userTarget)); photoToDisplay = localStorage.getItem('dsc_avatar') || generateAvatar(localUserName); } 
                 else if (currentUser && currentUserData) { database.ref('users/' + currentUser.uid + '/trackingData/' + todayStr).set(total); database.ref('users/' + currentUser.uid + '/targetData').set(userTarget); photoToDisplay = currentUserData.photoURL || currentUser.photoURL || generateAvatar(userNameToDisplay); }
