@@ -4,7 +4,6 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7875755235721674" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- 📌 SEO & Meta Tags -->
     <title>DSCSaving | Daily Saving Challenge</title>
     <meta name="google-site-verification" content="cOCTgcawgqNc4gSyOQukBqpWCLOxOVzTZskBzwZwb8M" />
     <meta name="description" content="DSCSaving - Track your daily savings easily. Join today to achieve your financial goals worldwide.">
@@ -17,10 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- 📌 Link to CSS File -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- 📌 Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -46,15 +43,12 @@
 
     <div class="bg-animation"></div>
 
-    <!-- 📌 INITIAL LOADER -->
     <div id="initialLoader" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
         <i class="fas fa-spinner fa-spin fa-3x"></i>
     </div>
 
-    <!-- 📌 FIREBASE AUTHENTICATION -->
     <div id="authModal" class="my-modal">
         <div class="my-modal-content">
-            <!-- 🌐 Quick Language Toggle on Modal (Visible only for LKR via JS) -->
             <div id="authLangToggleContainer" style="position: absolute; top: 15px; right: 15px; z-index: 10; display: none;">
                 <div class="lang-toggle" style="gap: 5px; margin: 0;">
                     <button class="lang-btn btn-si" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('si')">සිං</button>
@@ -133,7 +127,6 @@
         </div>
     </div>
 
-    <!-- 📌 TARGET SETTING MODAL -->
     <div id="targetModal" class="my-modal">
         <div class="my-modal-content">
             <h2 style="font-size: 1.4rem; margin-bottom:10px; color: var(--primary-light);"><i class="fas fa-bullseye"></i> <span data-i18n="target_title">Set a Target</span></h2>
@@ -150,9 +143,7 @@
         </div>
     </div>
 
-    <!-- 📌 MAIN APP WRAPPER -->
     <div id="app-wrapper">
-        <!-- HEADER -->
         <div class="header-section">
             <div class="header-left-group">
                 <img src="dsc_logo.png" alt="DSC Logo" class="logo-img">
@@ -167,7 +158,6 @@
         </div>
 
         <div class="main-content-flex">
-            <!-- 🔹 TAB 1: HOME -->
             <div id="view-home" class="view-section active">
                 
                 <div class="live-total-container">
@@ -206,7 +196,6 @@
                 </div>
             </div>
 
-            <!-- 🔹 TAB 2: CALENDAR -->
             <div id="view-calendar" class="view-section" id="calendarCaptureArea">
                 <div class="calendar-section">
                     <h2><i class="fas fa-calendar-alt"></i> <span data-i18n="calendar_title">My Savings Record</span></h2>
@@ -234,7 +223,6 @@
                 </div>
             </div>
 
-            <!-- 🔹 TAB 3: HUB (ARTICLE LIST) -->
             <div id="view-hub" class="view-section">
                 <h2 class="section-title"><i class="fas fa-book-open"></i> <span data-i18n="blog_title">Financial Advice & Articles</span></h2>
                 <div id="blogGrid">
@@ -242,7 +230,6 @@
                 </div>
             </div>
 
-            <!-- 🔹 TAB 3.1: FULL ARTICLE VIEW -->
             <div id="view-article" class="view-section">
                 <button class="back-to-hub-btn" onclick="closeArticleView()">
                     <i class="fas fa-arrow-left"></i> <span data-i18n="back_btn">Back</span>
@@ -255,7 +242,6 @@
                 </div>
             </div>
 
-            <!-- 🔹 TAB 5: SETTINGS -->
             <div id="view-settings" class="view-section">
                 <div class="settings-card">
                     <h3><i class="fas fa-globe" style="margin-right:8px; color:var(--accent);"></i> <span data-i18n="regional_settings">Regional Settings</span></h3>
@@ -264,11 +250,9 @@
                     <div class="select-wrapper">
                         <i class="fas fa-money-bill-wave icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
                         <select id="currencySelect" class="custom-select" onchange="changeCurrencyManually()">
-                            <!-- Options managed in JS -->
-                        </select>
+                            </select>
                     </div>
 
-                    <!-- Language Toggle only visible if Currency is LKR -->
                     <div id="settingsLangContainer" style="display: none;">
                         <h4 style="margin: 15px 0 10px; font-size: 0.95rem; color: var(--text-secondary);" data-i18n="select_lang">Language</h4>
                         <div class="lang-toggle">
@@ -335,7 +319,6 @@
         </div>
     </div>
 
-    <!-- 📌 BOTTOM NAVIGATION BAR -->
     <div class="bottom-nav" id="bottomNav" style="display: none;">
         <div class="nav-item active" onclick="switchView('home', this)">
             <i class="fas fa-home"></i><span data-i18n="nav_home">Home</span>
@@ -351,7 +334,6 @@
         </div>
     </div>
 
-    <!-- 📌 CUSTOM WHEEL MODAL -->
     <div id="customModal" class="my-modal">
         <div class="my-modal-content">
             <h2 style="font-size: 1.2rem; margin-bottom:5px;" data-i18n="modal_setup_title">Setup Wheel</h2>
@@ -365,7 +347,6 @@
         </div>
     </div>
 
-    <!-- 📌 WIN RESULT MODAL -->
     <div id="resultModal" class="my-modal">
         <div class="my-modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
             <div id="captureArea" class="capture-card">
@@ -447,6 +428,7 @@
         };
 
         let userCurrency = localStorage.getItem('dsc_currency') || null;
+        // 🚨 Force English as the Main/Default language if nothing is saved
         let currentLang = localStorage.getItem('dsc_lang') || 'en';
 
         // Format Amount strictly based on Currency
@@ -1028,7 +1010,6 @@
                 const startAngle = i * sliceAngle; const endAngle = startAngle + sliceAngle;
                 gradient += `${colors[i % colors.length]} ${startAngle}deg ${endAngle}deg${i === values.length - 1 ? '' : ', '}`;
                 const span = document.createElement('span'); span.className = 'slice-text'; 
-                // Fix formatting inside wheel (no decimals if not needed)
                 let isInnerDecimal = cData.multInner < 1 && id === 'innerWheel';
                 span.innerText = isInnerDecimal ? parseFloat(values[i]).toFixed(1) : Math.round(values[i]); 
                 span.style.transform = `translate(-50%, -50%) rotate(${startAngle}deg) translateY(-${textOffset}px)`; wheel.appendChild(span);
