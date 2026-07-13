@@ -4,7 +4,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7875755235721674" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- 📌 SEO අංශය -->
+    <!-- 📌 SEO & Meta Tags -->
     <title>DSCSaving | Daily Saving Challenge</title>
     <meta name="google-site-verification" content="cOCTgcawgqNc4gSyOQukBqpWCLOxOVzTZskBzwZwb8M" />
     <meta name="description" content="DSCSaving - Track your daily savings easily. Join today to achieve your financial goals worldwide.">
@@ -30,10 +30,19 @@
         .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
         .goog-te-banner-frame { display: none !important; }
         body { top: 0 !important; }
+        
         /* Custom Dropdown styling for Location/Currency */
-        .custom-select { width: 100%; padding: 15px 20px 15px 45px; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); background: rgba(0,0,0,0.6); color: white; font-family: inherit; font-size: 1rem; outline: none; appearance: none; -webkit-appearance: none; }
+        .custom-select { 
+            width: 100%; padding: 15px 20px 15px 45px; border-radius: var(--radius-lg); 
+            border: 1px solid var(--glass-border); background: rgba(0,0,0,0.6); color: white; 
+            font-family: inherit; font-size: 1rem; outline: none; appearance: none; -webkit-appearance: none; 
+        }
         .select-wrapper { position: relative; margin-bottom: 15px; }
-        .select-wrapper::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+        .select-wrapper::after { 
+            content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%); 
+            color: var(--text-muted); pointer-events: none; 
+        }
     </style>
 </head>
 <body>
@@ -46,6 +55,7 @@
     <!-- 📌 INITIAL LOADER -->
     <div id="initialLoader" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
         <i class="fas fa-spinner fa-spin fa-3x"></i>
+        <div style="font-size: 0.9rem; margin-top: 10px; color: white;" class="notranslate" id="loadingText">Connecting to Global Servers...</div>
     </div>
 
     <!-- 📌 FIREBASE AUTHENTICATION -->
@@ -396,7 +406,7 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
-// =========================================
+        // =========================================
         // 📌 100% GLOBAL INTERNATIONALIZATION & GEOLOCATION
         // =========================================
         
@@ -406,6 +416,7 @@
         // 1. Fetch All Countries from Free API automatically
         async function fetchAllCountries() {
             try {
+                document.getElementById('loadingText').innerText = "Fetching Global Regions...";
                 // Fetching all 195+ countries
                 const res = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,currencies,languages');
                 const data = await res.json();
@@ -435,11 +446,11 @@
                     const veryLowValue = ['IDR', 'VND', 'IRR', 'COP', 'UGX', 'TZS'];
 
                     if (highValue.includes(currencyCode)) { 
-                        multOuter = 1; multInner = 0.1; // ex: $1, $2, $3...
+                        multOuter = 1; multInner = 0.1; 
                     } else if (lowMidValue.includes(currencyCode)) { 
-                        multOuter = 100; multInner = 10; // ex: Rs.100, Rs.200...
+                        multOuter = 100; multInner = 10; 
                     } else if (veryLowValue.includes(currencyCode)) {
-                        multOuter = 1000; multInner = 100; // ex: Rp.1000, Rp.2000...
+                        multOuter = 1000; multInner = 100; 
                     }
 
                     globalCountryDB[code] = { name, currency: currencyCode, symbol, multOuter, multInner, langs };
@@ -472,6 +483,7 @@
                 return;
             }
             try {
+                document.getElementById('loadingText').innerText = "Locating Your Region...";
                 const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
                 
@@ -584,10 +596,11 @@
             }
         }
 
-        // --- UPDATE INITIALIZATION CALL ---
-        function initializeApp() { 
-            fetchAllCountries(); // Start by loading all countries, then proceeds to location
-            loadBloggerPosts(currentStartIndex); 
+        function changeAppLanguage(langCode) {
+            userRegion.currentLang = langCode;
+            localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
+            populateLanguageToggles();
+            triggerGoogleTranslate(langCode);
         }
 
         function triggerGoogleTranslate(langCode) {
@@ -838,7 +851,7 @@
         function getTodayString() { const slDate = getSLDate(); return `${slDate.getFullYear()}-${String(slDate.getMonth()+1).padStart(2, '0')}-${String(slDate.getDate()).padStart(2, '0')}`; }
 
         function initializeApp() { 
-            fetchUserLocation();
+            fetchAllCountries();
             loadBloggerPosts(currentStartIndex); 
         }
         document.addEventListener("DOMContentLoaded", initializeApp);
