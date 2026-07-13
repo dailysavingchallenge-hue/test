@@ -48,7 +48,7 @@
 
         /* 🏆 Achievers Banner Styles */
         .achievers-banner-container {
-            display: none; /* Hidden by default, shown via JS if data exists */
+            display: none; 
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(236, 72, 153, 0.15));
             border: 1px solid var(--accent);
             border-radius: var(--radius-xl);
@@ -108,7 +108,7 @@
         }
         .grand-stat-card .stat-value {
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 800;
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
@@ -285,9 +285,6 @@
                 <div id="homeTargetWinNote" class="target-win-note">
                     <h2>🎉 <span data-i18n="target_achieved_msg">Congratulations! You've achieved your target!</span> 🎉</h2>
                     <p data-i18n="win_note_desc">Today is a special day! Your dedication has paid off.</p>
-                    <button class="action-btn primary" onclick="openTargetModal()">
-                        <i class="fas fa-plus"></i> <span data-i18n="new_target_btn">Set a New Target</span>
-                    </button>
                 </div>
 
                 <!-- Expanded Purpose Section -->
@@ -327,6 +324,7 @@
                     </div>
                 </div>
                 
+                <!-- 📌 Target Display Section under the Calendar (As per original setup) -->
                 <div id="targetDisplayCalendar" class="target-card"></div>
 
                 <!-- Last Saver Grand Card -->
@@ -427,6 +425,8 @@
                         <i class="fas fa-save"></i> <span data-i18n="save_profile">Save Changes</span>
                     </button>
                 </div>
+                
+                <!-- 📌 Target Display Section on Settings -->
                 <div id="targetDisplaySettings" class="target-card"></div>
 
                 <button class="logout-btn" onclick="logoutUser()">
@@ -447,7 +447,7 @@
         </div>
     </div>
 
-    <!-- 📌 BOTTOM NAVIGATION BAR -->
+    <!-- 📌 BOTTOM NAVIGATION BAR (NOW WITH 5 ITEMS) -->
     <div class="bottom-nav notranslate" id="bottomNav" style="display: none;">
         <div class="nav-item active" onclick="switchView('home', this)">
             <i class="fas fa-home"></i><span data-i18n="nav_home">Home</span>
@@ -457,6 +457,10 @@
         </div>
         <div class="nav-item" id="nav-explore" onclick="switchView('hub', this)">
             <i class="fas fa-book-open"></i><span data-i18n="nav_explore">Explore</span>
+        </div>
+        <!-- Re-added About Us -->
+        <div class="nav-item" onclick="window.location.href='about.html'">
+            <i class="fas fa-info-circle"></i><span data-i18n="nav_about">About Us</span>
         </div>
         <div class="nav-item" id="nav-settings" onclick="switchView('settings', this)">
             <i class="fas fa-cog"></i><span data-i18n="nav_settings">Settings</span>
@@ -529,7 +533,7 @@
             <h4><i class="fas fa-shield-alt"></i> Build an Emergency Fund</h4>
             <p>Life is unpredictable. Before making risky investments, ensure you have an emergency fund covering at least 3 to 6 months of your living expenses. This keeps you out of debt when emergencies strike.</p>
             <h4><i class="fas fa-chart-line"></i> Power of Investing</h4>
-            <p>Saving keeps your money safe, but investing makes it grow. Due to inflation, money sitting in a drawer loses value over time. Learn about stocks, mutual funds, or real estate to beat inflation and build long-term wealth. Dive into the articles below to learn more!</p>
+            <p>Saving keeps your money safe, but investing makes it grow. Due to inflation, money sitting in a bank account loses value over time. Learn about stocks, mutual funds, or real estate to beat inflation and build long-term wealth. Dive into the articles below to learn more!</p>
         `;
 
         const adviceSi = `
@@ -606,8 +610,10 @@
         };
 
         let userCurrency = localStorage.getItem('dsc_currency') || null;
+        // 🚨 Force English as the Main/Default language if nothing is saved
         let currentLang = localStorage.getItem('dsc_lang') || 'en';
 
+        // Format Amount strictly based on Currency
         function formatAmount(amount) {
             if (!currencyDB[userCurrency]) return amount;
             let cData = currencyDB[userCurrency];
@@ -671,10 +677,13 @@
             applyRegionalSettings();
         }
 
+        let currentBloggerLabel = 'En'; // Default Label for Blogger
+
         let translateRetryCount = 0;
         function setLanguage(lang) {
             if (userCurrency !== "LKR" && lang !== 'en') lang = 'en';
             
+            let previousLang = currentLang;
             currentLang = lang; 
             localStorage.setItem('dsc_lang', lang);
             
@@ -698,7 +707,18 @@
             const loadMoreBtn = document.getElementById('loadMoreBtnActual'); if (loadMoreBtn) loadMoreBtn.innerText = translations[currentLang].js_load_more;
             document.querySelectorAll('.read-more-text').forEach(el => el.innerText = translations[currentLang].js_read_more);
 
-            // Trigger Google Translate for Blog content
+            // 📌 Blogger Label Logic (Fetch new category based on language)
+            let newLabel = lang === 'si' ? 'Sin' : 'En';
+            if (newLabel !== currentBloggerLabel || fetchedArticles.length === 0) {
+                currentBloggerLabel = newLabel;
+                fetchedArticles = [];
+                currentStartIndex = 1;
+                const blogGrid = document.getElementById('blogGrid');
+                if (blogGrid) blogGrid.innerHTML = `<p id="noArticlesMsg" class="notranslate" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">Fetching articles...</p>`;
+                loadBloggerPosts(1);
+            }
+
+            // Trigger Google Translate for Blog content inside full-article-content
             translateRetryCount = 0;
             triggerGoogleTranslate(lang);
         }
@@ -800,13 +820,18 @@
         database.ref('stats').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                globalSpinCount = data.totalSpins || 0; const winnerName = data.lastWinnerName || "-";
+                globalSpinCount = data.totalSpins || 0; 
+                const winnerName = data.lastWinnerName || "-";
+                const winnerAmt = data.lastWinnerAmount || 0;
+                
                 const winnerDisplay = document.getElementById('lastWinnerDisplay');
-                if (winnerDisplay && winnerName !== "-") { winnerDisplay.innerText = winnerName; }
+                if (winnerDisplay && winnerName !== "-") { 
+                    winnerDisplay.innerText = `${winnerName} (${formatAmount(winnerAmt)})`; 
+                }
             }
         });
 
-        // Listen for today's achievers
+        // 📌 Listen for today's achievers
         function fetchDailyAchievers() {
             const todayStr = getTodayString();
             database.ref('dailyAchievers/' + todayStr).on('value', (snapshot) => {
@@ -824,7 +849,7 @@
             if (achievers) {
                 let html = '';
                 Object.values(achievers).forEach(ach => {
-                    html += `<div class="achiever-badge"><i class="fas fa-star" style="color:#fbbf24;"></i> ${ach.name} <span>(${formatAmount(ach.target)})</span></div>`;
+                    html += `<div class="achiever-badge notranslate"><i class="fas fa-star" style="color:#fbbf24;"></i> ${ach.name} <span>(${formatAmount(ach.target)})</span></div>`;
                 });
                 homeList.innerHTML = html; calList.innerHTML = html;
                 homeBanner.style.display = 'block'; calBanner.style.display = 'block';
@@ -924,7 +949,7 @@
         }
 
         // =========================================
-        // 📌 BLOGGER (HEADLESS CMS) - REFINED GRID
+        // 📌 BLOGGER (HEADLESS CMS) 
         // =========================================
         const myBloggerURL = "https://dailysavingchallengelk.blogspot.com";
         let fetchedArticles = []; 
@@ -936,7 +961,8 @@
             if(isFetchingPosts) return;
             isFetchingPosts = true;
             const script = document.createElement('script');
-            script.src = `${myBloggerURL}/feeds/posts/default?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}`;
+            // Fetching posts using Blogger JSON feed (With Label Filter)
+            script.src = `${myBloggerURL}/feeds/posts/default/-/${currentBloggerLabel}?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}`;
             document.body.appendChild(script);
         }
 
@@ -1047,7 +1073,6 @@
         function initializeApp() { 
             initCurrencyAndLang(); 
             fetchDailyAchievers();
-            loadBloggerPosts(currentStartIndex); 
             setTimeout(checkDirectArticleLink, 500); 
         }
         document.addEventListener("DOMContentLoaded", initializeApp);
@@ -1198,8 +1223,12 @@
                 if (canEdit) { html += `<button class="action-btn secondary mt-15 notranslate" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span>${translations[currentLang].target_edit_btn}</span></button>`; } 
                 else { html += `<p class="target-lock-text"><i class="fas fa-lock"></i> <span class="notranslate">${translations[currentLang].target_lock_msg.replace('{days}', daysLeft)}</span></p>`; }
             } else { html += `<h3><i class="fas fa-bullseye"></i> <span class="notranslate">${translations[currentLang].no_target_title}</span></h3>`; html += `<button class="action-btn highlighted-btn mt-15 notranslate" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span>${translations[currentLang].target_add_btn}</span></button>`; }
-            const calCont = document.getElementById('targetDisplayCalendar'); const setCont = document.getElementById('targetDisplaySettings');
-            if(calCont) calCont.innerHTML = html; if(setCont) setCont.innerHTML = html;
+            
+            // 📌 Kept Target only on Calendar and Settings as per Original setup
+            const setCont = document.getElementById('targetDisplaySettings');
+            const calCont = document.getElementById('targetDisplayCalendar');
+            if(setCont) setCont.innerHTML = html;
+            if(calCont) calCont.innerHTML = html;
         }
 
         // =========================================
@@ -1273,12 +1302,9 @@
                 const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = localUserName || (currentUserData ? currentUserData.name : "User"); let photoToDisplay = "";
                 if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null }; const totalSavedNow = Object.values(trackingData).reduce((sum, val) => sum + val, 0);
                 
-                // --- TARGET ACHIEVER LOGIC ---
-                let isNewAchiever = false;
+                // --- 🏆 TARGET ACHIEVER LOGIC ---
                 if (userTarget.amount > 0 && totalSavedNow >= userTarget.amount && !userTarget.achievedDate) { 
                     userTarget.achievedDate = todayStr; 
-                    isNewAchiever = true;
-                    // Push to Global Firebase Node
                     database.ref('dailyAchievers/' + todayStr).push({
                         name: userNameToDisplay,
                         target: userTarget.amount
