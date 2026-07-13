@@ -1,424 +1,960 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7875755235721674" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>දිනපතා ඉතිරුම් අභියෝගය | Daily Saving Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 📌 SEO අංශය -->
+    <title>DSCSaving | Daily Saving Challenge</title>
+    <meta name="google-site-verification" content="cOCTgcawgqNc4gSyOQukBqpWCLOxOVzTZskBzwZwb8M" />
+    <meta name="description" content="DSCSaving - Track your daily savings easily. Join today to achieve your financial goals worldwide.">
+    <meta name="keywords" content="DSCSaving, Daily Saving Challenge, save money, financial goals, saving app, international savings">
+    <meta name="author" content="DSCSaving">
+    <link rel="icon" type="image/png" href="dsc_logo.png">
+    <link rel="apple-touch-icon" href="dsc_logo.png">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 📌 Link to CSS File -->
+    <link rel="stylesheet" href="style.css">
 
     <!-- 📌 Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
-        :root {
-            --primary: #6366f1; --primary-light: #818cf8; --primary-dark: #4f46e5;
-            --secondary: #ec4899; --accent: #f59e0b; --success: #10b981;
-            --warning: #f59e0b; --danger: #ef4444; --dark: #0f172a;
-            --dark-light: #1e293b; --dark-lighter: #334155;
-            --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #f8fafc; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            background: var(--dark); color: var(--text-primary);
-            min-height: 100vh; overflow-x: hidden; line-height: 1.6;
-        }
-
-        .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
-                        radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 1) 100%);
-        }
-
-        #app-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 15px; position: relative; z-index: 1; }
-
-        /* 📌 HEADER SECTION */
-        .header-section { padding: 30px 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.1); }
-        .main-title { font-size: clamp(1.2rem, 4vw, 2.8rem); font-weight: 800; background: linear-gradient(135deg, var(--primary-light), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* 📌 LIVE TOTAL */
-        .live-total-container { display: flex; justify-content: center; margin-bottom: 30px; }
-        .live-total { display: inline-flex; align-items: center; gap: 10px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--glass-border); padding: 15px 30px; border-radius: var(--radius-full); font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 700; backdrop-filter: blur(20px); }
-        .live-total .amount { color: var(--accent); transition: all 0.5s ease; }
-
-        /* 📌 SCRATCH CARDS SECTION */
-        .scratch-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; }
-        .scratch-instruction { text-align: center; margin-bottom: 25px; z-index: 20; position: relative; width: 100%; }
-        .scratch-instruction h3 { font-size: clamp(0.9rem, 2vw, 1.2rem); background: var(--glass); padding: 12px 20px; border-radius: var(--radius-full); border: 1px solid var(--glass-border); display: inline-block;}
-
-        .scratch-cards-container {
-            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; 
-            max-width: 600px; width: 100%; position: relative; min-height: 400px;
-            align-items: center; padding: 20px 0;
-        }
-
-        .scratch-card-new {
-            width: 160px; height: 120px; position: relative; 
-            cursor: pointer; filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4)); 
-            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s ease;
-            z-index: 2;
-        }
-        .scratch-card-new:hover { transform: translateY(-5px); filter: drop-shadow(0 15px 25px rgba(99, 102, 241, 0.5)); }
-
-        .img-revealed, .img-unrevealed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-        .img-revealed { z-index: 1; }
-        .img-unrevealed { z-index: 3; }
-
-        .scratch-result-text {
-            position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%);
-            width: 100%; text-align: center; font-size: 1.1rem; font-weight: 800; color: #ef4444; 
-            z-index: 2; opacity: 0;
-        }
-
-        @keyframes cleanWipe {
-            0% { clip-path: inset(0 0 0 0); filter: blur(0); }
-            100% { clip-path: inset(0 0 0 100%); filter: blur(2px); }
-        }
-
-        /* 📌 SETTINGS BUTTONS & SLIDER MODAL */
-        .btn-container { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; z-index: 20; position: relative; }
-        
-        .custom-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--glass); color: var(--text-secondary); border: 1px solid var(--glass-border); padding: 12px 28px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); }
-        .custom-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--primary); color: var(--text-primary); transform: translateY(-2px); }
-        .highlighted-btn { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
-        .highlighted-btn:hover { background: linear-gradient(135deg, var(--accent), var(--secondary)); color: white; border-color: transparent; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-
-        .temp-reset-btn { padding: 10px 25px; background: var(--danger); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); transition: 0.3s; }
-        .temp-reset-btn:hover { background: #dc2626; transform: translateY(-2px); }
-
-        .slider-container { margin: 25px 0; }
-        input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; background: var(--dark-lighter); border-radius: var(--radius-full); outline: none; margin: 15px 0; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); cursor: pointer; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); border: 3px solid white; transition: transform 0.2s; }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-        .slider-value { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-light), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 15px 0; }
-        .slider-labels { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.8rem; margin-top: 5px; }
-
-        /* 📌 CALENDAR TRACKER SECTION */
-        .calendar-section { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); padding: 35px; margin-bottom: 40px; backdrop-filter: blur(20px); box-shadow: var(--shadow-lg); width: 100%; }
-        .calendar-section h2 { text-align: center; color: var(--text-primary); margin-bottom: 25px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .calendar-section h2 i { color: var(--accent); }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
-        .day-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 12px 5px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70px; }
-        .day-card .date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; font-weight: 600; }
-        .day-card .amount { font-size: 0.95rem; font-weight: 700; color: var(--text-secondary); }
-        .day-card.completed { background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); border-color: var(--success); }
-        .day-card.completed .amount { color: var(--success); }
-
-        /* 📌 GENERAL MODALS */
-        .my-modal { display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); justify-content: center; align-items: center; padding: 20px; animation: fadeIn 0.3s ease; }
-        .my-modal.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .my-modal-content { background: linear-gradient(135deg, var(--dark-light), var(--dark)); padding: 40px; border-radius: var(--radius-xl); text-align: center; border: 1px solid var(--glass-border); min-width: 320px; max-width: 500px; width: 100%; color: var(--text-primary); box-shadow: var(--shadow-xl), 0 0 50px rgba(99, 102, 241, 0.3); position: relative; }
-        .my-modal-content::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent)); }
-        
-        .action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border: none; border-radius: var(--radius-full); font-size: 1rem; cursor: pointer; font-weight: 600; font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif; transition: all 0.3s ease; }
-        .action-btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .action-btn.secondary { background: var(--glass); color: var(--text-secondary); border: 1px solid var(--glass-border); }
-
-        .welcome-input-wrapper { margin: 15px 0 25px 0; position: relative; }
-        .welcome-input-wrapper i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.2rem; }
-        .welcome-input { width: 100%; padding: 18px 20px 18px 50px; border-radius: var(--radius-full); border: 2px solid var(--primary); background: rgba(0,0,0,0.2); color: white; font-size: 1.2rem; outline: none; }
-
-        /* Mobile specific adjustments */
-        @media (max-width: 480px) {
-            .scratch-cards-container { gap: 10px; min-height: 350px; }
-            .scratch-card-new { width: 110px; height: 85px; }
-            .scratch-result-text { font-size: 0.8rem; bottom: 16%; }
-            .calendar-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
-            .my-modal-content { padding: 25px 20px; width: 95%; }
-        }
+        /* Hide Google Translate Default UI */
+        .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+        .goog-te-banner-frame { display: none !important; }
+        body { top: 0 !important; }
+        /* Custom Dropdown styling for Location/Currency */
+        .custom-select { width: 100%; padding: 15px 20px 15px 45px; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); background: rgba(0,0,0,0.6); color: white; font-family: inherit; font-size: 1rem; outline: none; appearance: none; -webkit-appearance: none; }
+        .select-wrapper { position: relative; margin-bottom: 15px; }
+        .select-wrapper::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
     </style>
 </head>
 <body>
 
+    <!-- Hidden Google Translate Element -->
+    <div id="google_translate_element" style="display:none;"></div>
+
     <div class="bg-animation"></div>
 
-    <!-- 📌 WELCOME MODAL -->
-    <div id="welcomeModal" class="my-modal">
+    <!-- 📌 INITIAL LOADER -->
+    <div id="initialLoader" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+    </div>
+
+    <!-- 📌 FIREBASE AUTHENTICATION -->
+    <div id="authModal" class="my-modal">
         <div class="my-modal-content">
-            <h2 class="main-title" style="font-size: 2.2rem; margin-bottom: 10px;">ආයුබෝවන්! 👋</h2>
-            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px;">දිනපතා ඉතිරි කිරීමේ අභියෝගය ආරම්භ කිරීමට ඔබගේ නම ඇතුළත් කරන්න.</p>
-            
-            <div class="welcome-input-wrapper">
-                <i class="fas fa-user"></i>
-                <input type="text" id="newUserName" class="welcome-input" placeholder="ඔබගේ නම">
+            <!-- 🌐 Dynamic Settings on Modal -->
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                <button class="action-btn secondary" style="padding: 8px 12px; font-size: 0.8rem; border-radius: var(--radius-full);" onclick="openGlobalSettings()">
+                    <i class="fas fa-globe"></i> <span id="authLocationDisplay">World</span>
+                </button>
+            </div>
+
+            <div id="authMainUI">
+                <img src="dsc_logo.png" alt="Logo" style="width: 70px; height: 70px; border-radius:50%; margin-bottom:10px; border: 2px solid rgba(255,255,255,0.2);">
+                <h2 class="main-title" style="font-size: 1.8rem; margin-bottom: 5px; text-align:center;">Welcome!</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Sign in to save and sync your progress securely.</p>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
+                    <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</div>
+                </div>
+                
+                <div id="authSignupFields" style="display: none;">
+                    <div class="auth-input-wrapper notranslate">
+                        <i class="fas fa-user icon-left"></i>
+                        <input type="text" id="authName" class="auth-input" placeholder="Your Name">
+                    </div>
+                </div>
+                
+                <div class="auth-input-wrapper notranslate">
+                    <i class="fas fa-envelope icon-left"></i>
+                    <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
+                </div>
+                
+                <div class="auth-input-wrapper notranslate">
+                    <i class="fas fa-lock icon-left"></i>
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Password">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('authPassword', this)"></i>
+                </div>
+
+                <div style="text-align: right; margin-bottom: 15px; margin-top: -5px;" id="loginForgotPwdWrapper">
+                    <a href="#" onclick="handleForgotPassword(false)" style="color: var(--accent); font-size: 0.85rem; text-decoration: none;">Forgot Password?</a>
+                </div>
+                
+                <button class="action-btn primary" id="authSubmitBtn" onclick="handleAuthSubmit()">
+                    <span id="authSubmitText">Login</span>
+                </button>
+                
+                <button class="google-btn" id="googleLoginBtn" onclick="loginWithGoogle()">
+                    <i class="fab fa-google" style="color: #ea4335; font-size: 1.1rem;"></i>
+                    <span>Continue with Google</span>
+                </button>
+                
+                <hr style="border: none; border-top: 1px dashed var(--glass-border); margin: 25px 0 20px;">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">If you don't want to log in, spin the wheel from here</p>
+                <button class="action-btn secondary" onclick="showGuestUI()">
+                    <i class="fas fa-gamepad"></i> <span>Use Local Account</span>
+                </button>
             </div>
             
-            <button class="action-btn primary" style="width: 100%; padding: 16px; font-size: 1.1rem;" onclick="saveUserName()">
-                ආරම්භ කරමු <i class="fas fa-arrow-right"></i>
-            </button>
+            <div id="guestUI" style="display: none;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 15px; color: var(--primary-light);">Use Local Account</h2>
+                <div class="attention-note">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Important:</strong> 
+                        <span>We cannot guarantee your data will be saved permanently. If data is lost locally, we cannot recover it.</span>
+                    </div>
+                </div>
+                <div class="auth-input-wrapper notranslate">
+                    <i class="fas fa-user icon-left"></i>
+                    <input type="text" id="guestNameInput" class="auth-input" placeholder="Your Name">
+                </div>
+                <button class="action-btn primary" onclick="handleGuestSubmit()">
+                    <span>Let's Start</span> <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="action-btn secondary" style="margin-top: 15px;" onclick="hideGuestUI()">
+                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- 📌 SETTINGS MODAL (MAX AMOUNT SLIDER) -->
-    <div id="maxAmountModal" class="my-modal">
+    <!-- 📌 GLOBAL SETTINGS MODAL (Country & Currency) -->
+    <div id="globalSettingsModal" class="my-modal">
         <div class="my-modal-content">
-            <h2 style="margin-bottom: 10px;">උපරිම අගය සකසන්න</h2>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">කාඩ්පතකින් ලැබිය හැකි උපරිම අගය තෝරා ගන්න (100 - 900)</p>
-            <div class="slider-container">
-                <input type="range" id="amountSlider" min="100" max="900" step="100" value="900" oninput="updateSliderText(this.value)">
-                <div class="slider-value" id="sliderValDisplay">900</div>
-                <div class="slider-labels"><span>100</span><span>500</span><span>900</span></div>
+            <h2 style="font-size: 1.4rem; margin-bottom:20px; color: var(--primary-light);"><i class="fas fa-globe"></i> Regional Settings</h2>
+            
+            <div class="select-wrapper notranslate">
+                <i class="fas fa-flag icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
+                <select id="countrySelect" class="custom-select" onchange="updateCurrencyOptions()">
+                    <!-- Options populated via JS -->
+                </select>
             </div>
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                <button class="action-btn primary" onclick="saveMaxAmount()"><i class="fas fa-check"></i> සුරකින්න</button>
-                <button class="action-btn secondary" onclick="closeMaxAmountModal()"><i class="fas fa-times"></i> අවලංගු කරන්න</button>
+
+            <div class="select-wrapper notranslate">
+                <i class="fas fa-money-bill-wave icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
+                <select id="currencySelect" class="custom-select">
+                    <!-- Options populated via JS -->
+                </select>
             </div>
+
+            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveGlobalSettings()"><i class="fas fa-check"></i> <span>Save Settings</span></button>
+            <button class="action-btn secondary" onclick="closeGlobalSettings()"><span>Cancel</span></button>
         </div>
     </div>
 
-    <div id="app-wrapper" style="opacity: 0; transition: opacity 0.5s ease;">
+    <!-- 📌 TARGET SETTING MODAL -->
+    <div id="targetModal" class="my-modal">
+        <div class="my-modal-content">
+            <h2 style="font-size: 1.4rem; margin-bottom:10px; color: var(--primary-light);"><i class="fas fa-bullseye"></i> <span>Set a Target</span></h2>
+            <div class="attention-note">
+                <i class="fas fa-exclamation-circle"></i>
+                <div><span>Important: You can only change this amount after 30 days.</span></div>
+            </div>
+            <div class="auth-input-wrapper notranslate">
+                <i class="fas fa-money-bill-wave icon-left"></i>
+                <input type="number" id="targetAmountInput" class="auth-input" placeholder="Target Amount">
+            </div>
+            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveTargetAmount()"><i class="fas fa-check"></i> <span>Save</span></button>
+            <button class="action-btn secondary" onclick="closeTargetModal()"><span>Cancel</span></button>
+        </div>
+    </div>
+
+    <!-- 📌 MAIN APP WRAPPER -->
+    <div id="app-wrapper">
+        <!-- HEADER -->
         <div class="header-section">
-            <div class="header-left">
-                <img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/dsc_logo.png" alt="DSC Logo" class="logo-img">
+            <div class="header-left-group">
+                <img src="dsc_logo.png" alt="DSC Logo" class="logo-img">
                 <div class="title-group">
                     <h1 class="main-title">Daily Saving Challenge</h1>
-                    <p style="color:var(--text-secondary); font-size:0.9rem; font-weight:500;">දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය</p>
                 </div>
             </div>
-        </div>
-
-        <div style="text-align: center; margin-bottom: 25px;">
-            <h2>Hi, <span id="displayUserName" style="color:var(--accent)">User</span> 👋</h2>
-        </div>
-
-        <div class="live-total-container">
-            <div class="live-total">
-                <i class="fas fa-piggy-bank" style="color:var(--accent)"></i>
-                <span>අද ඉතුරු කරමු:</span>
-                <span class="amount" id="liveAmount">Rs. 0</span>
+            <div class="user-profile-wrapper notranslate" onclick="switchView('settings', document.getElementById('nav-settings'))">
+                <div class="user-greeting"><span>Hi,</span> <span id="displayUserName">User</span></div>
+                <img id="headerProfilePic" src="" class="header-profile-pic">
             </div>
         </div>
 
-        <!-- 📌 SCRATCH CARDS SECTION -->
-        <div class="scratch-section">
-            <div class="scratch-instruction" id="scratchInstruction">
-                <h3>අද දවසේ ඉතුරු කරන්න ඕන මුදල දැනගැනීමට කාඩ් එකක් සූරලා බලන්න</h3>
-            </div>
-            
-            <div class="scratch-cards-container" id="scratchCardsContainer">
-                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
-                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
-                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
-                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
-                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
-                <div class="scratch-card-new" onclick="scratchCard(this)"><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_on.png" class="img-revealed"><div class="scratch-result-text"></div><img src="https://raw.githubusercontent.com/dailysavingchallenge-hue/DSC/main/Scard_off.png" class="img-unrevealed"></div>
+        <div class="main-content-flex">
+            <!-- 🔹 TAB 1: HOME -->
+            <div id="view-home" class="view-section active">
+                
+                <div class="live-total-container">
+                    <div class="live-total">
+                        <i class="fas fa-piggy-bank"></i>
+                        <span style="font-size: 1rem; color: var(--text-secondary); margin-right: 5px;">Let's Save:</span>
+                        <span class="amount notranslate" id="liveAmount">$0</span>
+                    </div>
+                </div>
+                <div class="wheel-section">
+                    <div class="wheel-container notranslate">
+                        <div class="wheel-glow"></div>
+                        <div class="pointer"></div>
+                        <div class="wheel outer-wheel" id="outerWheel"></div>
+                        <div class="wheel inner-wheel" id="innerWheel"></div>
+                        <div class="wheel-center"><i class="fas fa-star"></i></div>
+                    </div>
+                    <button id="spinBtn" class="spin-btn" onclick="spin()">
+                        <i class="fas fa-sync-alt"></i> <span id="spinBtnText">Spin Wheel</span>
+                    </button>
+                    <button class="custom-btn" onclick="openCustom()">
+                        <i class="fas fa-cog"></i> <span>Change Outer Wheel Values</span>
+                    </button>
+                </div>
+                <div id="homeTargetWinNote" class="target-win-note">
+                    <h2>🎉 <span>Congratulations! You've achieved your target!</span> 🎉</h2>
+                    <p>Today is a special day! Your dedication has paid off.</p>
+                    <button class="action-btn primary" onclick="openTargetModal()">
+                        <i class="fas fa-plus"></i> <span>Set a New Target</span>
+                    </button>
+                </div>
+
+                <div class="purpose-section">
+                    <h2><i class="fas fa-bullseye"></i> <span>Purpose of the Challenge</span></h2>
+                    <p>Cultivate the habit of saving a small amount daily to secure your future. This Wheel randomly gives you an amount to save daily, helping you grow your savings account through a fun challenge.</p>
+                </div>
             </div>
 
-            <!-- 📌 BUTTONS UNDER CARDS -->
-            <div class="btn-container">
-                <button class="custom-btn highlighted-btn" onclick="openMaxAmountModal()">
-                    <i class="fas fa-cog"></i>
-                    <b>උපරිම ඉතුරුම් අගය වෙනස් කරමු</b>
+            <!-- 🔹 TAB 2: CALENDAR -->
+            <div id="view-calendar" class="view-section" id="calendarCaptureArea">
+                <div class="calendar-section">
+                    <h2><i class="fas fa-calendar-alt"></i> <span>My Savings Record</span></h2>
+                    <div class="calendar-grid notranslate" id="calendarGrid"></div>
+                    <div class="monthly-total-box">
+                        <button id="showTotalBtn" class="action-btn secondary" style="width: auto; padding: 12px 30px;" onclick="showMonthlyTotal()">
+                            <i class="fas fa-eye"></i> <span>Show This Month's Total</span>
+                        </button>
+                        <div id="totalAmountContainer" class="monthly-total-display" style="display:none;">
+                            <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom:5px;">Total Savings This Month</div>
+                            <div class="total-amount notranslate" id="monthTotalAmount">$0</div>
+                        </div>
+                        <div id="calendarDownloadArea" style="text-align: center; margin-top: 15px; display: none; width: 100%;">
+                            <button class="action-btn primary" onclick="downloadCalendar()">
+                                <i class="fas fa-download"></i> <span>Download This Month's Record</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="targetDisplayCalendar" class="target-card"></div>
+            </div>
+
+            <!-- 🔹 TAB 3: HUB (ARTICLE LIST) -->
+            <div id="view-hub" class="view-section">
+                <h2 class="section-title"><i class="fas fa-book-open"></i> <span>Financial Advice & Articles</span></h2>
+                <div id="blogGrid">
+                    <p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">Fetching articles...</p>
+                </div>
+            </div>
+
+            <!-- 🔹 TAB 3.1: FULL ARTICLE VIEW -->
+            <div id="view-article" class="view-section">
+                <button class="back-to-hub-btn" onclick="closeArticleView()">
+                    <i class="fas fa-arrow-left"></i> <span>Back</span>
                 </button>
-                <button id="tempResetBtn" class="temp-reset-btn" onclick="resetCards()">Reset Cards (Temp)</button>
+                <div class="full-article-container">
+                    <h2 class="full-article-title" id="fullArticleTitle">Loading...</h2>
+                    <div class="full-article-content" id="fullArticleContent">
+                        Please wait...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 TAB 5: SETTINGS -->
+            <div id="view-settings" class="view-section">
+                <div class="settings-card">
+                    <h3><i class="fas fa-globe" style="margin-right:8px; color:var(--accent);"></i> <span>Regional & Language Settings</span></h3>
+                    
+                    <button class="action-btn secondary" style="margin-bottom: 15px;" onclick="openGlobalSettings()">
+                        <i class="fas fa-map-marker-alt"></i> Change Country / Currency
+                    </button>
+
+                    <div id="dynamicLanguageContainer" class="lang-toggle notranslate">
+                        <!-- Populated dynamically based on Country -->
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-user-edit" style="margin-right:8px; color:var(--primary-light);"></i> <span>User Profile</span></h3>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <label for="avatarUpload" style="cursor: pointer; position: relative; display: inline-block;">
+                            <img id="settingsAvatarPreview" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: var(--dark-lighter);">
+                            <div style="position: absolute; bottom: 0; right: -5px; background: var(--accent); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.5);"><i class="fas fa-camera"></i></div>
+                        </label>
+                        <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                    </div>
+
+                    <div class="auth-input-wrapper notranslate" id="settingsEmailWrapper" style="display: none;">
+                        <i class="fas fa-envelope icon-left"></i>
+                        <input type="text" id="settingsEmail" class="auth-input" readonly style="opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.4);">
+                    </div>
+
+                    <div class="auth-input-wrapper notranslate">
+                        <i class="fas fa-user icon-left"></i>
+                        <input type="text" id="settingsName" class="auth-input" placeholder="Your Name">
+                    </div>
+
+                    <div id="settingsPasswordSection" style="display: none;" class="notranslate">
+                        <div class="auth-input-wrapper">
+                            <i class="fas fa-unlock-alt icon-left"></i>
+                            <input type="password" id="settingsCurrentPassword" class="auth-input" placeholder="Old Password">
+                            <i class="fas fa-eye password-toggle" onclick="togglePassword('settingsCurrentPassword', this)"></i>
+                        </div>
+                        <div class="auth-input-wrapper">
+                            <i class="fas fa-lock icon-left"></i>
+                            <input type="password" id="settingsNewPassword" class="auth-input" placeholder="New Password">
+                            <i class="fas fa-eye password-toggle" onclick="togglePassword('settingsNewPassword', this)"></i>
+                        </div>
+                    </div>
+
+                    <button class="action-btn success" id="saveProfileBtn" onclick="saveProfileSettings()">
+                        <i class="fas fa-save"></i> <span>Save Changes</span>
+                    </button>
+                </div>
+                <div id="targetDisplaySettings" class="target-card"></div>
+
+                <button class="logout-btn" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                </button>
             </div>
         </div>
 
-        <!-- 📌 CALENDAR SECTION -->
-        <div class="calendar-section" id="calendarCaptureArea">
-            <h2><i class="fas fa-calendar-alt"></i> මගේ ඉතිරි කිරීමේ සටහන (මේ මාසයේ)</h2>
-            <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="global-footer">
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a> | 
+                <a href="terms.html">Terms of Service</a> | 
+                <a href="about.html">About & Contact</a>
+            </div>
+            <div class="footer-text">
+                &copy; 2026 Daily Saving Challenge<br><span>All Rights Reserved.</span>
+            </div>
         </div>
-
     </div>
 
-    <script>
-        let localUserName = localStorage.getItem('dsc_userName') || '';
-        let trackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
-        
-        // Load global max amount from local storage (default is 900)
-        let globalMaxAmount = parseInt(localStorage.getItem('dsc_maxAmount')) || 900;
-        let isAnimating = false;
+    <!-- 📌 BOTTOM NAVIGATION BAR -->
+    <div class="bottom-nav notranslate" id="bottomNav" style="display: none;">
+        <div class="nav-item active" onclick="switchView('home', this)">
+            <i class="fas fa-home"></i><span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchView('calendar', this)">
+            <i class="fas fa-calendar-alt"></i><span>Calendar</span>
+        </div>
+        <div class="nav-item" id="nav-explore" onclick="switchView('hub', this)">
+            <i class="fas fa-book-open"></i><span>Explore</span>
+        </div>
+        <div class="nav-item" id="nav-settings" onclick="switchView('settings', this)">
+            <i class="fas fa-cog"></i><span>Settings</span>
+        </div>
+    </div>
 
-        function initializeApp() {
-            if (!localUserName) {
-                document.getElementById('welcomeModal').classList.add('active');
-            } else {
-                document.getElementById('app-wrapper').style.opacity = '1';
-                document.getElementById('displayUserName').innerText = localUserName;
-                renderCalendar();
+    <!-- 📌 CUSTOM WHEEL MODAL -->
+    <div id="customModal" class="my-modal">
+        <div class="my-modal-content">
+            <h2 style="font-size: 1.2rem; margin-bottom:5px;">Setup Wheel</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Adjust Max Wheel Value</p>
+            <div class="slider-container notranslate">
+                <input type="range" id="wheelSlider" min="1" max="9" step="1" value="9" oninput="updateSliderText(this.value)">
+                <div class="slider-value" id="sliderValDisplay">9</div>
+            </div>
+            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveCustom()"><i class="fas fa-check"></i> <span>Save</span></button>
+            <button class="action-btn secondary" onclick="closeCustom()"><span>Cancel</span></button>
+        </div>
+    </div>
+
+    <!-- 📌 WIN RESULT MODAL -->
+    <div id="resultModal" class="my-modal">
+        <div class="my-modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+            <div id="captureArea" class="capture-card">
+                <div id="captureDate" class="capture-date notranslate"></div>
+                <img id="popupAvatar" src="" alt="Profile" class="profile-pic">
+                <h2 id="cardName" class="notranslate">Hi Name</h2>
+                <p class="capture-subtitle" style="margin:5px 0 10px;">Amount to save today</p>
+                <div class="amount notranslate" id="cardTotal">$0</div>
+                <div class="capture-footer" style="margin-top:15px; font-size:0.9rem;"><i class="fab fa-facebook"></i>Daily Saving Challenge</div>
+            </div>
+            <button class="action-btn primary" style="margin-bottom:10px;" onclick="shareAndDownload()"><i class="fas fa-download"></i> Download & Share</button>
+            <button class="action-btn secondary" onclick="closeModal()"><span>Close</span></button>
+        </div>
+    </div>
+
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        // =========================================
+        // 📌 INTERNATIONALIZATION & GEOLOCATION
+        // =========================================
+        
+        // Comprehensive Country & Currency Settings for Global scaling
+        const countryDB = {
+            "US": { name: "United States", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'es', name: 'Spanish'}] },
+            "LK": { name: "Sri Lanka", currency: "LKR", symbol: "Rs.", multOuter: 100, multInner: 10, langs: [{code: 'en', name: 'English'}, {code: 'si', name: 'Sinhala'}, {code: 'ta', name: 'Tamil'}] },
+            "IN": { name: "India", currency: "INR", symbol: "₹", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'hi', name: 'Hindi'}, {code: 'ta', name: 'Tamil'}] },
+            "GB": { name: "United Kingdom", currency: "GBP", symbol: "£", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
+            "AU": { name: "Australia", currency: "AUD", symbol: "A$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
+            "CA": { name: "Canada", currency: "CAD", symbol: "C$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'fr', name: 'French'}] },
+            "AE": { name: "United Arab Emirates", currency: "AED", symbol: "د.إ", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'ar', name: 'Arabic'}] },
+            // Default Fallback
+            "DEFAULT": { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'es', name: 'Spanish'}, {code: 'fr', name: 'French'}] }
+        };
+
+        // User Current Region Data
+        let userRegion = JSON.parse(localStorage.getItem('dsc_region_data')) || null;
+
+        async function fetchUserLocation() {
+            if (userRegion) {
+                applyRegionalSettings();
+                return;
+            }
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                
+                let detectedCountry = countryDB[data.country_code] ? data.country_code : "DEFAULT";
+                
+                userRegion = {
+                    countryCode: detectedCountry,
+                    currency: countryDB[detectedCountry].currency,
+                    symbol: countryDB[detectedCountry].symbol,
+                    multOuter: countryDB[detectedCountry].multOuter,
+                    multInner: countryDB[detectedCountry].multInner,
+                    currentLang: 'en'
+                };
+                localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
+                applyRegionalSettings();
+            } catch (error) {
+                userRegion = { countryCode: "DEFAULT", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, currentLang: 'en' };
+                applyRegionalSettings();
             }
         }
 
-        function saveUserName() {
-            const nameInput = document.getElementById('newUserName').value.trim();
-            if(nameInput === "") return alert("කරුණාකර ඔබගේ නම ඇතුළත් කරන්න!");
-            localStorage.setItem('dsc_userName', nameInput);
-            localUserName = nameInput;
-            document.getElementById('welcomeModal').classList.remove('active');
-            document.getElementById('displayUserName').innerText = localUserName;
-            document.getElementById('app-wrapper').style.opacity = '1';
+        function applyRegionalSettings() {
+            document.getElementById('authLocationDisplay').innerText = countryDB[userRegion.countryCode].name;
+            populateLanguageToggles();
+            buildWheelUI();
+            checkTodaySpin();
             renderCalendar();
+            renderTargetUI();
+            triggerGoogleTranslate(userRegion.currentLang);
         }
 
-        // 📌 SETTINGS MODAL LOGIC
-        function openMaxAmountModal() {
-            document.getElementById('amountSlider').value = globalMaxAmount;
-            document.getElementById('sliderValDisplay').innerText = globalMaxAmount;
-            document.getElementById('maxAmountModal').classList.add('active');
+        // =========================================
+        // 📌 SETTINGS UI FOR REGION & LANGUAGE
+        // =========================================
+        function openGlobalSettings() {
+            const cSelect = document.getElementById('countrySelect');
+            cSelect.innerHTML = '';
+            Object.keys(countryDB).forEach(key => {
+                if(key !== "DEFAULT") cSelect.innerHTML += `<option value="${key}">${countryDB[key].name}</option>`;
+            });
+            cSelect.value = userRegion.countryCode === "DEFAULT" ? "US" : userRegion.countryCode;
+            updateCurrencyOptions();
+            document.getElementById('globalSettingsModal').classList.add('active');
+        }
+        
+        function closeGlobalSettings() { document.getElementById('globalSettingsModal').classList.remove('active'); }
+
+        function updateCurrencyOptions() {
+            const selectedCountry = document.getElementById('countrySelect').value;
+            const curSelect = document.getElementById('currencySelect');
+            curSelect.innerHTML = `<option value="${countryDB[selectedCountry].currency}">${countryDB[selectedCountry].currency} (${countryDB[selectedCountry].symbol})</option>`;
+            // Add custom USD option for standardisation if not USD
+            if(countryDB[selectedCountry].currency !== 'USD') {
+                curSelect.innerHTML += `<option value="USD">USD ($)</option>`;
+            }
         }
 
-        function closeMaxAmountModal() {
-            document.getElementById('maxAmountModal').classList.remove('active');
+        function saveGlobalSettings() {
+            const selectedCountry = document.getElementById('countrySelect').value;
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            
+            let finalMultOuter = countryDB[selectedCountry].multOuter;
+            let finalMultInner = countryDB[selectedCountry].multInner;
+            let finalSymbol = countryDB[selectedCountry].symbol;
+
+            if (selectedCurrency === 'USD') {
+                finalMultOuter = countryDB['US'].multOuter;
+                finalMultInner = countryDB['US'].multInner;
+                finalSymbol = countryDB['US'].symbol;
+            }
+
+            userRegion = {
+                countryCode: selectedCountry,
+                currency: selectedCurrency,
+                symbol: finalSymbol,
+                multOuter: finalMultOuter,
+                multInner: finalMultInner,
+                currentLang: 'en' // Reset to english on change
+            };
+            
+            localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
+            applyRegionalSettings();
+            closeGlobalSettings();
+            showNotification("Regional settings updated!", "success");
         }
 
-        function updateSliderText(val) {
-            document.getElementById('sliderValDisplay').innerText = val;
+        function populateLanguageToggles() {
+            const container = document.getElementById('dynamicLanguageContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            const langs = countryDB[userRegion.countryCode].langs;
+            langs.forEach(lang => {
+                const isActive = userRegion.currentLang === lang.code ? 'active' : '';
+                container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('${lang.code}')">${lang.name}</button>`;
+            });
         }
 
-        function saveMaxAmount() {
-            globalMaxAmount = parseInt(document.getElementById('amountSlider').value);
-            localStorage.setItem('dsc_maxAmount', globalMaxAmount);
-            closeMaxAmountModal();
+        function changeAppLanguage(langCode) {
+            userRegion.currentLang = langCode;
+            localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
+            populateLanguageToggles();
+            triggerGoogleTranslate(langCode);
         }
 
-        // 📌 CALENDAR LOGIC
-        function getTodayString() {
-            const today = new Date();
-            return `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        function triggerGoogleTranslate(langCode) {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = langCode;
+                select.dispatchEvent(new Event('change'));
+            } else {
+                setTimeout(() => triggerGoogleTranslate(langCode), 500);
+            }
+        }
+
+        function switchView(viewName, navElement) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewName).classList.add('active');
+            if(navElement) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                navElement.classList.add('active');
+            }
+            window.scrollTo(0,0);
+        }
+
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") { input.type = "text"; iconElement.classList.remove('fa-eye'); iconElement.classList.add('fa-eye-slash'); } 
+            else { input.type = "password"; iconElement.classList.remove('fa-eye-slash'); iconElement.classList.add('fa-eye'); }
+        }
+
+        // =========================================
+        // 📌 FIREBASE LOGIC 
+        // =========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDo_Z1pawT4IB_KaoLdo0Yl2YV5gt27S3U", authDomain: "dailysavingchallenge-b7f58.firebaseapp.com",
+            projectId: "dailysavingchallenge-b7f58", storageBucket: "dailysavingchallenge-b7f58.firebasestorage.app",
+            messagingSenderId: "936731731201", appId: "1:936731731201:web:bb3e841e7664b805102700",
+            databaseURL: "https://dailysavingchallenge-b7f58-default-rtdb.firebaseio.com" 
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); const database = firebase.database();
+
+        let globalSpinCount = 0; let currentUser = null; let currentUserData = null; let trackingData = {};
+        let isLocalMode = localStorage.getItem('dsc_local_session') === 'true';
+        let localUserName = localStorage.getItem('dsc_userName') || '';
+        let localTrackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
+        let tempAvatarBase64 = null;
+        let userTarget = { amount: 0, setDate: null, achievedDate: null };
+        let localTargetData = JSON.parse(localStorage.getItem('dsc_target')) || null;
+        if (localTargetData) userTarget = localTargetData;
+
+        function syncLocalDataToCloud(user) {
+            const localTracking = JSON.parse(localStorage.getItem('dsc_tracking')) || {}; const localTarget = JSON.parse(localStorage.getItem('dsc_target')) || null;
+            if (Object.keys(localTracking).length > 0 || localTarget) {
+                database.ref('users/' + user.uid).once('value').then(snapshot => {
+                    const cloudData = snapshot.val() || {}; const cloudTracking = cloudData.trackingData || {}; const cloudTarget = cloudData.targetData || { amount: 0, setDate: null, achievedDate: null };
+                    const mergedTracking = { ...cloudTracking, ...localTracking }; const mergedTarget = localTarget ? localTarget : cloudTarget;
+                    database.ref('users/' + user.uid).update({ trackingData: mergedTracking, targetData: mergedTarget }).then(() => {
+                        localStorage.removeItem('dsc_tracking'); localStorage.removeItem('dsc_target'); localStorage.setItem('dsc_local_session', 'false');
+                    });
+                });
+            }
+        }
+
+        function launchApp() {
+            document.getElementById('authModal').classList.remove('active'); 
+            document.getElementById('app-wrapper').style.display = 'flex'; 
+            document.getElementById('bottomNav').style.display = 'flex';
+        }
+
+        auth.onAuthStateChanged((user) => {
+            const loader = document.getElementById('initialLoader');
+            if(loader) loader.style.display = 'none';
+
+            if (user) {
+                isLocalMode = false; localStorage.setItem('dsc_local_session', 'false');
+                currentUser = user; launchApp(); loadUserData(user.uid);
+            } else {
+                currentUser = null; currentUserData = null;
+                if (isLocalMode && localUserName) {
+                    trackingData = localTrackingData; if(localTargetData) userTarget = localTargetData;
+                    launchApp(); document.getElementById('displayUserName').innerText = localUserName;
+                    const savedAvatar = localStorage.getItem('dsc_avatar') || generateAvatar(localUserName);
+                    document.getElementById('headerProfilePic').src = savedAvatar; document.getElementById('settingsAvatarPreview').src = savedAvatar;
+                    document.getElementById('settingsName').value = localUserName; 
+                    document.getElementById('settingsPasswordSection').style.display = 'none';
+                    document.getElementById('settingsEmailWrapper').style.display = 'block';
+                    document.getElementById('settingsEmail').value = "Local Account (No Email)";
+                    renderCalendar(); checkTodaySpin(); renderTargetUI();
+                } else {
+                    document.getElementById('authModal').classList.add('active'); 
+                    document.getElementById('app-wrapper').style.display = 'none'; 
+                    document.getElementById('bottomNav').style.display = 'none';
+                }
+            }
+        });
+
+        let authMode = 'login'; 
+        function switchAuthTab(mode) {
+            authMode = mode; 
+            document.getElementById('tabLogin').classList.toggle('active', mode === 'login'); 
+            document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
+            document.getElementById('authSignupFields').style.display = mode === 'signup' ? 'block' : 'none'; 
+            
+            const forgotPwd = document.getElementById('loginForgotPwdWrapper');
+            if(forgotPwd) forgotPwd.style.display = mode === 'login' ? 'block' : 'none';
+
+            document.getElementById('authSubmitText').innerText = mode === 'login' ? 'Login' : 'Sign Up';
+        }
+
+        function showGuestUI() { document.getElementById('authMainUI').style.display = 'none'; document.getElementById('guestUI').style.display = 'block'; }
+        function hideGuestUI() { document.getElementById('guestUI').style.display = 'none'; document.getElementById('authMainUI').style.display = 'block'; }
+
+        function handleGuestSubmit() {
+            const name = document.getElementById('guestNameInput').value.trim();
+            if(!name) { showNotification("Please enter your name!", "warning"); return; }
+            localStorage.setItem('dsc_userName', name); localStorage.setItem('dsc_local_session', 'true');
+            isLocalMode = true; localUserName = name; trackingData = localTrackingData; if(localTargetData) userTarget = localTargetData;
+            const avatar = generateAvatar(localUserName); localStorage.setItem('dsc_avatar', avatar);
+            launchApp(); document.getElementById('displayUserName').innerText = localUserName; document.getElementById('headerProfilePic').src = avatar; document.getElementById('settingsAvatarPreview').src = avatar;
+            document.getElementById('settingsName').value = localUserName; 
+            document.getElementById('settingsPasswordSection').style.display = 'none';
+            document.getElementById('settingsEmailWrapper').style.display = 'block';
+            document.getElementById('settingsEmail').value = "Local Account";
+            renderCalendar(); checkTodaySpin(); renderTargetUI(); 
+            showNotification(`Hi ${localUserName}, let's start saving!`, "success");
+        }
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then((result) => {
+                const user = result.user;
+                database.ref('users/' + user.uid).update({ name: user.displayName, email: user.email, photoURL: user.photoURL, joinedAt: new Date().toISOString() });
+                syncLocalDataToCloud(user); 
+                showNotification("Success!", "success");
+            }).catch(error => showNotification(error.message, "error"));
+        }
+
+        function handleAuthSubmit() {
+            const email = document.getElementById('authEmail').value.trim(); const password = document.getElementById('authPassword').value; const name = document.getElementById('authName').value.trim();
+            if (!email || !password || (authMode === 'signup' && !name)) { showNotification("Fill all fields!", "warning"); return; }
+            
+            if (authMode === 'login') {
+                auth.signInWithEmailAndPassword(email, password).then((userCredential) => { 
+                    syncLocalDataToCloud(userCredential.user); showNotification("Success!", "success"); 
+                }).catch(() => { showNotification("Auth Failed.", "error"); });
+            } else {
+                auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
+                    database.ref('users/' + userCredential.user.uid).set({ name: name, email: email, joinedAt: new Date().toISOString() }).then(() => { 
+                        syncLocalDataToCloud(userCredential.user); showNotification("Success!", "success"); 
+                    });
+                }).catch((error) => { showNotification(error.message, "error"); });
+            }
+        }
+        
+        function logoutUser() {
+            if (isLocalMode) { localStorage.setItem('dsc_local_session', 'false'); isLocalMode = false; window.location.reload(); } else { auth.signOut().then(() => { window.location.reload(); }); }
+        }
+
+        // =========================================
+        // 📌 BLOGGER CMS
+        // =========================================
+        const myBloggerURL = "https://dailysavingchallengelk.blogspot.com";
+        let fetchedArticles = []; 
+        let currentStartIndex = 1;
+        const postsPerPage = 10;
+        let isFetchingPosts = false;
+
+        function loadBloggerPosts(startIndex = 1) {
+            if(isFetchingPosts) return;
+            isFetchingPosts = true;
+            const script = document.createElement('script');
+            script.src = `${myBloggerURL}/feeds/posts/default?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}`;
+            document.body.appendChild(script);
+        }
+
+        window.handleBloggerPosts = function(data) {
+            isFetchingPosts = false;
+            const blogGrid = document.getElementById('blogGrid'); 
+            if(!blogGrid) return;
+            
+            const noMsg = document.getElementById('noArticlesMsg');
+            if(noMsg) noMsg.remove();
+
+            const oldLoadCont = document.getElementById('loadMoreContainer');
+            if(oldLoadCont) oldLoadCont.remove();
+
+            const entries = data.feed.entry || [];
+
+            if (entries.length === 0 && fetchedArticles.length === 0) { 
+                blogGrid.innerHTML = `<p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">No articles available.</p>`; 
+                return; 
+            }
+
+            entries.forEach((entry) => {
+                const globalIndex = fetchedArticles.length;
+                fetchedArticles.push(entry);
+                const title = entry.title.$t;
+                const postId = entry.id.$t.split('post-')[1]; 
+                
+                let imgUrl = 'https://via.placeholder.com/400x250/1e293b/cbd5e1?text=Daily+Saving+Challenge'; 
+                if (entry.media$thumbnail) imgUrl = entry.media$thumbnail.url.replace(/\/s72\-c\//, '/w400-h250-c/');
+                else if (entry.content && entry.content.$t.match(/<img.+?src=["'](.*?)["']/)) imgUrl = entry.content.$t.match(/<img.+?src=["'](.*?)["']/)[1];
+                
+                blogGrid.innerHTML += `
+                    <div class="article-card" onclick="openArticle('${postId}', ${globalIndex})">
+                        <div class="article-thumb" style="background-image: url('${imgUrl}');"></div>
+                        <div class="article-info">
+                            <h3 class="article-card-title">${title}</h3>
+                            <div class="article-card-footer">
+                                <span class="read-more-btn"><span class="read-more-text">Read More</span> <i class="fas fa-arrow-right"></i></span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            if (entries.length === postsPerPage) {
+                blogGrid.innerHTML += `
+                    <div id="loadMoreContainer" style="grid-column: 1 / -1; margin-top: 15px;">
+                        <button id="loadMoreBtnActual" class="load-more-btn" onclick="loadNextPosts()">Load More Articles</button>
+                    </div>`;
+            }
+        };
+
+        window.loadNextPosts = function() {
+            currentStartIndex += postsPerPage;
+            loadBloggerPosts(currentStartIndex);
+        }
+
+        window.openArticle = function(postId, index) {
+            if (!fetchedArticles[index]) return;
+            const entry = fetchedArticles[index];
+            window.history.pushState({articleId: postId}, entry.title.$t, '?article=' + postId);
+            
+            document.getElementById('fullArticleTitle').innerText = entry.title.$t;
+            document.getElementById('fullArticleContent').innerHTML = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : "");
+            switchView('article', document.getElementById('nav-explore'));
+        }
+
+        window.closeArticleView = function() {
+            window.history.pushState({}, document.title, window.location.pathname);
+            switchView('hub', document.getElementById('nav-explore'));
+        }
+
+        // =========================================
+        // 📌 UI UPDATES & LOGIC (App Init)
+        // =========================================
+        function getSLDate() { const d = new Date(); return d; } // Standard local time for global use
+        function getTodayString() { const slDate = getSLDate(); return `${slDate.getFullYear()}-${String(slDate.getMonth()+1).padStart(2, '0')}-${String(slDate.getDate()).padStart(2, '0')}`; }
+
+        function initializeApp() { 
+            fetchUserLocation();
+            loadBloggerPosts(currentStartIndex); 
+        }
+        document.addEventListener("DOMContentLoaded", initializeApp);
+
+        function showMonthlyTotal() {
+            const btn = document.getElementById('showTotalBtn'); const totalDisplay = document.getElementById('totalAmountContainer'); const downloadBtn = document.getElementById('calendarDownloadArea');
+            btn.style.display = 'none'; totalDisplay.style.display = 'block';
+            const slDate = getSLDate(); const daysInMonth = new Date(slDate.getFullYear(), slDate.getMonth() + 1, 0).getDate();
+            if (slDate.getDate() === daysInMonth) { downloadBtn.style.display = 'block'; }
+            setTimeout(() => { totalDisplay.style.display = 'none'; downloadBtn.style.display = 'none'; btn.style.display = 'inline-flex'; }, 5000);
         }
 
         function renderCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
-            
-            const todayDate = new Date();
-            const year = todayDate.getFullYear();
-            const month = todayDate.getMonth();
-            const todayStr = getTodayString();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendarGrid'); grid.innerHTML = ''; let currentMonthTotal = 0;
+            const slDate = getSLDate(); const year = slDate.getFullYear(); const month = slDate.getMonth();
+            const todayStr = getTodayString(); const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             for (let i = 1; i <= daysInMonth; i++) {
                 const dayStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                const card = document.createElement('div');
-                card.className = 'day-card';
-                let amountHtml = '-';
+                const card = document.createElement('div'); card.className = 'day-card'; let amountHtml = '-';
+                const isPastDay = dayStr < todayStr;
+                if (trackingData[dayStr]) { card.classList.add('completed'); amountHtml = `${userRegion.symbol}${trackingData[dayStr]}`; currentMonthTotal += trackingData[dayStr]; } 
+                else if (dayStr === todayStr) { card.classList.add('today'); amountHtml = 'Today'; } 
+                else if (isPastDay) { card.classList.add('missed'); amountHtml = '<i class="fas fa-times"></i>'; }
+                card.innerHTML = `<div class="date">${i}</div><div class="amount">${amountHtml}</div>`; grid.appendChild(card);
+            }
+            document.getElementById('monthTotalAmount').innerText = `${userRegion.symbol}${currentMonthTotal.toLocaleString()}`;
+        }
 
-                if (trackingData[dayStr]) {
-                    card.classList.add('completed');
-                    amountHtml = `Rs. ${trackingData[dayStr]}`;
-                } else if (dayStr < todayStr) {
-                    card.style.opacity = "0.5";
-                    amountHtml = '<i class="fas fa-times"></i>';
-                } else if (dayStr === todayStr) {
-                    card.style.borderColor = "var(--primary)";
-                    amountHtml = "අද";
-                }
-
-                card.innerHTML = `<div class="date">${i}</div><div class="amount">${amountHtml}</div>`;
-                grid.appendChild(card);
+        function checkTodaySpin() {
+            const todayStr = getTodayString(); const spinBtn = document.getElementById('spinBtn');
+            if (trackingData[todayStr]) {
+                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>Completed</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}${trackingData[todayStr].toLocaleString()}`;
+            } else {
+                spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText">Spin Wheel</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}0`;
             }
         }
 
-        // 📌 SCRATCH CARD LOGIC
-        function scratchCard(clickedCard) {
-            if (isAnimating || clickedCard.style.pointerEvents === 'none') return;
-            isAnimating = true;
-
-            // Generate Random Amount strictly based on the Maximum Value set by user
-            // e.g., if globalMaxAmount = 500, steps = 40. Math.random * 41 -> 0 to 40. Multiplied by 10 -> 0 to 400. Plus 100 -> 100 to 500.
-            const steps = (globalMaxAmount - 100) / 10;
-            const randomMultiplier = Math.floor(Math.random() * (steps + 1));
-            const total = (randomMultiplier * 10) + 100; 
-
-            const container = document.getElementById('scratchCardsContainer');
-            const allCards = container.querySelectorAll('.scratch-card-new');
-            
-            const containerRect = container.getBoundingClientRect();
-            const centerX = containerRect.left + containerRect.width / 2;
-            const centerY = containerRect.top + containerRect.height / 2;
-
-            const isMobile = window.innerWidth <= 480;
-            const scaleFactor = isMobile ? 2.0 : 2.5; 
-
-            allCards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const cardCenterX = rect.left + rect.width / 2;
-                const cardCenterY = rect.top + rect.height / 2;
+        function loadUserData(uid) {
+            database.ref('users/' + uid).on('value', (snapshot) => {
+                currentUserData = snapshot.val() || {};
+                const name = currentUserData.name || currentUser.displayName || 'User'; const photo = currentUserData.photoURL || currentUser.photoURL || generateAvatar(name);
+                trackingData = currentUserData.trackingData || {}; userTarget = currentUserData.targetData || { amount: 0, setDate: null, achievedDate: null };
                 
-                const moveX = centerX - cardCenterX;
-                const moveY = centerY - cardCenterY;
+                document.getElementById('displayUserName').innerText = name; 
+                document.getElementById('headerProfilePic').src = photo;
+                document.getElementById('settingsName').value = name; 
+                document.getElementById('settingsAvatarPreview').src = photo;
+                
+                document.getElementById('settingsEmailWrapper').style.display = 'block';
+                if(currentUser.email) { document.getElementById('settingsEmail').value = currentUser.email; } else { document.getElementById('settingsEmail').value = "Local Account"; }
 
-                card.style.pointerEvents = 'none'; 
-                card.style.transition = 'transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease, filter 1.5s ease';
-
-                if (card === clickedCard) {
-                    card.querySelector('.scratch-result-text').innerText = `Rs. ${total}`;
-                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(${scaleFactor})`;
-                    card.style.zIndex = '10';
-                    card.style.filter = 'drop-shadow(0 0 40px rgba(245, 158, 11, 0.7))';
-                } else {
-                    card.style.transform = `translate(${moveX}px, ${moveY}px) scale(0.2)`;
-                    card.style.opacity = '0';
-                    card.style.zIndex = '1';
-                }
+                renderCalendar(); checkTodaySpin(); renderTargetUI();
             });
+        }
 
+        function generateAvatar(name) {
+            const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : '👤';
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" fill="#6366f1" rx="50" /><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#ffffff">${initial}</text></svg>`;
+            return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+        }
+
+        function openTargetModal() { document.getElementById('targetAmountInput').value = userTarget.amount || ''; document.getElementById('targetModal').classList.add('active'); }
+        function closeTargetModal() { document.getElementById('targetModal').classList.remove('active'); }
+
+        function saveTargetAmount() {
+            const val = parseFloat(document.getElementById('targetAmountInput').value); if(isNaN(val) || val <= 0) return;
+            userTarget.amount = val; userTarget.setDate = getTodayString(); userTarget.achievedDate = null;
+            if(isLocalMode){ localStorage.setItem('dsc_target', JSON.stringify(userTarget)); } else if (currentUser) { database.ref('users/' + currentUser.uid + '/targetData').set(userTarget); }
+            closeTargetModal(); renderTargetUI();
+        }
+
+        function renderTargetUI() {
+            if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null };
+            const totalSaved = Object.values(trackingData).reduce((sum, val) => sum + val, 0); const today = getTodayString();
+            let html = '';
+            if (userTarget.amount > 0) {
+                const remaining = Math.max(0, userTarget.amount - totalSaved); const progress = Math.min(100, (totalSaved / userTarget.amount) * 100);
+                html += `<h3><i class="fas fa-bullseye"></i> <span>My Savings Target</span></h3>`; html += `<div class="target-amount-display notranslate">${userRegion.symbol}${userTarget.amount.toLocaleString()}</div>`;
+                if (remaining > 0) { html += `<p><span>Remaining:</span> <strong class="notranslate">${userRegion.symbol}${remaining.toLocaleString()}</strong></p>`; html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; } 
+                else { html += `<p class="target-achieved-text"><i class="fas fa-trophy"></i> <span>Target Achieved!</span></p>`; }
+                html += `<button class="action-btn secondary mt-15" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span>Edit Target</span></button>`; 
+            } else { html += `<h3><i class="fas fa-bullseye"></i> <span>No Target Set</span></h3>`; html += `<button class="action-btn highlighted-btn mt-15" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span>Set a Target</span></button>`; }
+            document.getElementById('targetDisplayCalendar').innerHTML = html; 
+            document.getElementById('targetDisplaySettings').innerHTML = html;
+        }
+
+        // =========================================
+        // 📌 DYNAMIC WHEEL BUILDER
+        // =========================================
+        let baseOuter = [1, 2, 3, 4, 5, 6, 7, 8, 9]; 
+        const baseInner = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const outerColors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6']; 
+        const innerColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#1dd1a1', '#ff9f43'];
+        let outerDeg = 0; let innerDeg = 0; let isSpinning = false;
+        let selectedMaxBase = 9;
+
+        function buildWheelUI() {
+            let outerVals = baseOuter.map(v => v * userRegion.multOuter);
+            let innerVals = baseInner.map(v => v * userRegion.multInner);
+            buildWheelHTML('outerWheel', outerVals, 150, outerColors); 
+            buildWheelHTML('innerWheel', innerVals, 85, innerColors);
+            
+            // Format slider correctly based on multiplier
+            document.getElementById('wheelSlider').max = 9;
+            document.getElementById('wheelSlider').value = selectedMaxBase;
+            document.getElementById('sliderValDisplay').innerText = selectedMaxBase * userRegion.multOuter;
+        }
+
+        function buildWheelHTML(id, values, textOffset, colors) {
+            const wheel = document.getElementById(id); if(!wheel) return; wheel.innerHTML = ''; 
+            const sliceAngle = 360 / values.length; const offsetAngle = sliceAngle / 2; let gradient = `conic-gradient(from -${offsetAngle}deg, `;
+            for(let i = 0; i < values.length; i++) {
+                const startAngle = i * sliceAngle; const endAngle = startAngle + sliceAngle;
+                gradient += `${colors[i % colors.length]} ${startAngle}deg ${endAngle}deg${i === values.length - 1 ? '' : ', '}`;
+                const span = document.createElement('span'); span.className = 'slice-text notranslate'; 
+                // fix decimal rounding (e.g. inner wheels like 0.1, 0.2)
+                span.innerText = Number.isInteger(values[i]) ? values[i] : values[i].toFixed(1); 
+                span.style.transform = `translate(-50%, -50%) rotate(${startAngle}deg) translateY(-${textOffset}px)`; wheel.appendChild(span);
+            }
+            gradient += ')'; wheel.style.background = gradient;
+        }
+
+        function openCustom() { document.getElementById('customModal').classList.add('active'); }
+        function updateSliderText(val) { document.getElementById('sliderValDisplay').innerText = val * userRegion.multOuter; }
+        function closeCustom() { document.getElementById('customModal').classList.remove('active'); }
+        function saveCustom() {
+            selectedMaxBase = parseInt(document.getElementById('wheelSlider').value); 
+            baseOuter = [];
+            for(let i = 1; i <= selectedMaxBase; i++) { baseOuter.push(i); }
+            buildWheelUI(); 
+            closeCustom(); 
+            resetWheelAngles();
+        }
+
+        function resetWheelAngles() {
+            document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none';
+            void document.getElementById('outerWheel').offsetWidth; 
+            document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0;
+        }
+
+        function spin() {
+            if (isSpinning) return; if (!currentUser && !isLocalMode) { showNotification("Please login.", "warning"); return; }
+            isSpinning = true; const spinDuration = Math.floor(Math.random() * 5000) + 10000;  const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Spinning...</span>`;
+            
+            const outIndex = Math.floor(Math.random() * baseOuter.length); const inIndex = Math.floor(Math.random() * baseInner.length);
+            const outTarget = 360 - (outIndex * (360 / baseOuter.length)); const inTarget = 360 - (inIndex * (360 / baseInner.length));
+            outerDeg += 3600 + outTarget - (outerDeg % 360); innerDeg += 5040 + inTarget - (innerDeg % 360);
+            
+            const outerWheel = document.getElementById('outerWheel'); const innerWheel = document.getElementById('innerWheel');
+            outerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; innerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; 
+            outerWheel.style.transform = `rotate(${outerDeg}deg)`; innerWheel.style.transform = `rotate(${innerDeg}deg)`;
+            
             setTimeout(() => {
-                const cover = clickedCard.querySelector('.img-unrevealed');
-                cover.style.animation = 'cleanWipe 2s cubic-bezier(0.25, 1, 0.5, 1) forwards';
-
-                setTimeout(() => {
-                    const textEl = clickedCard.querySelector('.scratch-result-text');
-                    textEl.style.transition = 'opacity 1s ease';
-                    textEl.style.opacity = '1';
-                    
-                    document.getElementById('liveAmount').innerText = `Rs. ${total}`;
-                    
-                    // Save progress locally
-                    const todayStr = getTodayString();
-                    trackingData[todayStr] = total;
-                    localStorage.setItem('dsc_tracking', JSON.stringify(trackingData));
-                    renderCalendar();
-
-                    document.getElementById('tempResetBtn').style.display = 'inline-block';
-                    isAnimating = false;
-                }, 2000);
-            }, 1500); 
+                const total = (baseOuter[outIndex] * userRegion.multOuter) + (baseInner[inIndex] * userRegion.multInner); 
+                const todayStr = getTodayString(); trackingData[todayStr] = total; 
+                let userNameToDisplay = localUserName || (currentUserData ? currentUserData.name : "User");
+                
+                if (isLocalMode) { localStorage.setItem('dsc_tracking', JSON.stringify(trackingData)); } 
+                else if (currentUser) { database.ref('users/' + currentUser.uid + '/trackingData/' + todayStr).set(total); }
+                
+                renderCalendar(); checkTodaySpin(); renderTargetUI(); 
+                document.getElementById('cardName').innerText = userNameToDisplay; 
+                // Decimal Formatting Fix for Result
+                document.getElementById('cardTotal').innerText = `${userRegion.symbol}${Number.isInteger(total) ? total : total.toFixed(2)}`;
+                
+                document.getElementById('resultModal').classList.add('active'); isSpinning = false;
+            }, spinDuration);
         }
 
-        // 📌 TEMPORARY RESET FUNCTION
-        function resetCards() {
-            if (isAnimating) return;
-            
-            const container = document.getElementById('scratchCardsContainer');
-            const allCards = container.querySelectorAll('.scratch-card-new');
+        function closeModal() { document.getElementById('resultModal').classList.remove('active'); resetWheelAngles(); }
 
-            allCards.forEach(card => {
-                card.style.transition = 'transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease';
-                card.style.transform = '';
-                card.style.zIndex = '';
-                card.style.opacity = '';
-                card.style.filter = '';
-                card.style.pointerEvents = 'auto'; 
-                
-                const cover = card.querySelector('.img-unrevealed');
-                cover.style.animation = 'none';
-                
-                const textEl = card.querySelector('.scratch-result-text');
-                textEl.style.transition = 'none';
-                textEl.style.opacity = '0';
-                textEl.innerText = '';
-            });
-
-            document.getElementById('liveAmount').innerText = `Rs. 0`;
-            document.getElementById('tempResetBtn').style.display = 'none';
+        function showNotification(message, type = 'info') {
+            const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#6366f1' }; 
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const notification = document.createElement('div'); notification.style.cssText = `position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, ${colors[type]}, ${colors[type]}dd); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 9999999; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.2);`;
+            notification.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`; document.body.appendChild(notification); 
+            setTimeout(() => notification.remove(), 3000);
         }
-
-        document.addEventListener("DOMContentLoaded", initializeApp);
     </script>
 </body>
 </html>
