@@ -26,17 +26,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
-        /* Hide Google Translate Default UI */
-        .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
-        .goog-te-banner-frame { display: none !important; }
-        body { top: 0 !important; }
-        
-        /* Custom Dropdown styling for Location/Currency */
+        /* Custom Dropdown styling for Currency */
         .custom-select { 
             width: 100%; padding: 15px 20px 15px 45px; border-radius: var(--radius-lg); 
             border: 1px solid var(--glass-border); background: rgba(0,0,0,0.6); color: white; 
             font-family: inherit; font-size: 1rem; outline: none; appearance: none; -webkit-appearance: none; 
+            cursor: pointer; transition: all 0.3s ease;
         }
+        .custom-select:focus { border-color: var(--primary); }
         .select-wrapper { position: relative; margin-bottom: 15px; }
         .select-wrapper::after { 
             content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
@@ -47,136 +44,109 @@
 </head>
 <body>
 
-    <!-- Hidden Google Translate Element -->
-    <div id="google_translate_element" style="display:none;"></div>
-
     <div class="bg-animation"></div>
 
     <!-- 📌 INITIAL LOADER -->
     <div id="initialLoader" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
         <i class="fas fa-spinner fa-spin fa-3x"></i>
-        <div style="font-size: 0.9rem; margin-top: 10px; color: white;" class="notranslate" id="loadingText">Connecting...</div>
     </div>
 
     <!-- 📌 FIREBASE AUTHENTICATION -->
     <div id="authModal" class="my-modal">
         <div class="my-modal-content">
-            <!-- 🌐 Dynamic Settings on Modal -->
-            <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                <button class="action-btn secondary" style="padding: 8px 12px; font-size: 0.8rem; border-radius: var(--radius-full);" onclick="openGlobalSettings()">
-                    <i class="fas fa-globe"></i> <span id="authLocationDisplay">World</span>
-                </button>
+            <!-- 🌐 Quick Language Toggle on Modal (Visible only for LKR via JS) -->
+            <div id="authLangToggleContainer" style="position: absolute; top: 15px; right: 15px; z-index: 10; display: none;">
+                <div class="lang-toggle" style="gap: 5px; margin: 0;">
+                    <button class="lang-btn btn-si" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('si')">සිං</button>
+                    <button class="lang-btn btn-en" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('en')">EN</button>
+                </div>
             </div>
 
             <div id="authMainUI">
                 <img src="dsc_logo.png" alt="Logo" style="width: 70px; height: 70px; border-radius:50%; margin-bottom:10px; border: 2px solid rgba(255,255,255,0.2);">
-                <h2 class="main-title" style="font-size: 1.8rem; margin-bottom: 5px; text-align:center;">Welcome!</h2>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Sign in to save and sync your progress securely.</p>
+                <h2 class="main-title" style="font-size: 1.8rem; margin-bottom: 5px; text-align:center;" data-i18n="welcome_title">Welcome!</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;" data-i18n="welcome_sub">Sign in to save and sync your progress securely.</p>
                 
                 <div class="auth-tabs">
-                    <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
-                    <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</div>
+                    <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')" data-i18n="tab_login">Login</div>
+                    <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')" data-i18n="tab_signup">Sign Up</div>
                 </div>
                 
                 <div id="authSignupFields" style="display: none;">
-                    <div class="auth-input-wrapper notranslate">
+                    <div class="auth-input-wrapper">
                         <i class="fas fa-user icon-left"></i>
-                        <input type="text" id="authName" class="auth-input" placeholder="Your Name">
+                        <input type="text" id="authName" class="auth-input" placeholder="Your Name" data-i18n-placeholder="name_placeholder">
                     </div>
                 </div>
                 
-                <div class="auth-input-wrapper notranslate">
+                <div class="auth-input-wrapper">
                     <i class="fas fa-envelope icon-left"></i>
-                    <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
+                    <input type="email" id="authEmail" class="auth-input" placeholder="Email Address" data-i18n-placeholder="email_placeholder">
                 </div>
                 
-                <div class="auth-input-wrapper notranslate">
+                <div class="auth-input-wrapper">
                     <i class="fas fa-lock icon-left"></i>
-                    <input type="password" id="authPassword" class="auth-input" placeholder="Password">
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Password" data-i18n-placeholder="password_placeholder">
                     <i class="fas fa-eye password-toggle" onclick="togglePassword('authPassword', this)"></i>
                 </div>
 
                 <div style="text-align: right; margin-bottom: 15px; margin-top: -5px;" id="loginForgotPwdWrapper">
-                    <a href="#" onclick="handleForgotPassword(false)" style="color: var(--accent); font-size: 0.85rem; text-decoration: none;">Forgot Password?</a>
+                    <a href="#" onclick="handleForgotPassword(false)" style="color: var(--accent); font-size: 0.85rem; text-decoration: none;" data-i18n="forgot_password">Forgot Password?</a>
                 </div>
                 
                 <button class="action-btn primary" id="authSubmitBtn" onclick="handleAuthSubmit()">
-                    <span id="authSubmitText">Login</span>
+                    <span id="authSubmitText" data-i18n="tab_login">Login</span>
                 </button>
                 
                 <button class="google-btn" id="googleLoginBtn" onclick="loginWithGoogle()">
                     <i class="fab fa-google" style="color: #ea4335; font-size: 1.1rem;"></i>
-                    <span>Continue with Google</span>
+                    <span data-i18n="google_login">Continue with Google</span>
                 </button>
                 
                 <hr style="border: none; border-top: 1px dashed var(--glass-border); margin: 25px 0 20px;">
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">If you don't want to log in, spin the wheel from here</p>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;" data-i18n="guest_prompt">If you don't want to log in, spin the wheel from here</p>
                 <button class="action-btn secondary" onclick="showGuestUI()">
-                    <i class="fas fa-gamepad"></i> <span>Use Local Account</span>
+                    <i class="fas fa-gamepad"></i> <span data-i18n="guest_btn">Use Local Account</span>
                 </button>
             </div>
             
             <div id="guestUI" style="display: none;">
-                <h2 style="font-size: 1.5rem; margin-bottom: 15px; color: var(--primary-light);">Use Local Account</h2>
+                <h2 style="font-size: 1.5rem; margin-bottom: 15px; color: var(--primary-light);" data-i18n="guest_btn">Use Local Account</h2>
                 <div class="attention-note">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div>
-                        <strong>Important:</strong> 
-                        <span>We cannot guarantee your data will be saved permanently. If data is lost locally, we cannot recover it.</span>
+                        <strong data-i18n="important">Important:</strong> 
+                        <span data-i18n="guest_warning">We cannot guarantee your data will be saved permanently. If data is lost locally, we cannot recover it.</span>
                     </div>
                 </div>
-                <div class="auth-input-wrapper notranslate">
+                <div class="auth-input-wrapper">
                     <i class="fas fa-user icon-left"></i>
-                    <input type="text" id="guestNameInput" class="auth-input" placeholder="Your Name">
+                    <input type="text" id="guestNameInput" class="auth-input" placeholder="Your Name" data-i18n-placeholder="name_placeholder">
                 </div>
                 <button class="action-btn primary" onclick="handleGuestSubmit()">
-                    <span>Let's Start</span> <i class="fas fa-arrow-right"></i>
+                    <span data-i18n="start_btn">Let's Start</span> <i class="fas fa-arrow-right"></i>
                 </button>
                 <button class="action-btn secondary" style="margin-top: 15px;" onclick="hideGuestUI()">
-                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="back_btn">Back</span>
                 </button>
             </div>
-        </div>
-    </div>
-
-    <!-- 📌 GLOBAL SETTINGS MODAL (Country & Currency) -->
-    <div id="globalSettingsModal" class="my-modal">
-        <div class="my-modal-content">
-            <h2 style="font-size: 1.4rem; margin-bottom:20px; color: var(--primary-light);"><i class="fas fa-globe"></i> Regional Settings</h2>
-            
-            <div class="select-wrapper notranslate">
-                <i class="fas fa-flag icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
-                <select id="countrySelect" class="custom-select" onchange="updateCurrencyOptions()">
-                    <!-- Options populated via JS -->
-                </select>
-            </div>
-
-            <div class="select-wrapper notranslate">
-                <i class="fas fa-money-bill-wave icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
-                <select id="currencySelect" class="custom-select">
-                    <!-- Options populated via JS -->
-                </select>
-            </div>
-
-            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveGlobalSettings()"><i class="fas fa-check"></i> <span>Save Settings</span></button>
-            <button class="action-btn secondary" onclick="closeGlobalSettings()"><span>Cancel</span></button>
         </div>
     </div>
 
     <!-- 📌 TARGET SETTING MODAL -->
     <div id="targetModal" class="my-modal">
         <div class="my-modal-content">
-            <h2 style="font-size: 1.4rem; margin-bottom:10px; color: var(--primary-light);"><i class="fas fa-bullseye"></i> <span>Set a Target</span></h2>
+            <h2 style="font-size: 1.4rem; margin-bottom:10px; color: var(--primary-light);"><i class="fas fa-bullseye"></i> <span data-i18n="target_title">Set a Target</span></h2>
             <div class="attention-note">
                 <i class="fas fa-exclamation-circle"></i>
-                <div><span>Important: You can only change this amount after 30 days.</span></div>
+                <div><span data-i18n="target_warning">Important: You can only change this amount after 30 days.</span></div>
             </div>
-            <div class="auth-input-wrapper notranslate">
+            <div class="auth-input-wrapper">
                 <i class="fas fa-money-bill-wave icon-left"></i>
-                <input type="number" id="targetAmountInput" class="auth-input" placeholder="Target Amount">
+                <input type="number" id="targetAmountInput" class="auth-input" placeholder="Target Amount" data-i18n-placeholder="target_placeholder">
             </div>
-            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveTargetAmount()"><i class="fas fa-check"></i> <span>Save</span></button>
-            <button class="action-btn secondary" onclick="closeTargetModal()"><span>Cancel</span></button>
+            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveTargetAmount()"><i class="fas fa-check"></i> <span data-i18n="modal_save">Save</span></button>
+            <button class="action-btn secondary" onclick="closeTargetModal()"><span data-i18n="modal_cancel">Cancel</span></button>
         </div>
     </div>
 
@@ -187,11 +157,11 @@
             <div class="header-left-group">
                 <img src="dsc_logo.png" alt="DSC Logo" class="logo-img">
                 <div class="title-group">
-                    <h1 class="main-title">Daily Saving Challenge</h1>
+                    <h1 class="main-title" data-i18n="site_title">Daily Saving Challenge</h1>
                 </div>
             </div>
-            <div class="user-profile-wrapper notranslate" onclick="switchView('settings', document.getElementById('nav-settings'))">
-                <div class="user-greeting"><span>Hi,</span> <span id="displayUserName">User</span></div>
+            <div class="user-profile-wrapper" onclick="switchView('settings', document.getElementById('nav-settings'))">
+                <div class="user-greeting"><span data-i18n="hi_text">Hi,</span> <span id="displayUserName">User</span></div>
                 <img id="headerProfilePic" src="" class="header-profile-pic">
             </div>
         </div>
@@ -203,12 +173,12 @@
                 <div class="live-total-container">
                     <div class="live-total">
                         <i class="fas fa-piggy-bank"></i>
-                        <span style="font-size: 1rem; color: var(--text-secondary); margin-right: 5px;">Let's Save:</span>
-                        <span class="amount notranslate" id="liveAmount">$0</span>
+                        <span data-i18n="save_label" style="font-size: 1rem; color: var(--text-secondary); margin-right: 5px;">Let's Save:</span>
+                        <span class="amount" id="liveAmount">$0</span>
                     </div>
                 </div>
                 <div class="wheel-section">
-                    <div class="wheel-container notranslate">
+                    <div class="wheel-container">
                         <div class="wheel-glow"></div>
                         <div class="pointer"></div>
                         <div class="wheel outer-wheel" id="outerWheel"></div>
@@ -216,52 +186,57 @@
                         <div class="wheel-center"><i class="fas fa-star"></i></div>
                     </div>
                     <button id="spinBtn" class="spin-btn" onclick="spin()">
-                        <i class="fas fa-sync-alt"></i> <span id="spinBtnText">Spin Wheel</span>
+                        <i class="fas fa-sync-alt"></i> <span id="spinBtnText" data-i18n="spin_btn">Spin Wheel</span>
                     </button>
                     <button class="custom-btn" onclick="openCustom()">
-                        <i class="fas fa-cog"></i> <span>Change Outer Wheel Values</span>
+                        <i class="fas fa-cog"></i> <span data-i18n="change_wheel_btn">Change Outer Wheel Values</span>
                     </button>
                 </div>
                 <div id="homeTargetWinNote" class="target-win-note">
-                    <h2>🎉 <span>Congratulations! You've achieved your target!</span> 🎉</h2>
-                    <p>Today is a special day! Your dedication has paid off.</p>
+                    <h2>🎉 <span data-i18n="target_achieved_msg">Congratulations! You've achieved your target!</span> 🎉</h2>
+                    <p data-i18n="win_note_desc">Today is a special day! Your dedication has paid off.</p>
                     <button class="action-btn primary" onclick="openTargetModal()">
-                        <i class="fas fa-plus"></i> <span>Set a New Target</span>
+                        <i class="fas fa-plus"></i> <span data-i18n="new_target_btn">Set a New Target</span>
                     </button>
                 </div>
 
                 <div class="purpose-section">
-                    <h2><i class="fas fa-bullseye"></i> <span>Purpose of the Challenge</span></h2>
-                    <p>Cultivate the habit of saving a small amount daily to secure your future. This Wheel randomly gives you an amount to save daily, helping you grow your savings account through a fun challenge.</p>
+                    <h2><i class="fas fa-bullseye"></i> <span data-i18n="purpose_title">Purpose of the Challenge</span></h2>
+                    <p data-i18n="purpose_desc">Cultivate the habit of saving a small amount daily to secure your future. This Wheel randomly gives you an amount to save daily, helping you grow your savings account through a fun challenge.</p>
                 </div>
             </div>
 
             <!-- 🔹 TAB 2: CALENDAR -->
             <div id="view-calendar" class="view-section" id="calendarCaptureArea">
                 <div class="calendar-section">
-                    <h2><i class="fas fa-calendar-alt"></i> <span>My Savings Record</span></h2>
-                    <div class="calendar-grid notranslate" id="calendarGrid"></div>
+                    <h2><i class="fas fa-calendar-alt"></i> <span data-i18n="calendar_title">My Savings Record</span></h2>
+                    <div class="calendar-grid" id="calendarGrid"></div>
                     <div class="monthly-total-box">
                         <button id="showTotalBtn" class="action-btn secondary" style="width: auto; padding: 12px 30px;" onclick="showMonthlyTotal()">
-                            <i class="fas fa-eye"></i> <span>Show This Month's Total</span>
+                            <i class="fas fa-eye"></i> <span data-i18n="show_total_btn">Show This Month's Total</span>
                         </button>
                         <div id="totalAmountContainer" class="monthly-total-display" style="display:none;">
-                            <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom:5px;">Total Savings This Month</div>
-                            <div class="total-amount notranslate" id="monthTotalAmount">$0</div>
+                            <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom:5px;" data-i18n="month_total_title">Total Savings This Month</div>
+                            <div class="total-amount" id="monthTotalAmount">$0</div>
                         </div>
                         <div id="calendarDownloadArea" style="text-align: center; margin-top: 15px; display: none; width: 100%;">
                             <button class="action-btn primary" onclick="downloadCalendar()">
-                                <i class="fas fa-download"></i> <span>Download This Month's Record</span>
+                                <i class="fas fa-download"></i> <span data-i18n="download_calendar">Download This Month's Record</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div id="targetDisplayCalendar" class="target-card"></div>
+                
+                <div class="live-stats-container">
+                    <div class="stat-badge"><span><i class="fas fa-users" style="margin-right:8px; color: var(--primary-light);"></i><span data-i18n="stats_participants">Total Participants:</span></span><span id="userCountDisplay" style="color: white;">...</span></div>
+                    <div class="stat-badge"><span><i class="fas fa-trophy" style="margin-right:8px; color: var(--accent);"></i><span data-i18n="stats_winner">Last Saver:</span></span><span id="lastWinnerDisplay" style="color: white;">...</span></div>
+                </div>
             </div>
 
             <!-- 🔹 TAB 3: HUB (ARTICLE LIST) -->
             <div id="view-hub" class="view-section">
-                <h2 class="section-title"><i class="fas fa-book-open"></i> <span>Financial Advice & Articles</span></h2>
+                <h2 class="section-title"><i class="fas fa-book-open"></i> <span data-i18n="blog_title">Financial Advice & Articles</span></h2>
                 <div id="blogGrid">
                     <p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">Fetching articles...</p>
                 </div>
@@ -270,7 +245,7 @@
             <!-- 🔹 TAB 3.1: FULL ARTICLE VIEW -->
             <div id="view-article" class="view-section">
                 <button class="back-to-hub-btn" onclick="closeArticleView()">
-                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="back_btn">Back</span>
                 </button>
                 <div class="full-article-container">
                     <h2 class="full-article-title" id="fullArticleTitle">Loading...</h2>
@@ -283,19 +258,28 @@
             <!-- 🔹 TAB 5: SETTINGS -->
             <div id="view-settings" class="view-section">
                 <div class="settings-card">
-                    <h3><i class="fas fa-globe" style="margin-right:8px; color:var(--accent);"></i> <span>Regional & Language Settings</span></h3>
+                    <h3><i class="fas fa-globe" style="margin-right:8px; color:var(--accent);"></i> <span data-i18n="regional_settings">Regional Settings</span></h3>
                     
-                    <button class="action-btn secondary" style="margin-bottom: 15px;" onclick="openGlobalSettings()">
-                        <i class="fas fa-map-marker-alt"></i> Change Country / Currency
-                    </button>
+                    <h4 style="margin: 0 0 10px; font-size: 0.95rem; color: var(--text-secondary);" data-i18n="select_currency">Currency</h4>
+                    <div class="select-wrapper">
+                        <i class="fas fa-money-bill-wave icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
+                        <select id="currencySelect" class="custom-select" onchange="changeCurrencyManually()">
+                            <!-- Options managed in JS -->
+                        </select>
+                    </div>
 
-                    <div id="dynamicLanguageContainer" class="lang-toggle notranslate">
-                        <!-- Populated dynamically based on Country -->
+                    <!-- Language Toggle only visible if Currency is LKR -->
+                    <div id="settingsLangContainer" style="display: none;">
+                        <h4 style="margin: 15px 0 10px; font-size: 0.95rem; color: var(--text-secondary);" data-i18n="select_lang">Language</h4>
+                        <div class="lang-toggle">
+                            <button class="lang-btn btn-si" onclick="setLanguage('si')">Sinhala</button>
+                            <button class="lang-btn btn-en" onclick="setLanguage('en')">English</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="settings-card">
-                    <h3><i class="fas fa-user-edit" style="margin-right:8px; color:var(--primary-light);"></i> <span>User Profile</span></h3>
+                    <h3><i class="fas fa-user-edit" style="margin-right:8px; color:var(--primary-light);"></i> <span data-i18n="profile_settings">User Profile</span></h3>
                     <div style="text-align: center; margin-bottom: 20px;">
                         <label for="avatarUpload" style="cursor: pointer; position: relative; display: inline-block;">
                             <img id="settingsAvatarPreview" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: var(--dark-lighter);">
@@ -304,37 +288,37 @@
                         <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                     </div>
 
-                    <div class="auth-input-wrapper notranslate" id="settingsEmailWrapper" style="display: none;">
+                    <div class="auth-input-wrapper" id="settingsEmailWrapper" style="display: none;">
                         <i class="fas fa-envelope icon-left"></i>
                         <input type="text" id="settingsEmail" class="auth-input" readonly style="opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.4);">
                     </div>
 
-                    <div class="auth-input-wrapper notranslate">
+                    <div class="auth-input-wrapper">
                         <i class="fas fa-user icon-left"></i>
-                        <input type="text" id="settingsName" class="auth-input" placeholder="Your Name">
+                        <input type="text" id="settingsName" class="auth-input" placeholder="Your Name" data-i18n-placeholder="name_placeholder">
                     </div>
 
-                    <div id="settingsPasswordSection" style="display: none;" class="notranslate">
+                    <div id="settingsPasswordSection" style="display: none;">
                         <div class="auth-input-wrapper">
                             <i class="fas fa-unlock-alt icon-left"></i>
-                            <input type="password" id="settingsCurrentPassword" class="auth-input" placeholder="Old Password">
+                            <input type="password" id="settingsCurrentPassword" class="auth-input" placeholder="Old Password" data-i18n-placeholder="current_password_placeholder">
                             <i class="fas fa-eye password-toggle" onclick="togglePassword('settingsCurrentPassword', this)"></i>
                         </div>
                         <div class="auth-input-wrapper">
                             <i class="fas fa-lock icon-left"></i>
-                            <input type="password" id="settingsNewPassword" class="auth-input" placeholder="New Password">
+                            <input type="password" id="settingsNewPassword" class="auth-input" placeholder="New Password" data-i18n-placeholder="new_password_placeholder">
                             <i class="fas fa-eye password-toggle" onclick="togglePassword('settingsNewPassword', this)"></i>
                         </div>
                     </div>
 
                     <button class="action-btn success" id="saveProfileBtn" onclick="saveProfileSettings()">
-                        <i class="fas fa-save"></i> <span>Save Changes</span>
+                        <i class="fas fa-save"></i> <span data-i18n="save_profile">Save Changes</span>
                     </button>
                 </div>
                 <div id="targetDisplaySettings" class="target-card"></div>
 
                 <button class="logout-btn" onclick="logoutUser()">
-                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout_btn">Logout</span>
                 </button>
             </div>
         </div>
@@ -346,38 +330,38 @@
                 <a href="about.html">About & Contact</a>
             </div>
             <div class="footer-text">
-                &copy; 2026 Daily Saving Challenge<br><span>All Rights Reserved.</span>
+                &copy; 2026 Daily Saving Challenge<br><span data-i18n="footer_rights">All Rights Reserved.</span>
             </div>
         </div>
     </div>
 
     <!-- 📌 BOTTOM NAVIGATION BAR -->
-    <div class="bottom-nav notranslate" id="bottomNav" style="display: none;">
+    <div class="bottom-nav" id="bottomNav" style="display: none;">
         <div class="nav-item active" onclick="switchView('home', this)">
-            <i class="fas fa-home"></i><span>Home</span>
+            <i class="fas fa-home"></i><span data-i18n="nav_home">Home</span>
         </div>
         <div class="nav-item" onclick="switchView('calendar', this)">
-            <i class="fas fa-calendar-alt"></i><span>Calendar</span>
+            <i class="fas fa-calendar-alt"></i><span data-i18n="nav_calendar">Calendar</span>
         </div>
         <div class="nav-item" id="nav-explore" onclick="switchView('hub', this)">
-            <i class="fas fa-book-open"></i><span>Explore</span>
+            <i class="fas fa-book-open"></i><span data-i18n="nav_explore">Explore</span>
         </div>
         <div class="nav-item" id="nav-settings" onclick="switchView('settings', this)">
-            <i class="fas fa-cog"></i><span>Settings</span>
+            <i class="fas fa-cog"></i><span data-i18n="nav_settings">Settings</span>
         </div>
     </div>
 
     <!-- 📌 CUSTOM WHEEL MODAL -->
     <div id="customModal" class="my-modal">
         <div class="my-modal-content">
-            <h2 style="font-size: 1.2rem; margin-bottom:5px;">Setup Wheel</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted);">Adjust Max Wheel Value</p>
-            <div class="slider-container notranslate">
+            <h2 style="font-size: 1.2rem; margin-bottom:5px;" data-i18n="modal_setup_title">Setup Wheel</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);" data-i18n="modal_setup_sub">Select Max Value</p>
+            <div class="slider-container">
                 <input type="range" id="wheelSlider" min="1" max="9" step="1" value="9" oninput="updateSliderText(this.value)">
                 <div class="slider-value" id="sliderValDisplay">9</div>
             </div>
-            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveCustom()"><i class="fas fa-check"></i> <span>Save</span></button>
-            <button class="action-btn secondary" onclick="closeCustom()"><span>Cancel</span></button>
+            <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveCustom()"><i class="fas fa-check"></i> <span data-i18n="modal_save">Save</span></button>
+            <button class="action-btn secondary" onclick="closeCustom()"><span data-i18n="modal_cancel">Cancel</span></button>
         </div>
     </div>
 
@@ -385,233 +369,181 @@
     <div id="resultModal" class="my-modal">
         <div class="my-modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
             <div id="captureArea" class="capture-card">
-                <div id="captureDate" class="capture-date notranslate"></div>
+                <div id="captureDate" class="capture-date"></div>
                 <img id="popupAvatar" src="" alt="Profile" class="profile-pic">
-                <h2 id="cardName" class="notranslate">Hi Name</h2>
-                <p class="capture-subtitle" style="margin:5px 0 10px;">Amount to save today</p>
-                <div class="amount notranslate" id="cardTotal">$0</div>
+                <h2 id="cardName">Hi Name</h2>
+                <p class="capture-subtitle" data-i18n="card_subtitle" style="margin:5px 0 10px;">Amount to save today</p>
+                <div class="amount" id="cardTotal">$0</div>
                 <div class="capture-footer" style="margin-top:15px; font-size:0.9rem;"><i class="fab fa-facebook"></i>Daily Saving Challenge</div>
             </div>
             <button class="action-btn primary" style="margin-bottom:10px;" onclick="shareAndDownload()"><i class="fas fa-download"></i> Download & Share</button>
-            <button class="action-btn secondary" onclick="closeModal()"><span>Close</span></button>
+            <button class="action-btn secondary" onclick="closeModal()"><span data-i18n="card_close">Close</span></button>
         </div>
     </div>
 
-    <!-- Google Translate Script -->
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
     <script>
         // =========================================
-        // 📌 100% BULLETPROOF GLOBAL INITIALIZATION
+        // 📌 HARDCODED TRANSLATIONS (Fast & Bulletproof)
         // =========================================
-        
-        // 1. Setup Base Default Global Data (Instant Load Protection)
-        let globalCountryDB = {
-            "DEFAULT": { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
-            "US": { name: "United States", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'es', name: 'Spanish'}] },
-            "LK": { name: "Sri Lanka", currency: "LKR", symbol: "Rs.", multOuter: 100, multInner: 10, langs: [{code: 'en', name: 'English'}, {code: 'si', name: 'Sinhala'}] },
-            "IN": { name: "India", currency: "INR", symbol: "₹", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'hi', name: 'Hindi'}] },
-            "GB": { name: "United Kingdom", currency: "GBP", symbol: "£", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
-            "AU": { name: "Australia", currency: "AUD", symbol: "A$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
-            "AE": { name: "United Arab Emirates", currency: "AED", symbol: "د.إ", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'ar', name: 'Arabic'}] }
+        const translations = {
+            en: {
+                site_title: "Daily Saving Challenge", select_lang: "Language", select_currency: "Currency", hi_text: "Hi,", welcome_title: "Welcome!", welcome_sub: "Sign in to save and sync your progress securely.",
+                tab_login: "Login", tab_signup: "Sign Up", google_login: "Continue with Google", guest_prompt: "If you don't want to log in, spin the wheel from here",
+                guest_btn: "Use Local Account", guest_warning: "We cannot guarantee your data will be saved permanently. If data is lost locally, we cannot recover it.",
+                back_btn: "Back", important: "Important:", name_placeholder: "Your Name", email_placeholder: "Email Address", password_placeholder: "Password",
+                logout_btn: "Logout", start_btn: "Let's Start", save_label: "Let's Save:", spin_btn: "Spin Wheel", change_wheel_btn: "Change Outer Wheel Values",
+                regional_settings: "Regional Settings", profile_settings: "User Profile", new_password_placeholder: "New Password", save_profile: "Save Changes",
+                calendar_title: "My Savings Record", month_total_title: "Total Savings This Month", show_total_btn: "Show This Month's Total", download_calendar: "Download This Month's Record",
+                stats_participants: "Total Participants:", stats_winner: "Last Saver:", purpose_title: "Purpose of the Challenge", purpose_desc: "Cultivate the habit of saving a small amount daily to secure your future. This Wheel randomly gives you an amount to save daily, helping you grow your savings account through a fun challenge.",
+                blog_title: "Financial Advice & Articles", view_all: "View All Articles", nav_about: "About Us",
+                footer_rights: "All Rights Reserved.", modal_setup_title: "Setup Wheel", modal_setup_sub: "Select Max Value", modal_save: "Save", modal_cancel: "Cancel",
+                card_subtitle: "Amount to save today", card_close: "Close", nav_home: "Home", nav_calendar: "Calendar", nav_explore: "Explore", nav_settings: "Settings",
+                target_title: "Set a Target", my_target: "My Savings Target", target_add_btn: "Set a Target", target_edit_btn: "Edit Target", target_warning: "Important: You can only change this amount after 30 days.",
+                target_placeholder: "Target Amount", target_remaining: "Remaining for Target:", target_achieved_msg: "Congratulations! You've achieved your target!", win_note_desc: "Today is a special day! Your dedication has paid off.",
+                new_target_btn: "Set a New Target", target_lock_msg: "You can change your target in {days} days.", no_target_title: "No Target Set", js_enter_all: "Please fill out all fields!",
+                js_enter_name: "Please enter your name!", js_auth_success: "Successfully logged in!", js_auth_error: "Authentication Failed. Please check details.", js_completed: "Completed Today",
+                js_spinning: "Spinning...", js_no_articles: "No articles available currently.", js_read_more: "Read More", js_today: "Today", js_start_greet: "let's start the challenge!",
+                popup_blocked: "Popup blocked by browser! Please use Email/Password to login.",
+                forgot_password: "Forgot Password?", current_password_placeholder: "Old Password", enter_email_reset: "Please enter your email address in the field to reset password.",
+                reset_link_sent: "Password reset link sent to your email!", wrong_old_password: "The old password you entered is incorrect!", local_acc_email: "Local Account (No Email)",
+                js_load_more: "Load More Articles", js_loading: "Loading..."
+            },
+            si: {
+                site_title: "දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය", select_lang: "භාෂාව / Language", select_currency: "මුදල් ඒකකය / Currency", hi_text: "ආයුබෝවන්,", welcome_title: "ආයුබෝවන්!", welcome_sub: "දිනපතා ඉතිරි කිරීමේ විස්තර ආරක්ෂිතව බලාගැනීමට ලොග් වෙන්න.",
+                tab_login: "ලොග් වෙන්න", tab_signup: "ලියාපදිංචි වෙන්න", google_login: "Google හරහා ලොග් වෙන්න", guest_prompt: "ලොග් වීමට අවශ්‍ය නැත්නම් මෙතනින් රෝදය කරකවන්න",
+                guest_btn: "Local ගිණුමකින් යන්න", guest_warning: "ඔබගේ දත්ත ආරක්ෂිතව පවතින බවට අපට සහතික විය නොහැක. යම් හෙයකින් දත්ත මැකී ගියහොත් අපට ඒ සඳහා වගකිය නොහැක.",
+                back_btn: "ආපසු", important: "වැදගත්:", name_placeholder: "ඔබගේ නම", email_placeholder: "ඊමේල් ලිපිනය", password_placeholder: "මුරපදය (Password)",
+                logout_btn: "ඉවත් වෙන්න (Logout)", start_btn: "ආරම්භ කරමු", save_label: "ඉතුරු කරමු:", spin_btn: "කරකවමු", change_wheel_btn: "ලොකු රවුමේ අගයන් වෙනස් කරමු",
+                regional_settings: "කලාපීය සැකසුම්", profile_settings: "ගිණුමේ සැකසුම් (Profile)", new_password_placeholder: "අලුත් මුරපදය (New Password)", save_profile: "සුරකින්න",
+                calendar_title: "මගේ ඉතිරි කිරීමේ සටහන", month_total_title: "මේ මාසයේ මුළු ඉතිරිය", show_total_btn: "මේ මාසයේ මුළු ඉතිරිය පෙන්වන්න", download_calendar: "මේ මාසේ සටහන ඩවුන්ලෝඩ් කරගමු",
+                stats_participants: "සහභාගී වූ ගණන:", stats_winner: "අවසන් ඉතුරුම්කරු:", purpose_title: "අභියෝගයේ අරමුන", purpose_desc: "ඔබේ අනාගතය සුරක්ෂිත කර ගැනීම සඳහා දිනපතා කුඩා මුදලක් හෝ ඉතිරි කිරීමේ පුරුද්දක් ඇති කිරීම මෙහි ප්‍රධාන අරමුණයි. මෙම Wheel එක මගින් ඔබට දිනපතා ඉතිරි කළ යුතු මුදල අහඹු ලෙස ලබා දෙන අතර, එය විනෝදාත්මක අභියෝගයක් ලෙසින් ඔබේ ඉතිරුම් ගිණුම වර්ධනය කර ගැනීමට උපකාරී වේ.",
+                blog_title: "මූල්‍ය උපදෙස් සහ ලිපි", view_all: "සියලුම ලිපි බලන්න", nav_about: "අපි ගැන",
+                footer_rights: "සියලුම හිමිකම් ඇවිරිණි.", modal_setup_title: "ලොකු රවුම සකසන්න", modal_setup_sub: "උපරිම අගය තෝරා ගන්න", modal_save: "සුරකින්න", modal_cancel: "අවලංගු කරන්න",
+                card_subtitle: "අද ඔයාට ඉතුරු කරනන් වෙන මුදල", card_close: "වසන්න", nav_home: "මුල් පිටුව", nav_calendar: "දින දර්ශනය", nav_explore: "තොරතුරු", nav_settings: "සැකසුම්",
+                target_title: "ඉලක්කයක් සකසමු", my_target: "මගේ ඉතිරුම් ඉලක්කය", target_add_btn: "නව ඉලක්කයක් යොදන්න", target_edit_btn: "ඉලක්කය වෙනස් කරන්න", target_warning: "වැදගත්: මෙම අගය නැවත වෙනස් කළ හැක්කේ දින 30 කට පසුව පමණි.",
+                target_placeholder: "ඉලක්කගත මුදල (Amount)", target_remaining: "ඉලක්කයට තව:", target_achieved_msg: "සුභපැතුම්! ඔබ ඔබේ ඉලක්කය සම්පූර්ණ කර ඇත!", win_note_desc: "අද දවස ඔබට සුවිශේෂී දවසක්! ඔබගේ කැපවීම සාර්ථක වී ඇත.",
+                new_target_btn: "නව ඉලක්කයක් යොදන්න", target_lock_msg: "ඔබට ඉලක්කය වෙනස් කිරීමට තව දින {days} ක් ඉතිරිව ඇත.", no_target_title: "කිසිදු ඉලක්කයක් යොදා නැත", js_enter_all: "කරුණාකර සියලුම විස්තර පුරවන්න!",
+                js_enter_name: "කරුණාකර ඔබගේ නම ඇතුළත් කරන්න!", js_auth_success: "සාර්ථකව ලොග් විය!", js_auth_error: "ඇතුළත් කළ විස්තර වැරදියි. නැවත උත්සාහ කරන්න.", js_completed: "අද සම්පූර්ණයි",
+                js_spinning: "කරකවමින්...", js_no_articles: "දැනට ලිපි කිසිවක් නොමැත.", js_read_more: "තවත් කියවන්න", js_today: "අද", js_start_greet: "අභියෝගය අරඹමු!",
+                popup_blocked: "බ්‍රව්සර් එකෙන් Popup Block කර ඇත! කරුණාකර Email/Password මගින් ලොග් වන්න.",
+                forgot_password: "මුරපදය අමතකද?", current_password_placeholder: "පැරණි මුරපදය (Old Password)", enter_email_reset: "මුරපදය අලුත් කිරීමට කරුණාකර ඉහළ කොටුවේ ඔබගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.",
+                reset_link_sent: "මුරපදය අලුත් කිරීමේ ලින්ක් එක ඔබගේ ඊමේල් එකට යැව්වා!", wrong_old_password: "ඔබ ලබා දුන් පැරණි මුරපදය වැරදියි!", local_acc_email: "Local ගිණුම (Email නැත)",
+                js_load_more: "තවත් ලිපි පෙන්වන්න", js_loading: "කරුණාකර රැඳී සිටින්න..."
+            }
         };
 
-        // 2. Load cached region from local storage to prevent blank screens
-        let storedRegion = JSON.parse(localStorage.getItem('dsc_region_data'));
-        let isFirstTime = !storedRegion;
-        
-        // Ensure userRegion is NEVER null.
-        let userRegion = storedRegion || {
-            countryCode: "DEFAULT", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, currentLang: 'en'
+        // =========================================
+        // 📌 CURRENCY DATABASE & LOGIC
+        // =========================================
+        const currencyDB = {
+            "LKR": { name: "Sri Lankan Rupee (LKR)", symbol: "Rs.", multOuter: 100, multInner: 10 },
+            "USD": { name: "US Dollar (USD)", symbol: "$", multOuter: 1, multInner: 0.1 },
+            "EUR": { name: "Euro (EUR)", symbol: "€", multOuter: 1, multInner: 0.1 },
+            "GBP": { name: "British Pound (GBP)", symbol: "£", multOuter: 1, multInner: 0.1 },
+            "AUD": { name: "Australian Dollar (AUD)", symbol: "A$", multOuter: 1, multInner: 0.1 },
+            "CAD": { name: "Canadian Dollar (CAD)", symbol: "C$", multOuter: 1, multInner: 0.1 },
+            "INR": { name: "Indian Rupee (INR)", symbol: "₹", multOuter: 10, multInner: 1 },
+            "AED": { name: "UAE Dirham (AED)", symbol: "د.إ", multOuter: 10, multInner: 1 }
         };
 
-        // Ensure user's current country code exists in DB before API finishes loading
-        if (!globalCountryDB[userRegion.countryCode]) {
-            globalCountryDB[userRegion.countryCode] = {
-                name: userRegion.countryCode, currency: userRegion.currency, symbol: userRegion.symbol,
-                multOuter: userRegion.multOuter, multInner: userRegion.multInner,
-                langs: [{code: userRegion.currentLang, name: 'Local'}, {code: 'en', name: 'English'}]
-            };
+        let userCurrency = localStorage.getItem('dsc_currency') || null;
+        let currentLang = localStorage.getItem('dsc_lang') || 'en';
+
+        // Format Amount strictly based on Currency
+        function formatAmount(amount) {
+            if (!currencyDB[userCurrency]) return amount;
+            let cData = currencyDB[userCurrency];
+            let isDecimal = cData.multInner < 1;
+            let numStr = isDecimal ? parseFloat(amount).toFixed(2) : Math.round(amount).toLocaleString();
+            return `${cData.symbol}${numStr}`;
         }
 
-        function initializeApp() { 
-            // 🚀 FIRE INSTANTLY: Do not wait for slow API requests
-            buildWheelUI(); 
-            applyRegionalSettings();
-            loadBloggerPosts(currentStartIndex); 
-            
-            // 🌍 Run API Fetch in the background seamlessly
-            fetchGlobalCountriesAPI().then(() => {
-                if (isFirstTime) detectUserLocationAPI();
-                else populateLanguageToggles(); // Just update dropdowns secretly
-            });
-        }
-        document.addEventListener("DOMContentLoaded", initializeApp);
-
-        // Background API Task 1: Fetch All Countries
-        async function fetchGlobalCountriesAPI() {
-            try {
-                const res = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,currencies,languages');
-                const data = await res.json();
-                
-                data.forEach(country => {
-                    const code = country.cca2;
-                    const name = country.name.common;
-                    
-                    const currencyCode = country.currencies ? Object.keys(country.currencies)[0] : "USD";
-                    const symbol = country.currencies && country.currencies[currencyCode].symbol ? country.currencies[currencyCode].symbol : currencyCode;
-                    
-                    let langs = [];
-                    if (country.languages) {
-                        langs = Object.entries(country.languages).map(([c, n]) => ({ code: c === 'eng' ? 'en' : c.substring(0,2), name: n }));
-                    } else { langs = [{code: 'en', name: 'English'}]; }
-
-                    let multOuter = 10; let multInner = 1;
-                    const highValue = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'CHF', 'NZD', 'SGD', 'BHD', 'KWD'];
-                    const lowMidValue = ['INR', 'LKR', 'PKR', 'BDT', 'PHP', 'THB', 'ZAR', 'RUB', 'KES', 'NPR'];
-                    const veryLowValue = ['IDR', 'VND', 'IRR', 'COP', 'UGX', 'TZS'];
-
-                    if (highValue.includes(currencyCode)) { multOuter = 1; multInner = 0.1; } 
-                    else if (lowMidValue.includes(currencyCode)) { multOuter = 100; multInner = 10; } 
-                    else if (veryLowValue.includes(currencyCode)) { multOuter = 1000; multInner = 100; }
-
-                    globalCountryDB[code] = { name, currency: currencyCode, symbol, multOuter, multInner, langs };
-                });
-
-                // Sort dropdown alphabetically
-                const defaultFallback = globalCountryDB["DEFAULT"];
-                globalCountryDB = Object.fromEntries( Object.entries(globalCountryDB).sort(([,a],[,b]) => a.name.localeCompare(b.name)) );
-                globalCountryDB["DEFAULT"] = defaultFallback;
-
-            } catch (error) { console.error("Background Country API Failed", error); }
-        }
-
-        // Background API Task 2: Fetch IP
-        async function detectUserLocationAPI() {
+        async function initCurrencyAndLang() {
+            if (userCurrency) {
+                applyRegionalSettings();
+                return;
+            }
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
-                
-                let detectedCountry = globalCountryDB[data.country_code] ? data.country_code : "DEFAULT";
-                let cData = globalCountryDB[detectedCountry];
-                
-                userRegion = {
-                    countryCode: detectedCountry, currency: cData.currency, symbol: cData.symbol,
-                    multOuter: cData.multOuter, multInner: cData.multInner, currentLang: 'en'
-                };
-                localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
-                applyRegionalSettings();
-            } catch (error) { console.error("IP API Failed", error); }
+                userCurrency = currencyDB[data.currency] ? data.currency : 'USD';
+            } catch(e) {
+                userCurrency = 'USD';
+            }
+            applyRegionalSettings();
         }
 
         function applyRegionalSettings() {
-            const displayEl = document.getElementById('authLocationDisplay');
-            if(displayEl && globalCountryDB[userRegion.countryCode]) {
-                displayEl.innerText = globalCountryDB[userRegion.countryCode].name;
+            // Force English and Hide Sinhala if NOT LKR
+            const authLangToggle = document.getElementById('authLangToggleContainer');
+            const settingsLangToggle = document.getElementById('settingsLangContainer');
+            
+            if (userCurrency !== "LKR") {
+                currentLang = 'en';
+                if(authLangToggle) authLangToggle.style.display = 'none';
+                if(settingsLangToggle) settingsLangToggle.style.display = 'none';
+            } else {
+                if(authLangToggle) authLangToggle.style.display = 'block';
+                if(settingsLangToggle) settingsLangToggle.style.display = 'block';
             }
-            populateLanguageToggles();
+
+            localStorage.setItem('dsc_currency', userCurrency);
+            localStorage.setItem('dsc_lang', currentLang);
+            
+            populateCurrencyDropdown();
+            setLanguage(currentLang);
             buildWheelUI();
             checkTodaySpin();
             renderCalendar();
             renderTargetUI();
-            
-            translateRetryCount = 0; // Reset counter
-            triggerGoogleTranslate(userRegion.currentLang);
         }
 
-        // =========================================
-        // 📌 SETTINGS UI FOR REGION & LANGUAGE
-        // =========================================
-        function openGlobalSettings() {
-            const cSelect = document.getElementById('countrySelect');
-            cSelect.innerHTML = '';
-            Object.keys(globalCountryDB).forEach(key => {
-                if(key !== "DEFAULT") cSelect.innerHTML += `<option value="${key}">${globalCountryDB[key].name}</option>`;
-            });
-            cSelect.value = userRegion.countryCode === "DEFAULT" ? "US" : userRegion.countryCode;
-            updateCurrencyOptions();
-            document.getElementById('globalSettingsModal').classList.add('active');
-        }
-        
-        function closeGlobalSettings() { document.getElementById('globalSettingsModal').classList.remove('active'); }
-
-        function updateCurrencyOptions() {
-            const selectedCountry = document.getElementById('countrySelect').value;
+        function populateCurrencyDropdown() {
             const curSelect = document.getElementById('currencySelect');
-            const cData = globalCountryDB[selectedCountry];
-            
-            curSelect.innerHTML = `<option value="${cData.currency}">${cData.currency} (${cData.symbol})</option>`;
-            if(cData.currency !== 'USD') { curSelect.innerHTML += `<option value="USD">USD ($)</option>`; }
+            if(!curSelect) return;
+            curSelect.innerHTML = '';
+            Object.keys(currencyDB).forEach(key => {
+                curSelect.innerHTML += `<option value="${key}" ${key === userCurrency ? 'selected' : ''}>${currencyDB[key].name}</option>`;
+            });
         }
 
-        function saveGlobalSettings() {
-            const selectedCountry = document.getElementById('countrySelect').value;
-            const selectedCurrency = document.getElementById('currencySelect').value;
-            
-            let finalMultOuter = globalCountryDB[selectedCountry].multOuter;
-            let finalMultInner = globalCountryDB[selectedCountry].multInner;
-            let finalSymbol = globalCountryDB[selectedCountry].symbol;
-
-            if (selectedCurrency === 'USD') {
-                finalMultOuter = 1; finalMultInner = 0.1; finalSymbol = '$';
-            }
-
-            userRegion = {
-                countryCode: selectedCountry, currency: selectedCurrency, symbol: finalSymbol,
-                multOuter: finalMultOuter, multInner: finalMultInner, currentLang: 'en' 
-            };
-            
-            localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
+        function changeCurrencyManually() {
+            userCurrency = document.getElementById('currencySelect').value;
+            showNotification("Currency changed successfully!", "success");
             applyRegionalSettings();
-            closeGlobalSettings();
-            showNotification("Regional settings updated!", "success");
         }
 
-        function populateLanguageToggles() {
-            const container = document.getElementById('dynamicLanguageContainer');
-            if(!container || !globalCountryDB[userRegion.countryCode]) return;
-            container.innerHTML = '';
-            const langs = globalCountryDB[userRegion.countryCode].langs;
+        function setLanguage(lang) {
+            // Safety check: if currency is not LKR, lang must be 'en'
+            if (userCurrency !== "LKR" && lang !== 'en') lang = 'en';
             
-            langs.forEach(lang => {
-                const isActive = userRegion.currentLang === lang.code ? 'active' : '';
-                container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('${lang.code}')">${lang.name}</button>`;
+            currentLang = lang; 
+            localStorage.setItem('dsc_lang', lang);
+            
+            document.querySelectorAll('.btn-si').forEach(btn => btn.classList.toggle('active', lang === 'si'));
+            document.querySelectorAll('.btn-en').forEach(btn => btn.classList.toggle('active', lang === 'en'));
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n'); if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
             });
             
-            if(!langs.find(l => l.code === 'en')) {
-                const isActive = userRegion.currentLang === 'en' ? 'active' : '';
-                container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('en')">English</button>`;
-            }
-        }
+            const submitBtnText = document.getElementById('authSubmitText');
+            if(submitBtnText) submitBtnText.innerText = translations[currentLang][authMode === 'login' ? 'tab_login' : 'tab_signup'];
 
-        function changeAppLanguage(langCode) {
-            userRegion.currentLang = langCode;
-            localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
-            populateLanguageToggles();
-            translateRetryCount = 0;
-            triggerGoogleTranslate(langCode);
-        }
-
-        let translateRetryCount = 0;
-        function triggerGoogleTranslate(langCode) {
-            const select = document.querySelector('.goog-te-combo');
-            if (select) {
-                select.value = langCode;
-                select.dispatchEvent(new Event('change'));
-            } else if (translateRetryCount < 15) {
-                translateRetryCount++;
-                setTimeout(() => triggerGoogleTranslate(langCode), 400); // Retry logic to prevent infinite loop memory leaks
-            }
+            if (currentUserData || isLocalMode) { renderCalendar(); checkTodaySpin(); renderTargetUI(); }
+            
+            const noArticles = document.getElementById('noArticlesMsg'); if (noArticles) noArticles.innerText = translations[currentLang].js_no_articles;
+            const loadMoreBtn = document.getElementById('loadMoreBtnActual'); if (loadMoreBtn) loadMoreBtn.innerText = translations[currentLang].js_load_more;
+            document.querySelectorAll('.read-more-text').forEach(el => el.innerText = translations[currentLang].js_read_more);
         }
 
         function switchView(viewName, navElement) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + viewName).classList.add('active');
+            
             if(navElement) {
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                 navElement.classList.add('active');
@@ -638,7 +570,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const database = firebase.database();
 
-        let currentUser = null; let currentUserData = null; let trackingData = {};
+        let globalSpinCount = 0; let currentUser = null; let currentUserData = null; let trackingData = {};
         let isLocalMode = localStorage.getItem('dsc_local_session') === 'true';
         let localUserName = localStorage.getItem('dsc_userName') || '';
         let localTrackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
@@ -661,12 +593,7 @@
         }
 
         function launchApp() {
-            document.getElementById('authModal').classList.remove('active'); 
-            document.getElementById('app-wrapper').style.display = 'flex'; 
-            document.getElementById('bottomNav').style.display = 'flex';
-            
-            const loader = document.getElementById('initialLoader');
-            if(loader) loader.style.display = 'none';
+            document.getElementById('authModal').classList.remove('active'); document.getElementById('app-wrapper').style.display = 'flex'; document.getElementById('bottomNav').style.display = 'flex';
         }
 
         auth.onAuthStateChanged((user) => {
@@ -686,13 +613,22 @@
                     document.getElementById('settingsName').value = localUserName; 
                     document.getElementById('settingsPasswordSection').style.display = 'none';
                     document.getElementById('settingsEmailWrapper').style.display = 'block';
-                    document.getElementById('settingsEmail').value = "Local Account (No Email)";
+                    document.getElementById('settingsEmail').value = translations[currentLang].local_acc_email;
                     renderCalendar(); checkTodaySpin(); renderTargetUI();
                 } else {
                     document.getElementById('authModal').classList.add('active'); 
                     document.getElementById('app-wrapper').style.display = 'none'; 
                     document.getElementById('bottomNav').style.display = 'none';
                 }
+            }
+        });
+
+        database.ref('stats').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                globalSpinCount = data.totalSpins || 0; const winnerName = data.lastWinnerName || "-";
+                const countDisplay = document.getElementById('userCountDisplay'); const winnerDisplay = document.getElementById('lastWinnerDisplay');
+                if (countDisplay) countDisplay.innerText = globalSpinCount.toLocaleString(); if (winnerDisplay && winnerName !== "-") { winnerDisplay.innerText = winnerName; }
             }
         });
 
@@ -706,7 +642,7 @@
             const forgotPwd = document.getElementById('loginForgotPwdWrapper');
             if(forgotPwd) forgotPwd.style.display = mode === 'login' ? 'block' : 'none';
 
-            document.getElementById('authSubmitText').innerText = mode === 'login' ? 'Login' : 'Sign Up';
+            document.getElementById('authSubmitText').innerText = translations[currentLang][mode === 'login' ? 'tab_login' : 'tab_signup'];
         }
 
         function showGuestUI() { document.getElementById('authMainUI').style.display = 'none'; document.getElementById('guestUI').style.display = 'block'; }
@@ -714,7 +650,7 @@
 
         function handleGuestSubmit() {
             const name = document.getElementById('guestNameInput').value.trim();
-            if(!name) { showNotification("Please enter your name!", "warning"); return; }
+            if(!name) { showNotification(translations[currentLang].js_enter_name, "warning"); return; }
             localStorage.setItem('dsc_userName', name); localStorage.setItem('dsc_local_session', 'true');
             isLocalMode = true; localUserName = name; trackingData = localTrackingData; if(localTargetData) userTarget = localTargetData;
             const avatar = generateAvatar(localUserName); localStorage.setItem('dsc_avatar', avatar);
@@ -722,44 +658,72 @@
             document.getElementById('settingsName').value = localUserName; 
             document.getElementById('settingsPasswordSection').style.display = 'none';
             document.getElementById('settingsEmailWrapper').style.display = 'block';
-            document.getElementById('settingsEmail').value = "Local Account";
-            renderCalendar(); checkTodaySpin(); renderTargetUI(); 
-            showNotification(`Hi ${localUserName}, let's start saving!`, "success");
+            document.getElementById('settingsEmail').value = translations[currentLang].local_acc_email;
+            renderCalendar(); checkTodaySpin(); renderTargetUI(); showNotification(`${translations[currentLang].hi_text} ${localUserName}, ${translations[currentLang].js_start_greet}`, "success");
         }
 
         function loginWithGoogle() {
+            const btn = document.getElementById('googleLoginBtn');
+            const originalHTML = btn.innerHTML;
+            if(btn) {
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span data-i18n="google_login">Connecting...</span>`;
+                btn.disabled = true;
+            }
+            
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).then((result) => {
                 const user = result.user;
                 database.ref('users/' + user.uid).update({ name: user.displayName, email: user.email, photoURL: user.photoURL, joinedAt: new Date().toISOString() });
                 syncLocalDataToCloud(user); 
-                showNotification("Success!", "success");
-            }).catch(error => showNotification(error.message, "error"));
+                showNotification(translations[currentLang].js_auth_success, "success");
+                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+            }).catch(error => { 
+                console.error("Auth Error:", error);
+                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+                if(error.code === 'auth/popup-blocked') {
+                    showNotification(translations[currentLang].popup_blocked, "error");
+                } else if(error.code !== 'auth/popup-closed-by-user') {
+                    showNotification(error.message, "error"); 
+                }
+            });
         }
 
         function handleAuthSubmit() {
             const email = document.getElementById('authEmail').value.trim(); const password = document.getElementById('authPassword').value; const name = document.getElementById('authName').value.trim();
-            if (!email || !password || (authMode === 'signup' && !name)) { showNotification("Fill all fields!", "warning"); return; }
-            
+            if (!email || !password || (authMode === 'signup' && !name)) { showNotification(translations[currentLang].js_enter_all, "warning"); return; }
+            const btn = document.getElementById('authSubmitBtn'); const originalText = btn.innerHTML; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`; btn.disabled = true;
+
             if (authMode === 'login') {
                 auth.signInWithEmailAndPassword(email, password).then((userCredential) => { 
-                    syncLocalDataToCloud(userCredential.user); showNotification("Success!", "success"); 
-                }).catch(() => { showNotification("Auth Failed.", "error"); });
+                    syncLocalDataToCloud(userCredential.user); showNotification(translations[currentLang].js_auth_success, "success"); btn.disabled = false; btn.innerHTML = originalText; 
+                }).catch(() => { showNotification(translations[currentLang].js_auth_error, "error"); btn.disabled = false; btn.innerHTML = originalText; });
             } else {
                 auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
                     database.ref('users/' + userCredential.user.uid).set({ name: name, email: email, joinedAt: new Date().toISOString() }).then(() => { 
-                        syncLocalDataToCloud(userCredential.user); showNotification("Success!", "success"); 
+                        syncLocalDataToCloud(userCredential.user); showNotification(translations[currentLang].js_auth_success, "success"); btn.disabled = false; btn.innerHTML = originalText; 
                     });
-                }).catch((error) => { showNotification(error.message, "error"); });
+                }).catch((error) => { showNotification(error.message, "error"); btn.disabled = false; btn.innerHTML = originalText; });
             }
         }
-        
+
+        function handleForgotPassword(fromSettings = false) {
+            let email = "";
+            if (fromSettings) {
+                email = currentUser ? currentUser.email : "";
+            } else {
+                email = document.getElementById('authEmail').value.trim();
+            }
+
+            if (!email) { showNotification(translations[currentLang].enter_email_reset, "warning"); return; }
+            auth.sendPasswordResetEmail(email).then(() => { showNotification(translations[currentLang].reset_link_sent, "success"); }).catch((error) => { showNotification(error.message, "error"); });
+        }
+
         function logoutUser() {
             if (isLocalMode) { localStorage.setItem('dsc_local_session', 'false'); isLocalMode = false; window.location.reload(); } else { auth.signOut().then(() => { window.location.reload(); }); }
         }
 
         // =========================================
-        // 📌 BLOGGER CMS
+        // 📌 BLOGGER (HEADLESS CMS) - REFINED GRID
         // =========================================
         const myBloggerURL = "https://dailysavingchallengelk.blogspot.com";
         let fetchedArticles = []; 
@@ -789,7 +753,7 @@
             const entries = data.feed.entry || [];
 
             if (entries.length === 0 && fetchedArticles.length === 0) { 
-                blogGrid.innerHTML = `<p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">No articles available.</p>`; 
+                blogGrid.innerHTML = `<p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">${translations[currentLang].js_no_articles}</p>`; 
                 return; 
             }
 
@@ -800,16 +764,17 @@
                 const postId = entry.id.$t.split('post-')[1]; 
                 
                 let imgUrl = 'https://via.placeholder.com/400x250/1e293b/cbd5e1?text=Daily+Saving+Challenge'; 
-                if (entry.media$thumbnail) imgUrl = entry.media$thumbnail.url.replace(/\/s72\-c\//, '/w400-h250-c/');
-                else if (entry.content && entry.content.$t.match(/<img.+?src=["'](.*?)["']/)) imgUrl = entry.content.$t.match(/<img.+?src=["'](.*?)["']/)[1];
-                
+                if (entry.media$thumbnail) { imgUrl = entry.media$thumbnail.url.replace(/\/s72\-c\//, '/w400-h250-c/'); } 
+                else if (entry.content && entry.content.$t.match(/<img.+?src=["'](.*?)["']/)) { imgUrl = entry.content.$t.match(/<img.+?src=["'](.*?)["']/)[1]; } 
+                else if (entry.summary && entry.summary.$t.match(/<img.+?src=["'](.*?)["']/)) { imgUrl = entry.summary.$t.match(/<img.+?src=["'](.*?)["']/)[1]; }
+
                 blogGrid.innerHTML += `
                     <div class="article-card" onclick="openArticle('${postId}', ${globalIndex})">
                         <div class="article-thumb" style="background-image: url('${imgUrl}');"></div>
                         <div class="article-info">
                             <h3 class="article-card-title">${title}</h3>
                             <div class="article-card-footer">
-                                <span class="read-more-btn"><span class="read-more-text">Read More</span> <i class="fas fa-arrow-right"></i></span>
+                                <span class="read-more-btn"><span class="read-more-text">${translations[currentLang].js_read_more}</span> <i class="fas fa-arrow-right"></i></span>
                             </div>
                         </div>
                     </div>`;
@@ -818,12 +783,16 @@
             if (entries.length === postsPerPage) {
                 blogGrid.innerHTML += `
                     <div id="loadMoreContainer" style="grid-column: 1 / -1; margin-top: 15px;">
-                        <button id="loadMoreBtnActual" class="load-more-btn" onclick="loadNextPosts()">Load More Articles</button>
+                        <button id="loadMoreBtnActual" class="load-more-btn" onclick="loadNextPosts()">
+                            ${translations[currentLang].js_load_more}
+                        </button>
                     </div>`;
             }
         };
 
         window.loadNextPosts = function() {
+            const btn = document.getElementById('loadMoreBtnActual');
+            if(btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang].js_loading}`;
             currentStartIndex += postsPerPage;
             loadBloggerPosts(currentStartIndex);
         }
@@ -843,11 +812,43 @@
             switchView('hub', document.getElementById('nav-explore'));
         }
 
+        function checkDirectArticleLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('article');
+            if (articleId) {
+                document.getElementById('fullArticleTitle').innerText = "Loading Article...";
+                switchView('article', document.getElementById('nav-explore'));
+                const script = document.createElement('script');
+                script.src = `${myBloggerURL}/feeds/posts/default/${articleId}?alt=json-in-script&callback=handleSinglePost`;
+                document.body.appendChild(script);
+            }
+        }
+
+        window.handleSinglePost = function(data) {
+            const entry = data.entry;
+            if(entry) {
+                document.getElementById('fullArticleTitle').innerText = entry.title.$t;
+                document.getElementById('fullArticleContent').innerHTML = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : "");
+            }
+        };
+
+        window.addEventListener('popstate', function(event) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('article')) { checkDirectArticleLink(); } else { switchView('hub', document.getElementById('nav-explore')); }
+        });
+
         // =========================================
-        // 📌 UI UPDATES & LOGIC
+        // 📌 APP INIT
         // =========================================
-        function getSLDate() { const d = new Date(); return d; } 
+        function getSLDate() { const d = new Date(); const utc = d.getTime() + (d.getTimezoneOffset() * 60000); return new Date(utc + (3600000 * 5.5)); }
         function getTodayString() { const slDate = getSLDate(); return `${slDate.getFullYear()}-${String(slDate.getMonth()+1).padStart(2, '0')}-${String(slDate.getDate()).padStart(2, '0')}`; }
+
+        function initializeApp() { 
+            initCurrencyAndLang(); 
+            loadBloggerPosts(currentStartIndex); 
+            setTimeout(checkDirectArticleLink, 500); 
+        }
+        document.addEventListener("DOMContentLoaded", initializeApp);
 
         function showMonthlyTotal() {
             const btn = document.getElementById('showTotalBtn'); const totalDisplay = document.getElementById('totalAmountContainer'); const downloadBtn = document.getElementById('calendarDownloadArea');
@@ -858,7 +859,6 @@
         }
 
         function renderCalendar() {
-            if(!userRegion) return;
             const grid = document.getElementById('calendarGrid'); grid.innerHTML = ''; let currentMonthTotal = 0;
             const slDate = getSLDate(); const year = slDate.getFullYear(); const month = slDate.getMonth();
             const todayStr = getTodayString(); const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -867,23 +867,20 @@
                 const dayStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 const card = document.createElement('div'); card.className = 'day-card'; let amountHtml = '-';
                 const isPastDay = dayStr < todayStr;
-                if (trackingData[dayStr]) { card.classList.add('completed'); amountHtml = `${userRegion.symbol}${trackingData[dayStr]}`; currentMonthTotal += trackingData[dayStr]; } 
-                else if (dayStr === todayStr) { card.classList.add('today'); amountHtml = 'Today'; } 
+                if (trackingData[dayStr]) { card.classList.add('completed'); amountHtml = formatAmount(trackingData[dayStr]); currentMonthTotal += trackingData[dayStr]; } 
+                else if (dayStr === todayStr) { card.classList.add('today'); amountHtml = translations[currentLang].js_today; } 
                 else if (isPastDay) { card.classList.add('missed'); amountHtml = '<i class="fas fa-times"></i>'; }
                 card.innerHTML = `<div class="date">${i}</div><div class="amount">${amountHtml}</div>`; grid.appendChild(card);
             }
-            const totalStr = Number.isInteger(currentMonthTotal) ? currentMonthTotal.toLocaleString() : currentMonthTotal.toFixed(2);
-            document.getElementById('monthTotalAmount').innerText = `${userRegion.symbol}${totalStr}`;
+            document.getElementById('monthTotalAmount').innerText = formatAmount(currentMonthTotal);
         }
 
         function checkTodaySpin() {
-            if(!userRegion) return;
             const todayStr = getTodayString(); const spinBtn = document.getElementById('spinBtn');
             if (trackingData[todayStr]) {
-                const amtStr = Number.isInteger(trackingData[todayStr]) ? trackingData[todayStr].toLocaleString() : trackingData[todayStr].toFixed(2);
-                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>Completed</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}${amtStr}`;
+                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>${translations[currentLang].js_completed}</span>`; document.getElementById('liveAmount').innerText = formatAmount(trackingData[todayStr]);
             } else {
-                spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText">Spin Wheel</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}0`;
+                spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText">${translations[currentLang].spin_btn}</span>`; document.getElementById('liveAmount').innerText = formatAmount(0);
             }
         }
 
@@ -899,16 +896,71 @@
                 document.getElementById('settingsAvatarPreview').src = photo;
                 
                 document.getElementById('settingsEmailWrapper').style.display = 'block';
-                if(currentUser.email) { document.getElementById('settingsEmail').value = currentUser.email; } else { document.getElementById('settingsEmail').value = "Local Account"; }
+                if(currentUser.email) { document.getElementById('settingsEmail').value = currentUser.email; } else { document.getElementById('settingsEmail').value = translations[currentLang].local_acc_email; }
 
+                if (currentUser.providerData.some(p => p.providerId === 'password')) { document.getElementById('settingsPasswordSection').style.display = 'block'; } else { document.getElementById('settingsPasswordSection').style.display = 'none'; }
+                
                 renderCalendar(); checkTodaySpin(); renderTargetUI();
             });
         }
 
-        function generateAvatar(name) {
-            const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : '👤';
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" fill="#6366f1" rx="50" /><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#ffffff">${initial}</text></svg>`;
-            return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+        function handleImageUpload(event) {
+            const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    canvas.width = 150; canvas.height = 150; const size = Math.min(img.width, img.height);
+                    const x = (img.width - size) / 2; const y = (img.height - size) / 2;
+                    ctx.drawImage(img, x, y, size, size, 0, 0, 150, 150);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.8); document.getElementById('settingsAvatarPreview').src = base64; tempAvatarBase64 = base64;
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function saveProfileSettings() {
+            const newName = document.getElementById('settingsName').value.trim(); 
+            const currentPass = document.getElementById('settingsCurrentPassword') ? document.getElementById('settingsCurrentPassword').value : "";
+            const newPass = document.getElementById('settingsNewPassword') ? document.getElementById('settingsNewPassword').value : "";
+
+            if (!newName) { showNotification(translations[currentLang].js_enter_name, "warning"); return; }
+            
+            const btn = document.getElementById('saveProfileBtn'); const originalHTML = btn.innerHTML; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`; btn.disabled = true;
+
+            if (isLocalMode) {
+                localStorage.setItem('dsc_userName', newName); localUserName = newName; if (tempAvatarBase64) localStorage.setItem('dsc_avatar', tempAvatarBase64);
+                document.getElementById('displayUserName').innerText = newName; document.getElementById('headerProfilePic').src = tempAvatarBase64 || localStorage.getItem('dsc_avatar') || generateAvatar(newName);
+                showNotification("Profile updated!", "success"); btn.innerHTML = originalHTML; btn.disabled = false;
+            } else if (currentUser) {
+                let updatePromises = []; let authUpdates = {};
+                if (newName !== currentUser.displayName) authUpdates.displayName = newName; if (tempAvatarBase64) authUpdates.photoURL = tempAvatarBase64;
+                if (Object.keys(authUpdates).length > 0) updatePromises.push(currentUser.updateProfile(authUpdates));
+                
+                let dbUpdates = {}; dbUpdates['/users/' + currentUser.uid + '/name'] = newName; if (tempAvatarBase64) dbUpdates['/users/' + currentUser.uid + '/photoURL'] = tempAvatarBase64;
+                updatePromises.push(database.ref().update(dbUpdates)); 
+                
+                const processUpdates = () => {
+                    Promise.all(updatePromises).then(() => {
+                        showNotification("Profile updated successfully!", "success"); btn.innerHTML = originalHTML; btn.disabled = false;
+                        document.getElementById('displayUserName').innerText = newName; if(tempAvatarBase64) document.getElementById('headerProfilePic').src = tempAvatarBase64;
+                        if(document.getElementById('settingsCurrentPassword')) document.getElementById('settingsCurrentPassword').value = '';
+                        if(document.getElementById('settingsNewPassword')) document.getElementById('settingsNewPassword').value = '';
+                    }).catch(error => { showNotification(error.message, "error"); btn.innerHTML = originalHTML; btn.disabled = false; });
+                };
+
+                if (newPass) {
+                    if(!currentPass) {
+                        showNotification(translations[currentLang].wrong_old_password, "warning");
+                        btn.innerHTML = originalHTML; btn.disabled = false; return;
+                    }
+                    const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPass);
+                    currentUser.reauthenticateWithCredential(credential).then(() => {
+                        currentUser.updatePassword(newPass).then(() => { processUpdates(); }).catch(err => { showNotification(err.message, "error"); btn.innerHTML = originalHTML; btn.disabled = false; });
+                    }).catch(err => { showNotification(translations[currentLang].wrong_old_password, "error"); btn.innerHTML = originalHTML; btn.disabled = false; });
+                } else { processUpdates(); }
+            }
         }
 
         function openTargetModal() { document.getElementById('targetAmountInput').value = userTarget.amount || ''; document.getElementById('targetModal').classList.add('active'); }
@@ -923,21 +975,26 @@
 
         function renderTargetUI() {
             if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null };
-            if (!userRegion) return;
             const totalSaved = Object.values(trackingData).reduce((sum, val) => sum + val, 0); const today = getTodayString();
+            let canEdit = false; let daysLeft = 0;
+            if (!userTarget.amount || (userTarget.amount > 0 && userTarget.achievedDate)) { canEdit = true; } 
+            else if (userTarget.setDate) {
+                const diffDays = Math.floor((new Date(today).getTime() - new Date(userTarget.setDate).getTime()) / (1000 * 60 * 60 * 24));
+                if (diffDays >= 30) canEdit = true; else daysLeft = 30 - diffDays;
+            }
+            if (userTarget.amount > 0 && userTarget.achievedDate === today) { document.body.classList.add('theme-gold'); const winNote = document.getElementById('homeTargetWinNote'); if(winNote) winNote.style.display = 'block'; } 
+            else { document.body.classList.remove('theme-gold'); const winNote = document.getElementById('homeTargetWinNote'); if(winNote) winNote.style.display = 'none'; }
             let html = '';
             if (userTarget.amount > 0) {
                 const remaining = Math.max(0, userTarget.amount - totalSaved); const progress = Math.min(100, (totalSaved / userTarget.amount) * 100);
-                const targetStr = Number.isInteger(userTarget.amount) ? userTarget.amount.toLocaleString() : userTarget.amount.toFixed(2);
-                const remainStr = Number.isInteger(remaining) ? remaining.toLocaleString() : remaining.toFixed(2);
-                
-                html += `<h3><i class="fas fa-bullseye"></i> <span>My Savings Target</span></h3>`; html += `<div class="target-amount-display notranslate">${userRegion.symbol}${targetStr}</div>`;
-                if (remaining > 0) { html += `<p><span>Remaining:</span> <strong class="notranslate">${userRegion.symbol}${remainStr}</strong></p>`; html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; } 
-                else { html += `<p class="target-achieved-text"><i class="fas fa-trophy"></i> <span>Target Achieved!</span></p>`; }
-                html += `<button class="action-btn secondary mt-15" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span>Edit Target</span></button>`; 
-            } else { html += `<h3><i class="fas fa-bullseye"></i> <span>No Target Set</span></h3>`; html += `<button class="action-btn highlighted-btn mt-15" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span>Set a Target</span></button>`; }
-            document.getElementById('targetDisplayCalendar').innerHTML = html; 
-            document.getElementById('targetDisplaySettings').innerHTML = html;
+                html += `<h3><i class="fas fa-bullseye"></i> <span data-i18n="my_target">${translations[currentLang].my_target}</span></h3>`; html += `<div class="target-amount-display">${formatAmount(userTarget.amount)}</div>`;
+                if (remaining > 0) { html += `<p><span data-i18n="target_remaining">${translations[currentLang].target_remaining}</span> <strong>${formatAmount(remaining)}</strong></p>`; html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; } 
+                else { html += `<p class="target-achieved-text"><i class="fas fa-trophy"></i> <span data-i18n="target_achieved_msg">${translations[currentLang].target_achieved_msg}</span></p>`; }
+                if (canEdit) { html += `<button class="action-btn secondary mt-15" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span data-i18n="target_edit_btn">${translations[currentLang].target_edit_btn}</span></button>`; } 
+                else { html += `<p class="target-lock-text"><i class="fas fa-lock"></i> <span>${translations[currentLang].target_lock_msg.replace('{days}', daysLeft)}</span></p>`; }
+            } else { html += `<h3><i class="fas fa-bullseye"></i> <span data-i18n="no_target_title">${translations[currentLang].no_target_title}</span></h3>`; html += `<button class="action-btn highlighted-btn mt-15" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span data-i18n="target_add_btn">${translations[currentLang].target_add_btn}</span></button>`; }
+            const calCont = document.getElementById('targetDisplayCalendar'); const setCont = document.getElementById('targetDisplaySettings');
+            if(calCont) calCont.innerHTML = html; if(setCont) setCont.innerHTML = html;
         }
 
         // =========================================
@@ -951,34 +1008,36 @@
         let selectedMaxBase = 9;
 
         function buildWheelUI() {
-            if(!userRegion) return;
-            let outerVals = baseOuter.map(v => v * userRegion.multOuter);
-            let innerVals = baseInner.map(v => v * userRegion.multInner);
-            buildWheelHTML('outerWheel', outerVals, 150, outerColors); 
-            buildWheelHTML('innerWheel', innerVals, 85, innerColors);
+            if(!userCurrency || !currencyDB[userCurrency]) return;
+            let cData = currencyDB[userCurrency];
+            let outerVals = baseOuter.map(v => v * cData.multOuter);
+            let innerVals = baseInner.map(v => v * cData.multInner);
+            buildWheelHTML('outerWheel', outerVals, 150, outerColors, cData); 
+            buildWheelHTML('innerWheel', innerVals, 85, innerColors, cData);
             
             const wSlider = document.getElementById('wheelSlider');
             if(wSlider) { wSlider.max = 9; wSlider.value = selectedMaxBase; }
             const sValDisplay = document.getElementById('sliderValDisplay');
-            if(sValDisplay) { sValDisplay.innerText = selectedMaxBase * userRegion.multOuter; }
+            if(sValDisplay) { sValDisplay.innerText = selectedMaxBase * cData.multOuter; }
         }
 
-        function buildWheelHTML(id, values, textOffset, colors) {
+        function buildWheelHTML(id, values, textOffset, colors, cData) {
             const wheel = document.getElementById(id); if(!wheel || values.length === 0) return; wheel.innerHTML = ''; 
             const sliceAngle = 360 / values.length; const offsetAngle = sliceAngle / 2; let gradient = `conic-gradient(from -${offsetAngle}deg, `;
             for(let i = 0; i < values.length; i++) {
                 const startAngle = i * sliceAngle; const endAngle = startAngle + sliceAngle;
                 gradient += `${colors[i % colors.length]} ${startAngle}deg ${endAngle}deg${i === values.length - 1 ? '' : ', '}`;
-                const span = document.createElement('span'); span.className = 'slice-text notranslate'; 
-                // Fix precise decimal issues natively JS generates
-                span.innerText = Number.isInteger(values[i]) ? values[i] : parseFloat(values[i].toFixed(2)); 
+                const span = document.createElement('span'); span.className = 'slice-text'; 
+                // Fix formatting inside wheel (no decimals if not needed)
+                let isInnerDecimal = cData.multInner < 1 && id === 'innerWheel';
+                span.innerText = isInnerDecimal ? parseFloat(values[i]).toFixed(1) : Math.round(values[i]); 
                 span.style.transform = `translate(-50%, -50%) rotate(${startAngle}deg) translateY(-${textOffset}px)`; wheel.appendChild(span);
             }
             gradient += ')'; wheel.style.background = gradient;
         }
 
         function openCustom() { document.getElementById('customModal').classList.add('active'); }
-        function updateSliderText(val) { document.getElementById('sliderValDisplay').innerText = val * userRegion.multOuter; }
+        function updateSliderText(val) { document.getElementById('sliderValDisplay').innerText = val * currencyDB[userCurrency].multOuter; }
         function closeCustom() { document.getElementById('customModal').classList.remove('active'); }
         function saveCustom() {
             selectedMaxBase = parseInt(document.getElementById('wheelSlider').value); 
@@ -996,43 +1055,61 @@
         }
 
         function spin() {
-            if (isSpinning) return; if (!currentUser && !isLocalMode) { showNotification("Please login.", "warning"); return; }
+            if (isSpinning) return; if (!currentUser && !isLocalMode) { showNotification("Please login or use local mode.", "warning"); return; }
             isSpinning = true; const spinDuration = Math.floor(Math.random() * 5000) + 10000;  const spinBtn = document.getElementById('spinBtn');
-            spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Spinning...</span>`;
-            
+            spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${translations[currentLang].js_spinning}</span>`; document.getElementById('liveAmount').innerText = translations[currentLang].js_spinning;
             const outIndex = Math.floor(Math.random() * baseOuter.length); const inIndex = Math.floor(Math.random() * baseInner.length);
             const outTarget = 360 - (outIndex * (360 / baseOuter.length)); const inTarget = 360 - (inIndex * (360 / baseInner.length));
             outerDeg += 3600 + outTarget - (outerDeg % 360); innerDeg += 5040 + inTarget - (innerDeg % 360);
-            
             const outerWheel = document.getElementById('outerWheel'); const innerWheel = document.getElementById('innerWheel');
-            outerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; innerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; 
-            outerWheel.style.transform = `rotate(${outerDeg}deg)`; innerWheel.style.transform = `rotate(${innerDeg}deg)`;
-            
+            outerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; innerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; outerWheel.style.transform = `rotate(${outerDeg}deg)`; innerWheel.style.transform = `rotate(${innerDeg}deg)`;
             setTimeout(() => {
-                const total = (baseOuter[outIndex] * userRegion.multOuter) + (baseInner[inIndex] * userRegion.multInner); 
-                const todayStr = getTodayString(); trackingData[todayStr] = total; 
-                let userNameToDisplay = localUserName || (currentUserData ? currentUserData.name : "User");
-                
-                if (isLocalMode) { localStorage.setItem('dsc_tracking', JSON.stringify(trackingData)); } 
-                else if (currentUser) { database.ref('users/' + currentUser.uid + '/trackingData/' + todayStr).set(total); }
-                
+                let cData = currencyDB[userCurrency];
+                const total = (baseOuter[outIndex] * cData.multOuter) + (baseInner[inIndex] * cData.multInner); 
+                const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = localUserName || (currentUserData ? currentUserData.name : "User"); let photoToDisplay = "";
+                if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null }; const totalSavedNow = Object.values(trackingData).reduce((sum, val) => sum + val, 0);
+                if (userTarget.amount > 0 && totalSavedNow >= userTarget.amount && !userTarget.achievedDate) { userTarget.achievedDate = todayStr; }
+                if (isLocalMode) { localStorage.setItem('dsc_tracking', JSON.stringify(trackingData)); localStorage.setItem('dsc_target', JSON.stringify(userTarget)); photoToDisplay = localStorage.getItem('dsc_avatar') || generateAvatar(localUserName); } 
+                else if (currentUser && currentUserData) { database.ref('users/' + currentUser.uid + '/trackingData/' + todayStr).set(total); database.ref('users/' + currentUser.uid + '/targetData').set(userTarget); photoToDisplay = currentUserData.photoURL || currentUser.photoURL || generateAvatar(userNameToDisplay); }
                 renderCalendar(); checkTodaySpin(); renderTargetUI(); 
-                document.getElementById('cardName').innerText = userNameToDisplay; 
-                document.getElementById('cardTotal').innerText = `${userRegion.symbol}${Number.isInteger(total) ? total : total.toFixed(2)}`;
-                
-                document.getElementById('resultModal').classList.add('active'); isSpinning = false;
+                document.getElementById('cardName').innerText = `${translations[currentLang].hi_text} ${userNameToDisplay}`; 
+                document.getElementById('cardTotal').innerText = formatAmount(total);
+                const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' }; document.getElementById('captureDate').innerText = new Date().toLocaleString('en-US', dateOptions); document.getElementById('popupAvatar').src = photoToDisplay;
+                database.ref('stats').set({ totalSpins: globalSpinCount + 1, lastWinnerName: userNameToDisplay, lastWinnerAmount: total }); const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }); database.ref('spinHistory').push({ userId: currentUser ? currentUser.uid : "local_guest", userName: userNameToDisplay, wonAmount: total, playedTime: currentTime });
+                document.getElementById('resultModal').classList.add('active'); createConfetti(); isSpinning = false;
             }, spinDuration);
         }
 
-        function closeModal() { document.getElementById('resultModal').classList.remove('active'); resetWheelAngles(); }
+        function closeModal() { 
+            document.getElementById('resultModal').classList.remove('active'); 
+            resetWheelAngles(); 
+            const slider = document.getElementById('wheelSlider'); 
+            if(slider) { slider.value = 9; updateSliderText(9); selectedMaxBase = 9; buildWheelUI(); }
+        }
+
+        function downloadCalendar() {
+            const captureElement = document.getElementById('calendarCaptureArea'); const totalDisplay = document.getElementById('totalAmountContainer'); const downloadBtn = document.getElementById('calendarDownloadArea'); const origTotalDisplay = totalDisplay.style.display;
+            totalDisplay.style.display = 'flex'; downloadBtn.style.display = 'none'; captureElement.classList.add('capturing');
+            html2canvas(captureElement, { scale: 2, useCORS: true, backgroundColor: '#0f172a' }).then(canvas => { let link = document.createElement('a'); link.download = `DSC_Calendar_${new Date().getFullYear()}_${new Date().getMonth()+1}.png`; link.href = canvas.toDataURL("image/png"); link.click(); showNotification("Calendar downloaded successfully!", "success"); totalDisplay.style.display = origTotalDisplay; downloadBtn.style.display = 'block'; captureElement.classList.remove('capturing'); }).catch(err => { showNotification("Sorry, an error occurred.", "error"); totalDisplay.style.display = origTotalDisplay; downloadBtn.style.display = 'block'; captureElement.classList.remove('capturing'); });
+        }
+
+        function shareAndDownload() {
+            const captureElement = document.getElementById('captureArea'); html2canvas(captureElement, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => { let link = document.createElement('a'); link.download = 'Daily_Saving_Challenge.png'; link.href = canvas.toDataURL("image/png"); link.click(); showNotification("Image downloaded successfully!", "success"); }).catch(err => { showNotification("Sorry, an error occurred.", "error"); });
+        }
+
+        function createConfetti() {
+            const colors = ['#fbbf24', '#f59e0b', '#fcd34d', '#ffffff'];
+            for (let i = 0; i < 60; i++) { const confetti = document.createElement('div'); confetti.className = 'confetti'; confetti.style.left = Math.random() * 100 + 'vw'; confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; confetti.style.animationDuration = (Math.random() * 2 + 2) + 's'; confetti.style.animationDelay = Math.random() * 0.5 + 's'; confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; document.body.appendChild(confetti); setTimeout(() => confetti.remove(), 4000); }
+        }
 
         function showNotification(message, type = 'info') {
-            const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#6366f1' }; 
-            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-            const notification = document.createElement('div'); notification.style.cssText = `position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, ${colors[type]}, ${colors[type]}dd); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 9999999; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.2);`;
-            notification.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`; document.body.appendChild(notification); 
-            setTimeout(() => notification.remove(), 3000);
+            const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#6366f1' }; const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const notification = document.createElement('div'); notification.style.cssText = `position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, ${colors[type]}, ${colors[type]}dd); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 9999999; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; animation: slideInRight 0.4s ease; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);`;
+            notification.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`; document.body.appendChild(notification); setTimeout(() => { notification.style.animation = 'slideOutRight 0.4s ease forwards'; setTimeout(() => notification.remove(), 400); }, 3000);
         }
+        
+        document.addEventListener('keydown', (e) => { if (e.key === ' ' && !isSpinning && (currentUser || isLocalMode) && !document.getElementById('spinBtn').disabled) { e.preventDefault(); spin(); } });
+        const style = document.createElement('style'); style.textContent = `@keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100px); opacity: 0; } }`; document.head.appendChild(style);
     </script>
 </body>
 </html>
