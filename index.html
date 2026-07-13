@@ -396,28 +396,78 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
-        // =========================================
-        // 📌 INTERNATIONALIZATION & GEOLOCATION
+// =========================================
+        // 📌 100% GLOBAL INTERNATIONALIZATION & GEOLOCATION
         // =========================================
         
-        // Comprehensive Country & Currency Settings for Global scaling
-        const countryDB = {
-            "US": { name: "United States", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'es', name: 'Spanish'}] },
-            "LK": { name: "Sri Lanka", currency: "LKR", symbol: "Rs.", multOuter: 100, multInner: 10, langs: [{code: 'en', name: 'English'}, {code: 'si', name: 'Sinhala'}, {code: 'ta', name: 'Tamil'}] },
-            "IN": { name: "India", currency: "INR", symbol: "₹", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'hi', name: 'Hindi'}, {code: 'ta', name: 'Tamil'}] },
-            "GB": { name: "United Kingdom", currency: "GBP", symbol: "£", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
-            "AU": { name: "Australia", currency: "AUD", symbol: "A$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
-            "CA": { name: "Canada", currency: "CAD", symbol: "C$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'fr', name: 'French'}] },
-            "AE": { name: "United Arab Emirates", currency: "AED", symbol: "د.إ", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'ar', name: 'Arabic'}] },
-            // Default Fallback
-            "DEFAULT": { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'es', name: 'Spanish'}, {code: 'fr', name: 'French'}] }
-        };
-
-        // User Current Region Data
+        let globalCountryDB = {};
         let userRegion = JSON.parse(localStorage.getItem('dsc_region_data')) || null;
 
+        // 1. Fetch All Countries from Free API automatically
+        async function fetchAllCountries() {
+            try {
+                // Fetching all 195+ countries
+                const res = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,currencies,languages');
+                const data = await res.json();
+                
+                data.forEach(country => {
+                    const code = country.cca2;
+                    const name = country.name.common;
+                    
+                    // Setup Currency
+                    const currencyCode = country.currencies ? Object.keys(country.currencies)[0] : "USD";
+                    const symbol = country.currencies && country.currencies[currencyCode].symbol ? country.currencies[currencyCode].symbol : currencyCode;
+                    
+                    // Setup Languages
+                    let langs = [];
+                    if (country.languages) {
+                        langs = Object.entries(country.languages).map(([c, n]) => ({ code: c === 'eng' ? 'en' : c.substring(0,2), name: n }));
+                    } else {
+                        langs = [{code: 'en', name: 'English'}];
+                    }
+
+                    // 🎯 DYNAMIC MULTIPLIER LOGIC based on Currency Strength
+                    let multOuter = 10; // Default for mid-range currencies
+                    let multInner = 1;
+                    
+                    const highValue = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'CHF', 'NZD', 'SGD', 'BHD', 'KWD'];
+                    const lowMidValue = ['INR', 'LKR', 'PKR', 'BDT', 'PHP', 'THB', 'ZAR', 'RUB', 'KES', 'NPR'];
+                    const veryLowValue = ['IDR', 'VND', 'IRR', 'COP', 'UGX', 'TZS'];
+
+                    if (highValue.includes(currencyCode)) { 
+                        multOuter = 1; multInner = 0.1; // ex: $1, $2, $3...
+                    } else if (lowMidValue.includes(currencyCode)) { 
+                        multOuter = 100; multInner = 10; // ex: Rs.100, Rs.200...
+                    } else if (veryLowValue.includes(currencyCode)) {
+                        multOuter = 1000; multInner = 100; // ex: Rp.1000, Rp.2000...
+                    }
+
+                    globalCountryDB[code] = { name, currency: currencyCode, symbol, multOuter, multInner, langs };
+                });
+
+                // Sort countries alphabetically for the dropdown
+                globalCountryDB = Object.fromEntries(
+                    Object.entries(globalCountryDB).sort(([,a],[,b]) => a.name.localeCompare(b.name))
+                );
+
+                // Add a default fallback just in case
+                globalCountryDB["DEFAULT"] = { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] };
+
+                // Now fetch user's IP location
+                fetchUserLocation();
+
+            } catch (error) {
+                console.error("Error loading global countries:", error);
+                // Fallback to basic if API fails
+                globalCountryDB["DEFAULT"] = { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] };
+                userRegion = { countryCode: "DEFAULT", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, currentLang: 'en' };
+                applyRegionalSettings();
+            }
+        }
+
+        // 2. Fetch User IP Location
         async function fetchUserLocation() {
-            if (userRegion) {
+            if (userRegion && globalCountryDB[userRegion.countryCode]) {
                 applyRegionalSettings();
                 return;
             }
@@ -425,26 +475,31 @@
                 const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
                 
-                let detectedCountry = countryDB[data.country_code] ? data.country_code : "DEFAULT";
+                let detectedCountry = globalCountryDB[data.country_code] ? data.country_code : "DEFAULT";
+                let cData = globalCountryDB[detectedCountry];
                 
                 userRegion = {
                     countryCode: detectedCountry,
-                    currency: countryDB[detectedCountry].currency,
-                    symbol: countryDB[detectedCountry].symbol,
-                    multOuter: countryDB[detectedCountry].multOuter,
-                    multInner: countryDB[detectedCountry].multInner,
+                    currency: cData.currency,
+                    symbol: cData.symbol,
+                    multOuter: cData.multOuter,
+                    multInner: cData.multInner,
                     currentLang: 'en'
                 };
                 localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
                 applyRegionalSettings();
             } catch (error) {
-                userRegion = { countryCode: "DEFAULT", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, currentLang: 'en' };
+                let cData = globalCountryDB["DEFAULT"];
+                userRegion = { countryCode: "DEFAULT", currency: cData.currency, symbol: cData.symbol, multOuter: cData.multOuter, multInner: cData.multInner, currentLang: 'en' };
                 applyRegionalSettings();
             }
         }
 
         function applyRegionalSettings() {
-            document.getElementById('authLocationDisplay').innerText = countryDB[userRegion.countryCode].name;
+            const displayEl = document.getElementById('authLocationDisplay');
+            if(displayEl && globalCountryDB[userRegion.countryCode]) {
+                displayEl.innerText = globalCountryDB[userRegion.countryCode].name;
+            }
             populateLanguageToggles();
             buildWheelUI();
             checkTodaySpin();
@@ -459,8 +514,8 @@
         function openGlobalSettings() {
             const cSelect = document.getElementById('countrySelect');
             cSelect.innerHTML = '';
-            Object.keys(countryDB).forEach(key => {
-                if(key !== "DEFAULT") cSelect.innerHTML += `<option value="${key}">${countryDB[key].name}</option>`;
+            Object.keys(globalCountryDB).forEach(key => {
+                if(key !== "DEFAULT") cSelect.innerHTML += `<option value="${key}">${globalCountryDB[key].name}</option>`;
             });
             cSelect.value = userRegion.countryCode === "DEFAULT" ? "US" : userRegion.countryCode;
             updateCurrencyOptions();
@@ -472,9 +527,11 @@
         function updateCurrencyOptions() {
             const selectedCountry = document.getElementById('countrySelect').value;
             const curSelect = document.getElementById('currencySelect');
-            curSelect.innerHTML = `<option value="${countryDB[selectedCountry].currency}">${countryDB[selectedCountry].currency} (${countryDB[selectedCountry].symbol})</option>`;
-            // Add custom USD option for standardisation if not USD
-            if(countryDB[selectedCountry].currency !== 'USD') {
+            const cData = globalCountryDB[selectedCountry];
+            
+            curSelect.innerHTML = `<option value="${cData.currency}">${cData.currency} (${cData.symbol})</option>`;
+            // Allow USD as an alternative globally
+            if(cData.currency !== 'USD') {
                 curSelect.innerHTML += `<option value="USD">USD ($)</option>`;
             }
         }
@@ -483,14 +540,15 @@
             const selectedCountry = document.getElementById('countrySelect').value;
             const selectedCurrency = document.getElementById('currencySelect').value;
             
-            let finalMultOuter = countryDB[selectedCountry].multOuter;
-            let finalMultInner = countryDB[selectedCountry].multInner;
-            let finalSymbol = countryDB[selectedCountry].symbol;
+            let finalMultOuter = globalCountryDB[selectedCountry].multOuter;
+            let finalMultInner = globalCountryDB[selectedCountry].multInner;
+            let finalSymbol = globalCountryDB[selectedCountry].symbol;
 
+            // If user manually switched to USD, adjust the multipliers to USA standard
             if (selectedCurrency === 'USD') {
-                finalMultOuter = countryDB['US'].multOuter;
-                finalMultInner = countryDB['US'].multInner;
-                finalSymbol = countryDB['US'].symbol;
+                finalMultOuter = 1;
+                finalMultInner = 0.1;
+                finalSymbol = '$';
             }
 
             userRegion = {
@@ -499,7 +557,7 @@
                 symbol: finalSymbol,
                 multOuter: finalMultOuter,
                 multInner: finalMultInner,
-                currentLang: 'en' // Reset to english on change
+                currentLang: 'en' // Reset language on country change
             };
             
             localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
@@ -512,18 +570,24 @@
             const container = document.getElementById('dynamicLanguageContainer');
             if(!container) return;
             container.innerHTML = '';
-            const langs = countryDB[userRegion.countryCode].langs;
+            const langs = globalCountryDB[userRegion.countryCode].langs;
+            
             langs.forEach(lang => {
                 const isActive = userRegion.currentLang === lang.code ? 'active' : '';
                 container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('${lang.code}')">${lang.name}</button>`;
             });
+            
+            // Add English if it wasn't returned by the API for that country
+            if(!langs.find(l => l.code === 'en')) {
+                const isActive = userRegion.currentLang === 'en' ? 'active' : '';
+                container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('en')">English</button>`;
+            }
         }
 
-        function changeAppLanguage(langCode) {
-            userRegion.currentLang = langCode;
-            localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
-            populateLanguageToggles();
-            triggerGoogleTranslate(langCode);
+        // --- UPDATE INITIALIZATION CALL ---
+        function initializeApp() { 
+            fetchAllCountries(); // Start by loading all countries, then proceeds to location
+            loadBloggerPosts(currentStartIndex); 
         }
 
         function triggerGoogleTranslate(langCode) {
