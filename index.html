@@ -55,7 +55,7 @@
     <!-- 📌 INITIAL LOADER -->
     <div id="initialLoader" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
         <i class="fas fa-spinner fa-spin fa-3x"></i>
-        <div style="font-size: 0.9rem; margin-top: 10px; color: white;" class="notranslate" id="loadingText">Connecting to Global Servers...</div>
+        <div style="font-size: 0.9rem; margin-top: 10px; color: white;" class="notranslate" id="loadingText">Connecting...</div>
     </div>
 
     <!-- 📌 FIREBASE AUTHENTICATION -->
@@ -407,17 +407,55 @@
 
     <script>
         // =========================================
-        // 📌 100% GLOBAL INTERNATIONALIZATION & GEOLOCATION
+        // 📌 100% BULLETPROOF GLOBAL INITIALIZATION
         // =========================================
         
-        let globalCountryDB = {};
-        let userRegion = JSON.parse(localStorage.getItem('dsc_region_data')) || null;
+        // 1. Setup Base Default Global Data (Instant Load Protection)
+        let globalCountryDB = {
+            "DEFAULT": { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
+            "US": { name: "United States", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}, {code: 'es', name: 'Spanish'}] },
+            "LK": { name: "Sri Lanka", currency: "LKR", symbol: "Rs.", multOuter: 100, multInner: 10, langs: [{code: 'en', name: 'English'}, {code: 'si', name: 'Sinhala'}] },
+            "IN": { name: "India", currency: "INR", symbol: "₹", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'hi', name: 'Hindi'}] },
+            "GB": { name: "United Kingdom", currency: "GBP", symbol: "£", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
+            "AU": { name: "Australia", currency: "AUD", symbol: "A$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] },
+            "AE": { name: "United Arab Emirates", currency: "AED", symbol: "د.إ", multOuter: 10, multInner: 1, langs: [{code: 'en', name: 'English'}, {code: 'ar', name: 'Arabic'}] }
+        };
 
-        // 1. Fetch All Countries from Free API automatically
-        async function fetchAllCountries() {
+        // 2. Load cached region from local storage to prevent blank screens
+        let storedRegion = JSON.parse(localStorage.getItem('dsc_region_data'));
+        let isFirstTime = !storedRegion;
+        
+        // Ensure userRegion is NEVER null.
+        let userRegion = storedRegion || {
+            countryCode: "DEFAULT", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, currentLang: 'en'
+        };
+
+        // Ensure user's current country code exists in DB before API finishes loading
+        if (!globalCountryDB[userRegion.countryCode]) {
+            globalCountryDB[userRegion.countryCode] = {
+                name: userRegion.countryCode, currency: userRegion.currency, symbol: userRegion.symbol,
+                multOuter: userRegion.multOuter, multInner: userRegion.multInner,
+                langs: [{code: userRegion.currentLang, name: 'Local'}, {code: 'en', name: 'English'}]
+            };
+        }
+
+        function initializeApp() { 
+            // 🚀 FIRE INSTANTLY: Do not wait for slow API requests
+            buildWheelUI(); 
+            applyRegionalSettings();
+            loadBloggerPosts(currentStartIndex); 
+            
+            // 🌍 Run API Fetch in the background seamlessly
+            fetchGlobalCountriesAPI().then(() => {
+                if (isFirstTime) detectUserLocationAPI();
+                else populateLanguageToggles(); // Just update dropdowns secretly
+            });
+        }
+        document.addEventListener("DOMContentLoaded", initializeApp);
+
+        // Background API Task 1: Fetch All Countries
+        async function fetchGlobalCountriesAPI() {
             try {
-                document.getElementById('loadingText').innerText = "Fetching Global Regions...";
-                // Fetching all 195+ countries
                 const res = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,currencies,languages');
                 const data = await res.json();
                 
@@ -425,65 +463,37 @@
                     const code = country.cca2;
                     const name = country.name.common;
                     
-                    // Setup Currency
                     const currencyCode = country.currencies ? Object.keys(country.currencies)[0] : "USD";
                     const symbol = country.currencies && country.currencies[currencyCode].symbol ? country.currencies[currencyCode].symbol : currencyCode;
                     
-                    // Setup Languages
                     let langs = [];
                     if (country.languages) {
                         langs = Object.entries(country.languages).map(([c, n]) => ({ code: c === 'eng' ? 'en' : c.substring(0,2), name: n }));
-                    } else {
-                        langs = [{code: 'en', name: 'English'}];
-                    }
+                    } else { langs = [{code: 'en', name: 'English'}]; }
 
-                    // 🎯 DYNAMIC MULTIPLIER LOGIC based on Currency Strength
-                    let multOuter = 10; // Default for mid-range currencies
-                    let multInner = 1;
-                    
+                    let multOuter = 10; let multInner = 1;
                     const highValue = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'CHF', 'NZD', 'SGD', 'BHD', 'KWD'];
                     const lowMidValue = ['INR', 'LKR', 'PKR', 'BDT', 'PHP', 'THB', 'ZAR', 'RUB', 'KES', 'NPR'];
                     const veryLowValue = ['IDR', 'VND', 'IRR', 'COP', 'UGX', 'TZS'];
 
-                    if (highValue.includes(currencyCode)) { 
-                        multOuter = 1; multInner = 0.1; 
-                    } else if (lowMidValue.includes(currencyCode)) { 
-                        multOuter = 100; multInner = 10; 
-                    } else if (veryLowValue.includes(currencyCode)) {
-                        multOuter = 1000; multInner = 100; 
-                    }
+                    if (highValue.includes(currencyCode)) { multOuter = 1; multInner = 0.1; } 
+                    else if (lowMidValue.includes(currencyCode)) { multOuter = 100; multInner = 10; } 
+                    else if (veryLowValue.includes(currencyCode)) { multOuter = 1000; multInner = 100; }
 
                     globalCountryDB[code] = { name, currency: currencyCode, symbol, multOuter, multInner, langs };
                 });
 
-                // Sort countries alphabetically for the dropdown
-                globalCountryDB = Object.fromEntries(
-                    Object.entries(globalCountryDB).sort(([,a],[,b]) => a.name.localeCompare(b.name))
-                );
+                // Sort dropdown alphabetically
+                const defaultFallback = globalCountryDB["DEFAULT"];
+                globalCountryDB = Object.fromEntries( Object.entries(globalCountryDB).sort(([,a],[,b]) => a.name.localeCompare(b.name)) );
+                globalCountryDB["DEFAULT"] = defaultFallback;
 
-                // Add a default fallback just in case
-                globalCountryDB["DEFAULT"] = { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] };
-
-                // Now fetch user's IP location
-                fetchUserLocation();
-
-            } catch (error) {
-                console.error("Error loading global countries:", error);
-                // Fallback to basic if API fails
-                globalCountryDB["DEFAULT"] = { name: "Global", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, langs: [{code: 'en', name: 'English'}] };
-                userRegion = { countryCode: "DEFAULT", currency: "USD", symbol: "$", multOuter: 1, multInner: 0.1, currentLang: 'en' };
-                applyRegionalSettings();
-            }
+            } catch (error) { console.error("Background Country API Failed", error); }
         }
 
-        // 2. Fetch User IP Location
-        async function fetchUserLocation() {
-            if (userRegion && globalCountryDB[userRegion.countryCode]) {
-                applyRegionalSettings();
-                return;
-            }
+        // Background API Task 2: Fetch IP
+        async function detectUserLocationAPI() {
             try {
-                document.getElementById('loadingText').innerText = "Locating Your Region...";
                 const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
                 
@@ -491,20 +501,12 @@
                 let cData = globalCountryDB[detectedCountry];
                 
                 userRegion = {
-                    countryCode: detectedCountry,
-                    currency: cData.currency,
-                    symbol: cData.symbol,
-                    multOuter: cData.multOuter,
-                    multInner: cData.multInner,
-                    currentLang: 'en'
+                    countryCode: detectedCountry, currency: cData.currency, symbol: cData.symbol,
+                    multOuter: cData.multOuter, multInner: cData.multInner, currentLang: 'en'
                 };
                 localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
                 applyRegionalSettings();
-            } catch (error) {
-                let cData = globalCountryDB["DEFAULT"];
-                userRegion = { countryCode: "DEFAULT", currency: cData.currency, symbol: cData.symbol, multOuter: cData.multOuter, multInner: cData.multInner, currentLang: 'en' };
-                applyRegionalSettings();
-            }
+            } catch (error) { console.error("IP API Failed", error); }
         }
 
         function applyRegionalSettings() {
@@ -517,6 +519,8 @@
             checkTodaySpin();
             renderCalendar();
             renderTargetUI();
+            
+            translateRetryCount = 0; // Reset counter
             triggerGoogleTranslate(userRegion.currentLang);
         }
 
@@ -542,10 +546,7 @@
             const cData = globalCountryDB[selectedCountry];
             
             curSelect.innerHTML = `<option value="${cData.currency}">${cData.currency} (${cData.symbol})</option>`;
-            // Allow USD as an alternative globally
-            if(cData.currency !== 'USD') {
-                curSelect.innerHTML += `<option value="USD">USD ($)</option>`;
-            }
+            if(cData.currency !== 'USD') { curSelect.innerHTML += `<option value="USD">USD ($)</option>`; }
         }
 
         function saveGlobalSettings() {
@@ -556,20 +557,13 @@
             let finalMultInner = globalCountryDB[selectedCountry].multInner;
             let finalSymbol = globalCountryDB[selectedCountry].symbol;
 
-            // If user manually switched to USD, adjust the multipliers to USA standard
             if (selectedCurrency === 'USD') {
-                finalMultOuter = 1;
-                finalMultInner = 0.1;
-                finalSymbol = '$';
+                finalMultOuter = 1; finalMultInner = 0.1; finalSymbol = '$';
             }
 
             userRegion = {
-                countryCode: selectedCountry,
-                currency: selectedCurrency,
-                symbol: finalSymbol,
-                multOuter: finalMultOuter,
-                multInner: finalMultInner,
-                currentLang: 'en' // Reset language on country change
+                countryCode: selectedCountry, currency: selectedCurrency, symbol: finalSymbol,
+                multOuter: finalMultOuter, multInner: finalMultInner, currentLang: 'en' 
             };
             
             localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
@@ -580,7 +574,7 @@
 
         function populateLanguageToggles() {
             const container = document.getElementById('dynamicLanguageContainer');
-            if(!container) return;
+            if(!container || !globalCountryDB[userRegion.countryCode]) return;
             container.innerHTML = '';
             const langs = globalCountryDB[userRegion.countryCode].langs;
             
@@ -589,7 +583,6 @@
                 container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('${lang.code}')">${lang.name}</button>`;
             });
             
-            // Add English if it wasn't returned by the API for that country
             if(!langs.find(l => l.code === 'en')) {
                 const isActive = userRegion.currentLang === 'en' ? 'active' : '';
                 container.innerHTML += `<button class="lang-btn ${isActive}" onclick="changeAppLanguage('en')">English</button>`;
@@ -600,16 +593,19 @@
             userRegion.currentLang = langCode;
             localStorage.setItem('dsc_region_data', JSON.stringify(userRegion));
             populateLanguageToggles();
+            translateRetryCount = 0;
             triggerGoogleTranslate(langCode);
         }
 
+        let translateRetryCount = 0;
         function triggerGoogleTranslate(langCode) {
             const select = document.querySelector('.goog-te-combo');
             if (select) {
                 select.value = langCode;
                 select.dispatchEvent(new Event('change'));
-            } else {
-                setTimeout(() => triggerGoogleTranslate(langCode), 500);
+            } else if (translateRetryCount < 15) {
+                translateRetryCount++;
+                setTimeout(() => triggerGoogleTranslate(langCode), 400); // Retry logic to prevent infinite loop memory leaks
             }
         }
 
@@ -642,7 +638,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const database = firebase.database();
 
-        let globalSpinCount = 0; let currentUser = null; let currentUserData = null; let trackingData = {};
+        let currentUser = null; let currentUserData = null; let trackingData = {};
         let isLocalMode = localStorage.getItem('dsc_local_session') === 'true';
         let localUserName = localStorage.getItem('dsc_userName') || '';
         let localTrackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
@@ -668,6 +664,9 @@
             document.getElementById('authModal').classList.remove('active'); 
             document.getElementById('app-wrapper').style.display = 'flex'; 
             document.getElementById('bottomNav').style.display = 'flex';
+            
+            const loader = document.getElementById('initialLoader');
+            if(loader) loader.style.display = 'none';
         }
 
         auth.onAuthStateChanged((user) => {
@@ -845,16 +844,10 @@
         }
 
         // =========================================
-        // 📌 UI UPDATES & LOGIC (App Init)
+        // 📌 UI UPDATES & LOGIC
         // =========================================
-        function getSLDate() { const d = new Date(); return d; } // Standard local time for global use
+        function getSLDate() { const d = new Date(); return d; } 
         function getTodayString() { const slDate = getSLDate(); return `${slDate.getFullYear()}-${String(slDate.getMonth()+1).padStart(2, '0')}-${String(slDate.getDate()).padStart(2, '0')}`; }
-
-        function initializeApp() { 
-            fetchAllCountries();
-            loadBloggerPosts(currentStartIndex); 
-        }
-        document.addEventListener("DOMContentLoaded", initializeApp);
 
         function showMonthlyTotal() {
             const btn = document.getElementById('showTotalBtn'); const totalDisplay = document.getElementById('totalAmountContainer'); const downloadBtn = document.getElementById('calendarDownloadArea');
@@ -865,6 +858,7 @@
         }
 
         function renderCalendar() {
+            if(!userRegion) return;
             const grid = document.getElementById('calendarGrid'); grid.innerHTML = ''; let currentMonthTotal = 0;
             const slDate = getSLDate(); const year = slDate.getFullYear(); const month = slDate.getMonth();
             const todayStr = getTodayString(); const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -878,13 +872,16 @@
                 else if (isPastDay) { card.classList.add('missed'); amountHtml = '<i class="fas fa-times"></i>'; }
                 card.innerHTML = `<div class="date">${i}</div><div class="amount">${amountHtml}</div>`; grid.appendChild(card);
             }
-            document.getElementById('monthTotalAmount').innerText = `${userRegion.symbol}${currentMonthTotal.toLocaleString()}`;
+            const totalStr = Number.isInteger(currentMonthTotal) ? currentMonthTotal.toLocaleString() : currentMonthTotal.toFixed(2);
+            document.getElementById('monthTotalAmount').innerText = `${userRegion.symbol}${totalStr}`;
         }
 
         function checkTodaySpin() {
+            if(!userRegion) return;
             const todayStr = getTodayString(); const spinBtn = document.getElementById('spinBtn');
             if (trackingData[todayStr]) {
-                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>Completed</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}${trackingData[todayStr].toLocaleString()}`;
+                const amtStr = Number.isInteger(trackingData[todayStr]) ? trackingData[todayStr].toLocaleString() : trackingData[todayStr].toFixed(2);
+                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>Completed</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}${amtStr}`;
             } else {
                 spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText">Spin Wheel</span>`; document.getElementById('liveAmount').innerText = `${userRegion.symbol}0`;
             }
@@ -926,12 +923,16 @@
 
         function renderTargetUI() {
             if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null };
+            if (!userRegion) return;
             const totalSaved = Object.values(trackingData).reduce((sum, val) => sum + val, 0); const today = getTodayString();
             let html = '';
             if (userTarget.amount > 0) {
                 const remaining = Math.max(0, userTarget.amount - totalSaved); const progress = Math.min(100, (totalSaved / userTarget.amount) * 100);
-                html += `<h3><i class="fas fa-bullseye"></i> <span>My Savings Target</span></h3>`; html += `<div class="target-amount-display notranslate">${userRegion.symbol}${userTarget.amount.toLocaleString()}</div>`;
-                if (remaining > 0) { html += `<p><span>Remaining:</span> <strong class="notranslate">${userRegion.symbol}${remaining.toLocaleString()}</strong></p>`; html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; } 
+                const targetStr = Number.isInteger(userTarget.amount) ? userTarget.amount.toLocaleString() : userTarget.amount.toFixed(2);
+                const remainStr = Number.isInteger(remaining) ? remaining.toLocaleString() : remaining.toFixed(2);
+                
+                html += `<h3><i class="fas fa-bullseye"></i> <span>My Savings Target</span></h3>`; html += `<div class="target-amount-display notranslate">${userRegion.symbol}${targetStr}</div>`;
+                if (remaining > 0) { html += `<p><span>Remaining:</span> <strong class="notranslate">${userRegion.symbol}${remainStr}</strong></p>`; html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; } 
                 else { html += `<p class="target-achieved-text"><i class="fas fa-trophy"></i> <span>Target Achieved!</span></p>`; }
                 html += `<button class="action-btn secondary mt-15" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span>Edit Target</span></button>`; 
             } else { html += `<h3><i class="fas fa-bullseye"></i> <span>No Target Set</span></h3>`; html += `<button class="action-btn highlighted-btn mt-15" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span>Set a Target</span></button>`; }
@@ -950,26 +951,27 @@
         let selectedMaxBase = 9;
 
         function buildWheelUI() {
+            if(!userRegion) return;
             let outerVals = baseOuter.map(v => v * userRegion.multOuter);
             let innerVals = baseInner.map(v => v * userRegion.multInner);
             buildWheelHTML('outerWheel', outerVals, 150, outerColors); 
             buildWheelHTML('innerWheel', innerVals, 85, innerColors);
             
-            // Format slider correctly based on multiplier
-            document.getElementById('wheelSlider').max = 9;
-            document.getElementById('wheelSlider').value = selectedMaxBase;
-            document.getElementById('sliderValDisplay').innerText = selectedMaxBase * userRegion.multOuter;
+            const wSlider = document.getElementById('wheelSlider');
+            if(wSlider) { wSlider.max = 9; wSlider.value = selectedMaxBase; }
+            const sValDisplay = document.getElementById('sliderValDisplay');
+            if(sValDisplay) { sValDisplay.innerText = selectedMaxBase * userRegion.multOuter; }
         }
 
         function buildWheelHTML(id, values, textOffset, colors) {
-            const wheel = document.getElementById(id); if(!wheel) return; wheel.innerHTML = ''; 
+            const wheel = document.getElementById(id); if(!wheel || values.length === 0) return; wheel.innerHTML = ''; 
             const sliceAngle = 360 / values.length; const offsetAngle = sliceAngle / 2; let gradient = `conic-gradient(from -${offsetAngle}deg, `;
             for(let i = 0; i < values.length; i++) {
                 const startAngle = i * sliceAngle; const endAngle = startAngle + sliceAngle;
                 gradient += `${colors[i % colors.length]} ${startAngle}deg ${endAngle}deg${i === values.length - 1 ? '' : ', '}`;
                 const span = document.createElement('span'); span.className = 'slice-text notranslate'; 
-                // fix decimal rounding (e.g. inner wheels like 0.1, 0.2)
-                span.innerText = Number.isInteger(values[i]) ? values[i] : values[i].toFixed(1); 
+                // Fix precise decimal issues natively JS generates
+                span.innerText = Number.isInteger(values[i]) ? values[i] : parseFloat(values[i].toFixed(2)); 
                 span.style.transform = `translate(-50%, -50%) rotate(${startAngle}deg) translateY(-${textOffset}px)`; wheel.appendChild(span);
             }
             gradient += ')'; wheel.style.background = gradient;
@@ -1016,7 +1018,6 @@
                 
                 renderCalendar(); checkTodaySpin(); renderTargetUI(); 
                 document.getElementById('cardName').innerText = userNameToDisplay; 
-                // Decimal Formatting Fix for Result
                 document.getElementById('cardTotal').innerText = `${userRegion.symbol}${Number.isInteger(total) ? total : total.toFixed(2)}`;
                 
                 document.getElementById('resultModal').classList.add('active'); isSpinning = false;
