@@ -4,108 +4,43 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7875755235721674" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- 📌 SEO & Meta Tags -->
+    <!-- 📌 SEO අංශය -->
     <title>DSCSaving | Daily Saving Challenge</title>
     <meta name="google-site-verification" content="cOCTgcawgqNc4gSyOQukBqpWCLOxOVzTZskBzwZwb8M" />
-    <meta name="description" content="DSCSaving - Track your daily savings easily. Join today to achieve your financial goals worldwide.">
-    <meta name="keywords" content="DSCSaving, Daily Saving Challenge, save money, financial goals, saving app, international savings">
+    <meta name="description" content="DSCSaving - Daily Saving Challenge. Build your saving habit daily and achieve your financial goals effortlessly.">
+    <meta name="keywords" content="DSCSaving, Daily Saving Challenge, save money, financial goals, Sri Lanka saving app, money management">
     <meta name="author" content="DSCSaving">
     <link rel="icon" type="image/png" href="dsc_logo.png">
     <link rel="apple-touch-icon" href="dsc_logo.png">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- 📌 Link to CSS File -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- 📌 Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-    <style>
-        /* Hide Google Translate Default UI completely */
-        .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
-        .goog-te-banner-frame { display: none !important; }
-        body { top: 0 !important; }
-        
-        /* Custom Dropdown styling */
-        .custom-select { 
-            width: 100%; padding: 15px 20px 15px 45px; border-radius: var(--radius-lg); 
-            border: 1px solid var(--glass-border); background: rgba(0,0,0,0.6); color: white; 
-            font-family: inherit; font-size: 1rem; outline: none; appearance: none; -webkit-appearance: none; 
-            cursor: pointer; transition: all 0.3s ease;
-        }
-        .custom-select:focus { border-color: var(--primary); }
-        .select-wrapper { position: relative; margin-bottom: 15px; }
-        .select-wrapper::after { 
-            content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
-            position: absolute; right: 20px; top: 50%; transform: translateY(-50%); 
-            color: var(--text-muted); pointer-events: none; 
-        }
-
-        /* 🌟 Grand Stat Card (Last Saver) */
-        .grand-stat-card {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(0,0,0,0.4));
-            border: 1px solid var(--accent);
-            padding: 25px;
-            border-radius: var(--radius-xl);
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
-            margin-top: 25px;
-        }
-        .grand-stat-card .stat-title {
-            color: var(--accent);
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .grand-stat-card .stat-value {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Reading Text Styling */
-        .long-text-content {
-            font-size: 0.95rem; color: var(--text-secondary); line-height: 1.8; text-align: justify;
-        }
-        .long-text-content p { margin-bottom: 15px; }
-        .long-text-content h4 { color: var(--primary-light); font-size: 1.1rem; margin: 25px 0 10px 0; }
-        .long-text-content ul { padding-left: 20px; margin-bottom: 15px; }
-        .long-text-content li { margin-bottom: 10px; }
-    </style>
 </head>
 <body>
 
-    <!-- Hidden Google Translate Element -->
-    <div id="google_translate_element" style="display:none;"></div>
-
     <div class="bg-animation"></div>
 
-    <!-- 📌 INITIAL LOADER -->
-    <div id="initialLoader" class="notranslate" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
+    <div id="initialLoader" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary-light); z-index:9999999;">
         <i class="fas fa-spinner fa-spin fa-3x"></i>
     </div>
 
-    <!-- 📌 FIREBASE AUTHENTICATION -->
-    <div id="authModal" class="my-modal notranslate">
+    <div id="authModal" class="my-modal">
         <div class="my-modal-content">
-            <!-- 🌐 Quick Language Toggle on Modal -->
-            <div id="authLangToggleContainer" style="position: absolute; top: 15px; right: 15px; z-index: 10; display: none;">
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
                 <div class="lang-toggle" style="gap: 5px; margin: 0;">
-                    <button class="lang-btn btn-si" style="padding: 5px 10px; font-size: 0.8rem;" onclick="changeLanguage('si')">සිං</button>
-                    <button class="lang-btn btn-en" style="padding: 5px 10px; font-size: 0.8rem;" onclick="changeLanguage('en')">EN</button>
+                    <button class="lang-btn btn-si" id="loginLangSi" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('si')">සිං</button>
+                    <button class="lang-btn btn-en" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
 
             <div id="authMainUI">
-                <img src="dsc_logo.png" alt="Logo" style="width: 70px; height: 70px; border-radius:50%; margin-bottom:10px; border: 2px solid rgba(255,255,255,0.2);">
+                <img src="dsc_logo.png" alt="Logo" style="width: 70px; height: 70px; border-radius:50%; margin-bottom:10px; border: 2px solid rgba(255,255,255,0.2);" onerror="this.src='https://via.placeholder.com/70?text=DSC'">
                 <h2 class="main-title" style="font-size: 1.8rem; margin-bottom: 5px; text-align:center;" data-i18n="welcome_title">Welcome!</h2>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;" data-i18n="welcome_sub">Sign in to save and sync your progress securely.</p>
                 
@@ -175,8 +110,7 @@
         </div>
     </div>
 
-    <!-- 📌 TARGET SETTING MODAL -->
-    <div id="targetModal" class="my-modal notranslate">
+    <div id="targetModal" class="my-modal">
         <div class="my-modal-content">
             <h2 style="font-size: 1.4rem; margin-bottom:10px; color: var(--primary-light);"><i class="fas fa-bullseye"></i> <span data-i18n="target_title">Set a Target</span></h2>
             <div class="attention-note">
@@ -185,7 +119,7 @@
             </div>
             <div class="auth-input-wrapper">
                 <i class="fas fa-money-bill-wave icon-left"></i>
-                <input type="number" id="targetAmountInput" class="auth-input" placeholder="Target Amount" data-i18n-placeholder="target_placeholder">
+                <input type="number" id="targetAmountInput" class="auth-input" placeholder="Target Amount (e.g. 100000)" data-i18n-placeholder="target_placeholder">
             </div>
             <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveTargetAmount()"><i class="fas fa-check"></i> <span data-i18n="modal_save">Save</span></button>
             <button class="action-btn secondary" onclick="closeTargetModal()"><span data-i18n="modal_cancel">Cancel</span></button>
@@ -194,10 +128,9 @@
 
     <!-- 📌 MAIN APP WRAPPER -->
     <div id="app-wrapper">
-        <!-- HEADER -->
-        <div class="header-section notranslate">
+        <div class="header-section">
             <div class="header-left-group">
-                <img src="dsc_logo.png" alt="DSC Logo" class="logo-img">
+                <img src="dsc_logo.png" alt="DSC Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/60?text=DSC'">
                 <div class="title-group">
                     <h1 class="main-title" data-i18n="site_title">Daily Saving Challenge</h1>
                 </div>
@@ -210,12 +143,16 @@
 
         <div class="main-content-flex">
             <!-- 🔹 TAB 1: HOME -->
-            <div id="view-home" class="view-section active notranslate">
+            <div id="view-home" class="view-section active">
+                
+                <!-- 🏆 WINNERS BANNER (TARGET ACHIEVERS) -->
+                <div id="homeAchievers" style="display: none;"></div>
+
                 <div class="live-total-container">
                     <div class="live-total">
                         <i class="fas fa-piggy-bank"></i>
                         <span data-i18n="save_label" style="font-size: 1rem; color: var(--text-secondary); margin-right: 5px;">Let's Save:</span>
-                        <span class="amount" id="liveAmount">$0</span>
+                        <span class="amount" id="liveAmount">Rs. 0</span>
                     </div>
                 </div>
                 <div class="wheel-section">
@@ -237,19 +174,29 @@
                 <div id="homeTargetWinNote" class="target-win-note">
                     <h2>🎉 <span data-i18n="target_achieved_msg">Congratulations! You've achieved your target!</span> 🎉</h2>
                     <p data-i18n="win_note_desc">Today is a special day! Your dedication has paid off.</p>
+                    <button class="action-btn primary" onclick="openTargetModal()">
+                        <i class="fas fa-plus"></i> <span data-i18n="new_target_btn">Set a New Target</span>
+                    </button>
                 </div>
 
-                <!-- Expanded Purpose Section -->
+                <!-- AdSense Slot (Hidden as requested) -->
+                <div class="adsense-slot" style="display: none;">
+                    <i class="fas fa-ad"></i>
+                    <span>Ad Placement</span>
+                </div>
+
                 <div class="purpose-section">
                     <h2><i class="fas fa-bullseye"></i> <span data-i18n="purpose_title">Purpose of the Challenge</span></h2>
-                    <div class="long-text-content" id="purposeFullText" data-i18n="purpose_full_text">
-                        <!-- Loaded from JS -->
-                    </div>
+                    <p data-i18n="purpose_desc" style="text-align: justify; font-size: 0.95rem;">Building financial discipline is often the hardest part of achieving wealth. The Daily Saving Challenge gamifies this process to make saving a seamless and exciting part of your daily routine. Instead of burdening yourself with saving a large fixed amount every month—which can feel overwhelming and is easy to give up on—this challenge breaks it down into small, randomized daily tasks. The spinning wheel removes the monotony, introducing a fun element of surprise that tricks your brain into enjoying the process of putting money aside. Whether it's a small amount or a larger one, consistency is the true secret. Over time, these daily micro-savings compound significantly, helping you build an emergency fund, save for a dream vacation, or simply develop a healthier relationship with money. By committing to this challenge, you are not just saving currency; you are investing in your future peace of mind, breaking bad spending habits, and taking a confident step toward true financial freedom.</p>
                 </div>
             </div>
 
             <!-- 🔹 TAB 2: CALENDAR -->
-            <div id="view-calendar" class="view-section notranslate" id="calendarCaptureArea">
+            <div id="view-calendar" class="view-section" id="calendarCaptureArea">
+                
+                <!-- 🏆 WINNERS BANNER (TARGET ACHIEVERS) -->
+                <div id="calAchievers" style="display: none;"></div>
+
                 <div class="calendar-section">
                     <h2><i class="fas fa-calendar-alt"></i> <span data-i18n="calendar_title">My Savings Record</span></h2>
                     <div class="calendar-grid" id="calendarGrid"></div>
@@ -259,7 +206,7 @@
                         </button>
                         <div id="totalAmountContainer" class="monthly-total-display" style="display:none;">
                             <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom:5px;" data-i18n="month_total_title">Total Savings This Month</div>
-                            <div class="total-amount" id="monthTotalAmount">$0</div>
+                            <div class="total-amount" id="monthTotalAmount">Rs. 0</div>
                         </div>
                         <div id="calendarDownloadArea" style="text-align: center; margin-top: 15px; display: none; width: 100%;">
                             <button class="action-btn primary" onclick="downloadCalendar()">
@@ -268,37 +215,44 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- 📌 ORIGINAL TARGET DISPLAY LOCATION -->
                 <div id="targetDisplayCalendar" class="target-card"></div>
 
-                <!-- Last Saver Grand Card -->
-                <div class="grand-stat-card">
-                    <div class="stat-title"><i class="fas fa-medal" style="margin-right:8px;"></i> <span data-i18n="stats_winner">Last Saver</span></div>
-                    <div class="stat-value" id="lastWinnerDisplay">...</div>
+                <!-- Last Saver Highlight -->
+                <div class="champion-card-small">
+                    <div class="champ-icon-small"><i class="fas fa-piggy-bank"></i></div>
+                    <div class="champ-details-small">
+                        <span class="champ-title-small" data-i18n="recent_champ">Last Saver</span>
+                        <span class="champ-name-small" id="lastWinnerDisplay">Loading...</span>
+                    </div>
+                    <div class="champ-amount-small" id="lastWinnerAmountDisplay">Rs. 0</div>
                 </div>
+
             </div>
 
             <!-- 🔹 TAB 3: HUB (ARTICLE LIST) -->
             <div id="view-hub" class="view-section">
-                <!-- Financial Advice Intro Text -->
-                <div class="settings-card notranslate" style="background: rgba(0,0,0,0.3); border: 1px solid var(--accent); margin-bottom: 25px;">
-                    <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-lightbulb"></i> <span data-i18n="advice_title">Master Your Money</span></h2>
-                    <div class="long-text-content" id="adviceFullText" data-i18n="advice_full_text">
-                        <!-- Loaded from JS -->
+                
+                <!-- 💡 Detailed Financial Advice Section Above Hub -->
+                <div class="advice-intro-card">
+                    <div class="advice-header">
+                        <i class="fas fa-lightbulb text-accent" style="font-size: 2rem; color: var(--accent);"></i>
+                        <h2 data-i18n="advice_main_title" style="margin:0; font-size:1.4rem;">Master Your Money</h2>
+                    </div>
+                    <div class="advice-content-box" data-i18n="advice_desc">
+                        Navigating the complex world of personal finance does not have to be an intimidating or complicated process. Welcome to our Financial Advice Hub, a dedicated space designed to provide you with clear, actionable, and user-friendly insights to help you completely master your money. We firmly believe that financial literacy is the essential cornerstone of a secure, stress-free future. Our ultimate goal is to empower you with the comprehensive knowledge and practical tools necessary to make informed, confident decisions about your wealth, no matter where you currently stand on your financial journey.<br><br>A fundamental pillar of achieving and maintaining financial health is the creation of a realistic, sustainable budget. We often recommend starting with the widely recognized 50/30/20 rule. This straightforward framework suggests allocating 50% of your net income to essential needs like housing, groceries, and utilities; 30% to wants and lifestyle choices such as dining out and entertainment; and a critical 20% dedicated entirely to savings and debt repayment. Implementing this simple structure ensures that you consistently live within your means while still enjoying your life today and actively preparing for whatever tomorrow may bring.<br><br>Alongside diligent budgeting, building a robust emergency fund is absolutely crucial. Life is inherently unpredictable, bringing unexpected medical bills, urgent home repairs, or sudden changes in employment. Having three to six months' worth of living expenses safely set aside in an accessible account can be the critical difference between experiencing a minor temporary setback and falling into a major, stressful financial crisis. An emergency fund is your personal financial shock absorber.<br><br>Beyond the act of saving, understanding the profound difference between saving and investing is key to long-term wealth building. While saving protects your money from loss and keeps it liquid, investing is what actually grows your wealth and protects your purchasing power against inflation. In our articles below, we provide clear introductory guides on how to make your money work tirelessly for you. We explore various low-risk investment avenues suitable for beginners, explaining concepts like compound interest, diversification, and long-term market trends in simple, plain language.<br><br>Additionally, we delve deeply into the psychology of spending. We understand that personal finance is often more about behavior than math. We offer practical, real-world tips on how to curb impulsive buying habits, how to accurately differentiate between true necessities and fleeting wants, and how to cultivate a resilient mindset of abundance and intentionality. By aligning your daily spending habits with your deepest values and long-term goals, you create a financial life that brings you genuine satisfaction.<br><br>Whether you are a complete beginner just starting your financial journey, someone looking to aggressively pay down high-interest debt, or an advanced saver aiming to accelerate your wealth accumulation and achieve early retirement, our carefully curated selection of articles is here to guide you every single step of the way. Remember, financial independence is not an overnight achievement; it is a marathon that requires patience, discipline, and continuous learning. Make it a habit to revisit your financial goals regularly, track your net worth, and celebrate the small milestones along the way. Every dollar saved and invested is a step closer to the freedom to live life on your own terms. Explore our articles below and equip yourself with the knowledge to thrive.
                     </div>
                 </div>
 
-                <h2 class="section-title notranslate"><i class="fas fa-book-open"></i> <span data-i18n="blog_title">Financial Advice & Articles</span></h2>
+                <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-book-open"></i> <span data-i18n="blog_title">Financial Advice & Articles</span></h2>
                 
                 <div id="blogGrid">
-                    <p id="noArticlesMsg" class="notranslate" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">Fetching articles...</p>
+                    <p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">Fetching articles...</p>
                 </div>
             </div>
 
             <!-- 🔹 TAB 3.1: FULL ARTICLE VIEW -->
             <div id="view-article" class="view-section">
-                <button class="back-to-hub-btn notranslate" onclick="closeArticleView()">
+                <button class="back-to-hub-btn" onclick="closeArticleView()">
                     <i class="fas fa-arrow-left"></i> <span data-i18n="back_btn">Back</span>
                 </button>
                 <div class="full-article-container">
@@ -310,25 +264,26 @@
             </div>
 
             <!-- 🔹 TAB 5: SETTINGS -->
-            <div id="view-settings" class="view-section notranslate">
-                <div class="settings-card">
-                    <h3><i class="fas fa-globe" style="margin-right:8px; color:var(--accent);"></i> <span data-i18n="regional_settings">Regional Settings</span></h3>
-                    
-                    <h4 style="margin: 0 0 10px; font-size: 0.95rem; color: var(--text-secondary);" data-i18n="select_currency">Currency</h4>
-                    <div class="select-wrapper">
-                        <i class="fas fa-money-bill-wave icon-left" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 5;"></i>
-                        <select id="currencySelect" class="custom-select" onchange="changeCurrencyManually()">
-                            <!-- Options managed in JS -->
-                        </select>
-                    </div>
+            <div id="view-settings" class="view-section">
 
-                    <!-- Language Toggle only visible if Currency is LKR -->
-                    <div id="settingsLangContainer" style="display: none;">
-                        <h4 style="margin: 15px 0 10px; font-size: 0.95rem; color: var(--text-secondary);" data-i18n="select_lang">Language</h4>
-                        <div class="lang-toggle">
-                            <button class="lang-btn btn-si" onclick="changeLanguage('si')">Sinhala</button>
-                            <button class="lang-btn btn-en" onclick="changeLanguage('en')">English</button>
-                        </div>
+                <!-- 🌐 Currency Selector -->
+                <div class="settings-card">
+                    <h3><i class="fas fa-coins" style="margin-right:8px; color:#f59e0b;"></i> <span data-i18n="currency_settings">Currency / මුදල් ඒකකය</span></h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;" data-i18n="currency_note">Note: Non-LKR currencies will force the app language to English.</p>
+                    <select id="currencySelector" class="auth-input" style="padding-left: 20px; font-weight: 600; cursor: pointer;" onchange="changeCurrency(this)">
+                        <option value="LKR">LKR - Sri Lankan Rupee (Rs.)</option>
+                        <option value="USD">USD - US Dollar ($)</option>
+                        <option value="EUR">EUR - Euro (€)</option>
+                        <option value="GBP">GBP - British Pound (£)</option>
+                        <option value="AUD">AUD - Australian Dollar (A$)</option>
+                    </select>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-language" style="margin-right:8px; color:var(--accent);"></i> <span data-i18n="select_lang">Language / භාෂාව</span></h3>
+                    <div class="lang-toggle" id="settingsLangToggle">
+                        <button class="lang-btn btn-si" id="settingsLangSi" onclick="setLanguage('si')">Sinhala</button>
+                        <button class="lang-btn btn-en active" onclick="setLanguage('en')">English</button>
                     </div>
                 </div>
 
@@ -344,7 +299,7 @@
 
                     <div class="auth-input-wrapper" id="settingsEmailWrapper" style="display: none;">
                         <i class="fas fa-envelope icon-left"></i>
-                        <input type="text" id="settingsEmail" class="auth-input" readonly style="opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.4);">
+                        <input type="text" id="settingsEmail" class="auth-input" readonly style="opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.4);" data-i18n-placeholder="email_placeholder">
                     </div>
 
                     <div class="auth-input-wrapper">
@@ -363,14 +318,15 @@
                             <input type="password" id="settingsNewPassword" class="auth-input" placeholder="New Password" data-i18n-placeholder="new_password_placeholder">
                             <i class="fas fa-eye password-toggle" onclick="togglePassword('settingsNewPassword', this)"></i>
                         </div>
+                        <div style="text-align: right; margin-bottom: 15px; margin-top: -5px;">
+                            <a href="#" onclick="handleForgotPassword(true)" style="color: var(--accent); font-size: 0.85rem; text-decoration: none;" data-i18n="forgot_password">Forgot Password?</a>
+                        </div>
                     </div>
 
                     <button class="action-btn success" id="saveProfileBtn" onclick="saveProfileSettings()">
                         <i class="fas fa-save"></i> <span data-i18n="save_profile">Save Changes</span>
                     </button>
                 </div>
-                
-                <!-- 📌 Target Display Section on Settings -->
                 <div id="targetDisplaySettings" class="target-card"></div>
 
                 <button class="logout-btn" onclick="logoutUser()">
@@ -379,20 +335,28 @@
             </div>
         </div>
 
-        <div class="global-footer notranslate">
+        <!-- 📌 GLOBAL FOOTER WITH LEGAL LINKS -->
+        <div class="global-footer">
+            <div class="social-icons">
+                <a href="https://web.facebook.com/profile.php?id=61590623947927" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="mailto:dailysavingchallenge@gmail.com" class="social-icon"><i class="fas fa-envelope"></i></a>
+            </div>
+            
             <div class="footer-links">
+                <a href="about.html">About Us</a> | 
                 <a href="privacy.html">Privacy Policy</a> | 
                 <a href="terms.html">Terms of Service</a> | 
-                <a href="about.html">About & Contact</a>
+                <a href="contact.html">Contact Us</a>
             </div>
+
             <div class="footer-text">
                 &copy; 2026 Daily Saving Challenge<br><span data-i18n="footer_rights">All Rights Reserved.</span>
             </div>
         </div>
     </div>
 
-    <!-- 📌 BOTTOM NAVIGATION BAR (NOW WITH 5 ITEMS) -->
-    <div class="bottom-nav notranslate" id="bottomNav" style="display: none;">
+    <!-- 📌 BOTTOM NAVIGATION BAR -->
+    <div class="bottom-nav" id="bottomNav" style="display: none;">
         <div class="nav-item active" onclick="switchView('home', this)">
             <i class="fas fa-home"></i><span data-i18n="nav_home">Home</span>
         </div>
@@ -410,29 +374,28 @@
         </div>
     </div>
 
-    <!-- 📌 CUSTOM WHEEL MODAL -->
-    <div id="customModal" class="my-modal notranslate">
+    <!-- 📌 MODALS -->
+    <div id="customModal" class="my-modal">
         <div class="my-modal-content">
             <h2 style="font-size: 1.2rem; margin-bottom:5px;" data-i18n="modal_setup_title">Setup Wheel</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted);" data-i18n="modal_setup_sub">Select Max Value</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted);" data-i18n="modal_setup_sub">Select Max Value (0 - 900)</p>
             <div class="slider-container">
-                <input type="range" id="wheelSlider" min="1" max="9" step="1" value="9" oninput="updateSliderText(this.value)">
-                <div class="slider-value" id="sliderValDisplay">9</div>
+                <input type="range" id="wheelSlider" min="0" max="900" step="100" value="900" oninput="updateSliderText(this.value)">
+                <div class="slider-value" id="sliderValDisplay">900</div>
             </div>
             <button class="action-btn primary" style="margin-bottom:10px;" onclick="saveCustom()"><i class="fas fa-check"></i> <span data-i18n="modal_save">Save</span></button>
             <button class="action-btn secondary" onclick="closeCustom()"><span data-i18n="modal_cancel">Cancel</span></button>
         </div>
     </div>
 
-    <!-- 📌 WIN RESULT MODAL -->
-    <div id="resultModal" class="my-modal notranslate">
+    <div id="resultModal" class="my-modal">
         <div class="my-modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
             <div id="captureArea" class="capture-card">
                 <div id="captureDate" class="capture-date"></div>
                 <img id="popupAvatar" src="" alt="Profile" class="profile-pic">
                 <h2 id="cardName">Hi Name</h2>
                 <p class="capture-subtitle" data-i18n="card_subtitle" style="margin:5px 0 10px;">Amount to save today</p>
-                <div class="amount" id="cardTotal">$0</div>
+                <div class="amount" id="cardTotal">Rs. 0</div>
                 <div class="capture-footer" style="margin-top:15px; font-size:0.9rem;"><i class="fab fa-facebook"></i>Daily Saving Challenge</div>
             </div>
             <button class="action-btn primary" style="margin-bottom:10px;" onclick="shareAndDownload()"><i class="fas fa-download"></i> Download & Share</button>
@@ -440,199 +403,98 @@
         </div>
     </div>
 
-    <!-- Google Translate Script (Used ONLY for Blog Content) -->
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en', 
-                includedLanguages: 'si,en', 
-                autoDisplay: false
-            }, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
     <script>
         // =========================================
-        // 📌 TEXT CONTENT & TRANSLATIONS
+        // 📌 TRANSLATIONS & CURRENCY LOGIC
         // =========================================
-
-        const purposeEn = `
-            <p>Welcome to the <strong>Daily Saving Challenge</strong>, a revolutionary way to transform your financial future. Saving money often feels like a massive, impossible task, especially when trying to save large amounts all at once. That's why we created this gamified platform.</p>
-            <p>By breaking down your savings goals into tiny, randomized daily amounts, we remove the psychological barrier of saving. Spinning the wheel becomes a fun daily habit rather than a chore. Over the course of 365 days, these micro-savings trigger a powerful <em>compound effect</em>.</p>
-            <p>Whether you're building an emergency fund, saving for a dream vacation, or trying to break bad spending habits, consistency is the key. Challenge yourself, stick to the daily spin, and watch your financial peace of mind grow day by day!</p>
-        `;
-
-        const purposeSi = `
-            <p><strong>Daily Saving Challenge</strong> වෙත ඔබව සාදරයෙන් පිළිගනිමු! මුදල් ඉතිරි කිරීම කියන්නේ ගොඩක් වෙලාවට අපිට අමාරු, කම්මැලි වැඩක්. විශේෂයෙන්ම එකපාර ලොකු මුදලක් ඉතිරි කරන්න හැදුවම ඒක මඟහැරෙනවා. අපි මේ App එක හැදුවේ අන්න ඒ ගැටලුවට විනෝදාත්මක විසඳුමක් විදියටයි.</p>
-            <p>ඔබේ ඉතිරි කිරීමේ ඉලක්කය ඉතා කුඩා, අහඹු මුදල් ප්‍රමාණ වලට වෙන් කිරීම මඟින් ඉතිරි කිරීමේ මානසික පීඩනය නැති වෙනවා. දිනපතා Wheel එක කරකවලා එන පොඩි මුදලක් කැටේට දාන එක ඔබටත් නොදැනීම විනෝදාංශයක් බවට පත් වේවි. දින 365ක් පුරාවට මේ පුංචි පුරුද්ද එකතු වුණාම, අවසානයේ අතිවිශාල මුදලක් (Compound effect) ඔබේ ගිණුමේ ඉතිරි වෙලා තියේවි.</p>
-            <p>හදිසි අනතුරකට, ඔබේ හීන වලට යන්න, එහෙමත් නැත්තම් අනවශ්‍ය වියදම් පාලනය කරගන්න මේක හොඳම ආරම්භයක්. දිනපතා අභියෝගය භාරගන්න, අදම පටන් ගන්න!</p>
-        `;
-
-        const adviceEn = `
-            <p>Welcome to your personal financial knowledge hub! Making money is only half the equation; knowing how to manage and grow it is where true financial freedom begins.</p>
-            <h4><i class="fas fa-chart-pie"></i> The 50/30/20 Rule</h4>
-            <p>One of the easiest ways to manage your money is the 50/30/20 rule. Allocate <strong>50%</strong> of your income to needs (rent, groceries, bills), <strong>30%</strong> to wants (entertainment, dining out), and strictly save or invest the remaining <strong>20%</strong>.</p>
-            <h4><i class="fas fa-shield-alt"></i> Build an Emergency Fund</h4>
-            <p>Life is unpredictable. Before making risky investments, ensure you have an emergency fund covering at least 3 to 6 months of your living expenses. This keeps you out of debt when emergencies strike.</p>
-            <h4><i class="fas fa-chart-line"></i> Power of Investing</h4>
-            <p>Saving keeps your money safe, but investing makes it grow. Due to inflation, money sitting in a bank account loses value over time. Learn about stocks, mutual funds, or real estate to beat inflation and build long-term wealth. Dive into the articles below to learn more!</p>
-        `;
-
-        const adviceSi = `
-            <p>ඔබේ පෞද්ගලික මූල්‍ය දැනුම වර්ධනය කරන කේන්ද්‍රස්ථානයට සාදරයෙන් පිළිගනිමු! සල්ලි හම්බ කරන එක පමණක් නෙමෙයි, ඒ සල්ලි නිවැරදිව කළමනාකරණය කරලා වර්ධනය කරගන්න හැටි දැනගැනීම තමයි සැබෑ මූල්‍ය නිදහසට පාර කියන්නේ.</p>
-            <h4><i class="fas fa-chart-pie"></i> 50/30/20 නීතිය</h4>
-            <p>මුදල් කළමනාකරණයට තියෙන ලේසිම ක්‍රමයක් තමයි මේක. ඔබේ ආදායමෙන් <strong>50%</strong> ක් අත්‍යවශ්‍ය දේවල් වලට (බිල්පත්, කෑම, ගෙවල් කුලී) වෙන් කරන්න. <strong>30%</strong> ක් ඔබේ ආශාවන් වෙනුවෙන් (විනෝදාස්වාදය, ඇඳුම්) වෙන් කරන්න. ඉතිරි <strong>20%</strong> අනිවාර්යයෙන්ම ඉතිරි කිරීමකට හෝ ආයෝජනයකට යොදවන්න.</p>
-            <h4><i class="fas fa-shield-alt"></i> හදිසි අරමුදලක් (Emergency Fund)</h4>
-            <p>ජීවිතේ කොයි වෙලේ මොනවා වෙයිද දන්නේ නෑ. ඒ නිසා අවදානම් ආයෝජන වලට යන්න කලින්, අඩුම තරමේ මාස 3 කින් හෝ 6 කින් ජීවත් වෙන්න පුළුවන් ගාණක් හදිසි අරමුදලක් විදියට වෙන් කරලා තියාගන්න. මේක ඔයාව ණය කාරයෙක් වෙන එකෙන් බේරගන්නවා.</p>
-            <h4><i class="fas fa-chart-line"></i> ආයෝජනය සහ උද්ධමනය</h4>
-            <p>ඉතිරි කිරීමෙන් සල්ලි ආරක්ෂා වෙනවා, හැබැයි ආයෝජනය කිරීමෙන් තමයි සල්ලි වර්ධනය වෙන්නේ. උද්ධමනය නිසා කාලයත් එක්ක සල්ලි වල වටිනාකම අඩු වෙනවා. ඒ නිසා කොටස් වෙළඳපොළ, ස්ථාවර තැන්පතු හෝ වෙනත් ආයෝජන ගැන ඉගෙනගන්න. පහල තියෙන ලිපි කියවලා තවත් දැනුම එකතු කරගන්න!</p>
-        `;
-
         const translations = {
             en: {
-                site_title: "Daily Saving Challenge", select_lang: "Language", select_currency: "Currency", hi_text: "Hi,", welcome_title: "Welcome!", welcome_sub: "Sign in to save and sync your progress securely.",
+                site_title: "Daily Saving Challenge", select_lang: "Language", hi_text: "Hi,", welcome_title: "Welcome!", welcome_sub: "Sign in to save and sync your progress securely.",
                 tab_login: "Login", tab_signup: "Sign Up", google_login: "Continue with Google", guest_prompt: "If you don't want to log in, spin the wheel from here",
                 guest_btn: "Use Local Account", guest_warning: "We cannot guarantee your data will be saved permanently. If data is lost locally, we cannot recover it.",
                 back_btn: "Back", important: "Important:", name_placeholder: "Your Name", email_placeholder: "Email Address", password_placeholder: "Password",
                 logout_btn: "Logout", start_btn: "Let's Start", save_label: "Let's Save:", spin_btn: "Spin Wheel", change_wheel_btn: "Change Outer Wheel Values",
-                regional_settings: "Regional Settings", profile_settings: "User Profile", new_password_placeholder: "New Password", save_profile: "Save Changes",
+                wheel_settings: "Wheel Settings", profile_settings: "User Profile", new_password_placeholder: "New Password", save_profile: "Save Changes",
                 calendar_title: "My Savings Record", month_total_title: "Total Savings This Month", show_total_btn: "Show This Month's Total", download_calendar: "Download This Month's Record",
-                stats_participants: "Total Participants:", stats_winner: "Last Saver", purpose_title: "Purpose of the Challenge", purpose_full_text: purposeEn,
-                advice_title: "Master Your Money", advice_full_text: adviceEn, 
+                recent_champ: "Last Saver", purpose_title: "Purpose of the Challenge", 
+                purpose_desc: "Building financial discipline is often the hardest part of achieving wealth. The Daily Saving Challenge gamifies this process to make saving a seamless and exciting part of your daily routine. Instead of burdening yourself with saving a large fixed amount every month—which can feel overwhelming and is easy to give up on—this challenge breaks it down into small, randomized daily tasks. The spinning wheel removes the monotony, introducing a fun element of surprise that tricks your brain into enjoying the process of putting money aside. Whether it's a small amount or a larger one, consistency is the true secret. Over time, these daily micro-savings compound significantly, helping you build an emergency fund, save for a dream vacation, or simply develop a healthier relationship with money. By committing to this challenge, you are not just saving currency; you are investing in your future peace of mind, breaking bad spending habits, and taking a confident step toward true financial freedom.",
+                advice_main_title: "Master Your Money",
+                advice_desc: "Navigating the complex world of personal finance does not have to be an intimidating or complicated process. Welcome to our Financial Advice Hub, a dedicated space designed to provide you with clear, actionable, and user-friendly insights to help you completely master your money. We firmly believe that financial literacy is the essential cornerstone of a secure, stress-free future. Our ultimate goal is to empower you with the comprehensive knowledge and practical tools necessary to make informed, confident decisions about your wealth, no matter where you currently stand on your financial journey.<br><br>A fundamental pillar of achieving and maintaining financial health is the creation of a realistic, sustainable budget. We often recommend starting with the widely recognized 50/30/20 rule. This straightforward framework suggests allocating 50% of your net income to essential needs like housing, groceries, and utilities; 30% to wants and lifestyle choices such as dining out and entertainment; and a critical 20% dedicated entirely to savings and debt repayment. Implementing this simple structure ensures that you consistently live within your means while still enjoying your life today and actively preparing for whatever tomorrow may bring.<br><br>Alongside diligent budgeting, building a robust emergency fund is absolutely crucial. Life is inherently unpredictable, bringing unexpected medical bills, urgent home repairs, or sudden changes in employment. Having three to six months' worth of living expenses safely set aside in an accessible account can be the critical difference between experiencing a minor temporary setback and falling into a major, stressful financial crisis. An emergency fund is your personal financial shock absorber.<br><br>Beyond the act of saving, understanding the profound difference between saving and investing is key to long-term wealth building. While saving protects your money from loss and keeps it liquid, investing is what actually grows your wealth and protects your purchasing power against inflation. In our articles below, we provide clear introductory guides on how to make your money work tirelessly for you. We explore various low-risk investment avenues suitable for beginners, explaining concepts like compound interest, diversification, and long-term market trends in simple, plain language.<br><br>Additionally, we delve deeply into the psychology of spending. We understand that personal finance is often more about behavior than math. We offer practical, real-world tips on how to curb impulsive buying habits, how to accurately differentiate between true necessities and fleeting wants, and how to cultivate a resilient mindset of abundance and intentionality. By aligning your daily spending habits with your deepest values and long-term goals, you create a financial life that brings you genuine satisfaction.<br><br>Whether you are a complete beginner just starting your financial journey, someone looking to aggressively pay down high-interest debt, or an advanced saver aiming to accelerate your wealth accumulation and achieve early retirement, our carefully curated selection of articles is here to guide you every single step of the way. Remember, financial independence is not an overnight achievement; it is a marathon that requires patience, discipline, and continuous learning. Make it a habit to revisit your financial goals regularly, track your net worth, and celebrate the small milestones along the way. Every dollar saved and invested is a step closer to the freedom to live life on your own terms. Explore our articles below and equip yourself with the knowledge to thrive.",
                 blog_title: "Financial Advice & Articles", view_all: "View All Articles", nav_about: "About Us",
-                footer_rights: "All Rights Reserved.", modal_setup_title: "Setup Wheel", modal_setup_sub: "Select Max Value", modal_save: "Save", modal_cancel: "Cancel",
+                footer_rights: "All Rights Reserved.", modal_setup_title: "Setup Wheel", modal_setup_sub: "Select Max Value (0 - 900)", modal_save: "Save", modal_cancel: "Cancel",
                 card_subtitle: "Amount to save today", card_close: "Close", nav_home: "Home", nav_calendar: "Calendar", nav_explore: "Explore", nav_settings: "Settings",
                 target_title: "Set a Target", my_target: "My Savings Target", target_add_btn: "Set a Target", target_edit_btn: "Edit Target", target_warning: "Important: You can only change this amount after 30 days.",
-                target_placeholder: "Target Amount", target_remaining: "Remaining for Target:", target_achieved_msg: "Congratulations! You've achieved your target!", win_note_desc: "Today is a special day! Your dedication has paid off.",
+                target_placeholder: "Target Amount (e.g. 100000)", target_remaining: "Remaining for Target:", target_achieved_msg: "Congratulations! You've achieved your target!", win_note_desc: "Today is a special day! Your dedication has paid off.",
                 new_target_btn: "Set a New Target", target_lock_msg: "You can change your target in {days} days.", no_target_title: "No Target Set", js_enter_all: "Please fill out all fields!",
                 js_enter_name: "Please enter your name!", js_auth_success: "Successfully logged in!", js_auth_error: "Authentication Failed. Please check details.", js_completed: "Completed Today",
                 js_spinning: "Spinning...", js_no_articles: "No articles available currently.", js_read_more: "Read More", js_today: "Today", js_start_greet: "let's start the challenge!",
                 popup_blocked: "Popup blocked by browser! Please use Email/Password to login.",
                 forgot_password: "Forgot Password?", current_password_placeholder: "Old Password", enter_email_reset: "Please enter your email address in the field to reset password.",
                 reset_link_sent: "Password reset link sent to your email!", wrong_old_password: "The old password you entered is incorrect!", local_acc_email: "Local Account (No Email)",
-                js_load_more: "Load More Articles", js_loading: "Loading..."
+                js_load_more: "Load More Articles", js_loading: "Loading...", currency_settings: "Currency", currency_note: "Note: Non-LKR currencies will force the app language to English.",
+                today_champions: "🎉 Today's Champions:"
             },
             si: {
-                site_title: "දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය", select_lang: "භාෂාව / Language", select_currency: "මුදල් ඒකකය / Currency", hi_text: "ආයුබෝවන්,", welcome_title: "ආයුබෝවන්!", welcome_sub: "දිනපතා ඉතිරි කිරීමේ විස්තර ආරක්ෂිතව බලාගැනීමට ලොග් වෙන්න.",
+                site_title: "දිනපතා මුදල් ඉතිරි කිරීමේ අභියෝගය", select_lang: "භාෂාව / Language", hi_text: "ආයුබෝවන්,", welcome_title: "ආයුබෝවන්!", welcome_sub: "දිනපතා ඉතිරි කිරීමේ විස්තර ආරක්ෂිතව බලාගැනීමට ලොග් වෙන්න.",
                 tab_login: "ලොග් වෙන්න", tab_signup: "ලියාපදිංචි වෙන්න", google_login: "Google හරහා ලොග් වෙන්න", guest_prompt: "ලොග් වීමට අවශ්‍ය නැත්නම් මෙතනින් රෝදය කරකවන්න",
                 guest_btn: "Local ගිණුමකින් යන්න", guest_warning: "ඔබගේ දත්ත ආරක්ෂිතව පවතින බවට අපට සහතික විය නොහැක. යම් හෙයකින් දත්ත මැකී ගියහොත් අපට ඒ සඳහා වගකිය නොහැක.",
                 back_btn: "ආපසු", important: "වැදගත්:", name_placeholder: "ඔබගේ නම", email_placeholder: "ඊමේල් ලිපිනය", password_placeholder: "මුරපදය (Password)",
                 logout_btn: "ඉවත් වෙන්න (Logout)", start_btn: "ආරම්භ කරමු", save_label: "ඉතුරු කරමු:", spin_btn: "කරකවමු", change_wheel_btn: "ලොකු රවුමේ අගයන් වෙනස් කරමු",
-                regional_settings: "කලාපීය සැකසුම්", profile_settings: "ගිණුමේ සැකසුම් (Profile)", new_password_placeholder: "අලුත් මුරපදය (New Password)", save_profile: "සුරකින්න",
+                wheel_settings: "රෝදයේ සැකසුම්", profile_settings: "ගිණුමේ සැකසුම් (Profile)", new_password_placeholder: "අලුත් මුරපදය (New Password)", save_profile: "සුරකින්න",
                 calendar_title: "මගේ ඉතිරි කිරීමේ සටහන", month_total_title: "මේ මාසයේ මුළු ඉතිරිය", show_total_btn: "මේ මාසයේ මුළු ඉතිරිය පෙන්වන්න", download_calendar: "මේ මාසේ සටහන ඩවුන්ලෝඩ් කරගමු",
-                stats_participants: "සහභාගී වූ ගණන:", stats_winner: "අවසන් ඉතුරුම්කරු", purpose_title: "අභියෝගයේ අරමුන", purpose_full_text: purposeSi,
-                advice_title: "ඔබේ මුදල් නිවැරදිව හසුරුවමු", advice_full_text: adviceSi, 
+                recent_champ: "අවසන් ඉතුරුම්කරු", purpose_title: "අභියෝගයේ අරමුන", 
+                purpose_desc: "මූල්‍ය විනයක් ගොඩනගා ගැනීම යනු බොහෝ දෙනෙකුට අසීරු කාර්යයකි. Daily Saving Challenge මගින් ඉතිරි කිරීමේ ක්‍රියාවලිය දිනපතා කළ හැකි විනෝදජනක පුරුද්දක් බවට පත් කරයි. සෑම මසකම විශාල මුදලක් එකවර ඉතිරි කිරීමට උත්සාහ කිරීම වෙනුවට (එය බොහෝවිට අපහසු වන අතර මඟහැරී යා හැක), මෙම අභියෝගය එය කුඩා, අහඹු දෛනික ඉලක්ක බවට බිඳ දමයි. මෙහි ඇති කැරකෙන රෝදය (Wheel) එකම මුදලක් දිගටම ඉතිරි කිරීමේ ඒකාකාරී බව මකා දමා, කුඩා විනෝදයක් එක් කරමින් දිනපතා මුදල් වෙන් කිරීමට ඔබගේ මනස හුරු කරවයි. මුදල කුඩා වුවත් විශාල වුවත්, මෙහි සැබෑ රහස අඛණ්ඩතාවයයි (Consistency). කාලයත් සමඟ මෙම කුඩා ඉතුරුම් එකතු වී විශාල අරමුදලක් බවට පත්වන අතර, එය ඔබගේ හදිසි අවශ්‍යතාවයකට, සිහින චාරිකාවකට හෝ සරලවම මුදල් සමඟ වඩා හොඳ සම්බන්ධතාවයක් ගොඩනගා ගැනීමට උපකාරී වනු ඇත. මෙම අභියෝගයට එක්වීමෙන් ඔබ හුදෙක් මුදල් ඉතිරි කරනවා පමණක් නොව, ඔබගේ අනාගත මූල්‍ය නිදහස වෙනුවෙන් සාර්ථක පියවරක් තබයි.",
+                advice_main_title: "මූල්‍ය කළමනාකරණය",
+                advice_desc: "පුද්ගලික මූල්‍ය කළමනාකරණය යනු සංකීර්ණ හෝ බියගන්වනසුලු ක්‍රියාවලියක් විය යුතු නැත. ඔබේ මුදල් නිවැරදිව කළමනාකරණය කිරීමට අවශ්‍ය පැහැදිලි, ප්‍රායෝගික සහ පරිශීලක-හිතකාමී මඟපෙන්වීමක් ලබාදෙන අපගේ මූල්‍ය උපදේශන මධ්‍යස්ථානයට (Financial Advice Hub) ඔබව සාදරයෙන් පිළිගනිමු. මූල්‍ය සාක්ෂරතාවය (financial literacy) යනු ආරක්ෂිත සහ ආතතියෙන් තොර අනාගතයක ප්‍රධානතම පදනම බව අපි තරයේ විශ්වාස කරමු. ඔබගේ මූල්‍ය ගමනේ ඔබ දැනට සිටින්නේ කුමන තත්ත්වයක වුවද, ඔබේ ධනය පිළිබඳව නිවැරදි සහ විශ්වාසදායක තීරණ ගැනීමට අවශ්‍ය පූර්ණ දැනුම හා ප්‍රායෝගික මෙවලම් ඔබට ලබාදීම අපගේ ප්‍රධාන අරමුණයි.<br><br>යහපත් මූල්‍ය සෞඛ්‍යයක් ගොඩනගා ගැනීමේ මූලික පියවරක් වන්නේ යථාර්ථවාදී සහ ප්‍රායෝගික අයවැයක් (Budget) නිර්මාණය කිරීමයි. මේ සඳහා ලොව පුරා පිළිගත් 50/30/20 නීතිය භාවිතා කිරීම අපි නිර්දේශ කරමු. මෙම සරල ක්‍රමවේදයට අනුව, ඔබේ ශුද්ධ ආදායමෙන් 50%ක් නිවාස, ආහාර සහ බිල්පත් වැනි අත්‍යවශ්‍ය දෑ සඳහාද, 30%ක් විනෝදාස්වාදය, ආපනශාලා වලින් ආහාර ගැනීම වැනි ඔබේ කැමැත්තන් සඳහාද, ඉතිරි 20% අනිවාර්යයෙන්ම ඉතුරුම් සහ ණය පියවීම සඳහාද වෙන් කළ යුතුය. මෙම ක්‍රමය තුළින් ඔබට වර්තමානය සතුටින් ගත කරන අතරම අනාගතයටත් සාර්ථකව මුහුණ දීමට හැකි මනා මූල්‍ය විනයක් ගොඩනැගේ.<br><br>නිසි අයවැයකරණයට අමතරව ශක්තිමත් හදිසි අරමුදලක් (Emergency fund) ගොඩනගා ගැනීමද අතිශයින්ම වැදගත්ය. ජීවිතය අනපේක්ෂිතය. හදිසි වෛද්‍ය ප්‍රතිකාර, නිවාස අලුත්වැඩියාවන් හෝ හදිසියේ රැකියාව අහිමිවීම් වැනි ඕනෑම දෙයක් සිදුවිය හැක. අවම වශයෙන් මාස 3ත් 6ත් අතර කාලයක ඔබේ ජීවන වියදම් පියවාගත හැකි මුදලක් පහසුවෙන් ලබාගත හැකි ගිණුමක තැන්පත් කර තිබීම, සුළු මූල්‍ය ගැටලුවක් විශාල අර්බුදයක් දක්වා වර්ධනය වීම වළක්වයි. ඔබේ හදිසි අරමුදල යනු ඔබේ ජීවිතයේ මූල්‍ය කම්පන අවශෝෂකයයි.<br><br>මුදල් ඉතිරි කිරීමට අමතරව, ඉතිරි කිරීම (Saving) සහ ආයෝජනය කිරීම (Investing) අතර ඇති පැහැදිලි වෙනස අවබෝධ කරගැනීම දිගුකාලීන ධනය ගොඩනැගීමේ රහසයි. ඉතිරි කිරීම මගින් ඔබේ මුදල් ආරක්ෂිතව සහ ද්‍රවශීලව තබාගන්නා අතර, ආයෝජනය කිරීම මගින් ඔබේ ධනය වර්ධනය කරමින් උද්ධමනයෙන් ඔබේ මුදලේ වටිනාකම අඩුවීම වළක්වයි. සංයුක්ත පොලිය (Compound interest), විවිධාංගීකරණය සහ වෙළඳපල ප්‍රවණතා වැනි සංකල්ප සරලව පැහැදිලි කරමින්, අඩු අවදානම් සහගත ආයෝජන අවස්ථා පිළිබඳව අපගේ පහත ලිපි මගින් ඔබට මඟපෙන්වනු ඇත.<br><br>එසේම, වියදම් කිරීම පිටුපස ඇති මනෝවිද්‍යාව පිළිබඳවත් අපි අවධානය යොමු කරමු. බොහෝවිට පුද්ගලික මූල්‍ය කළමනාකරණය රඳා පවතින්නේ ගණිතයට වඩා අපගේ හැසිරීම් මතය. ආවේගශීලීව මුදල් වියදම් කිරීම පාලනය කරගන්නා ආකාරය, සැබෑ අවශ්‍යතා සහ ක්ෂණික ආශාවන් වෙන්කර හඳුනාගන්නා ආකාරය පිළිබඳව ප්‍රායෝගික උපදෙස් අපි ඔබට ලබා දෙමු. ඔබේ දෛනික වියදම් ඔබේ දිගුකාලීන ඉලක්ක සමඟ පෙළගැස්වීමෙන් ඔබට සැබෑ තෘප්තියක් ගෙනදෙන මූල්‍ය ජීවිතයක් නිර්මාණය කරගත හැක.<br><br>ඔබ මූල්‍ය ලෝකයට නවකයෙකු වුවද, ඉහළ පොලී සහිත ණය ඉක්මනින් ගෙවා දැමීමට උත්සාහ කරන්නෙකු වුවද, නැතහොත් ඉක්මන් විශ්‍රාම ගැන්වීමක් අපේක්ෂාවෙන් ධනය ගොඩනගන අයෙකු වුවද, අපගේ මෙම ලිපි පෙළ ඔබට සෑම පියවරකදීම මඟ පෙන්වනු ඇත. මතක තබාගන්න, මූල්‍ය ස්වාධීනත්වය යනු එක රැයකින් ළඟා කරගත හැකි දෙයක් නොවේ. එය ඉවසීම, විනය සහ අඛණ්ඩ ඉගෙනීම අවශ්‍ය වන දිගු ගමනකි. ඔබ ඉතිරි කරන සහ ආයෝජනය කරන සෑම රුපියලක්ම, ඔබේම නීති යටතේ නිදහසේ ජීවත් වීමට ඔබට ලබාදෙන ශක්තියකි. පහත ලිපි කියවා සාර්ථක මූල්‍ය අනාගතයකට අවශ්‍ය දැනුමෙන් සන්නද්ධ වන්න.",
                 blog_title: "මූල්‍ය උපදෙස් සහ ලිපි", view_all: "සියලුම ලිපි බලන්න", nav_about: "අපි ගැන",
-                footer_rights: "සියලුම හිමිකම් ඇවිරිණි.", modal_setup_title: "ලොකු රවුම සකසන්න", modal_setup_sub: "උපරිම අගය තෝරා ගන්න", modal_save: "සුරකින්න", modal_cancel: "අවලංගු කරන්න",
+                footer_rights: "සියලුම හිමිකම් ඇවිරිණි.", modal_setup_title: "ලොකු රවුම සකසන්න", modal_setup_sub: "උපරිම අගය තෝරා ගන්න (0 - 900)", modal_save: "සුරකින්න", modal_cancel: "අවලංගු කරන්න",
                 card_subtitle: "අද ඔයාට ඉතුරු කරනන් වෙන මුදල", card_close: "වසන්න", nav_home: "මුල් පිටුව", nav_calendar: "දින දර්ශනය", nav_explore: "තොරතුරු", nav_settings: "සැකසුම්",
                 target_title: "ඉලක්කයක් සකසමු", my_target: "මගේ ඉතිරුම් ඉලක්කය", target_add_btn: "නව ඉලක්කයක් යොදන්න", target_edit_btn: "ඉලක්කය වෙනස් කරන්න", target_warning: "වැදගත්: මෙම අගය නැවත වෙනස් කළ හැක්කේ දින 30 කට පසුව පමණි.",
-                target_placeholder: "ඉලක්කගත මුදල (Amount)", target_remaining: "ඉලක්කයට තව:", target_achieved_msg: "සුභපැතුම්! ඔබ ඔබේ ඉලක්කය සම්පූර්ණ කර ඇත!", win_note_desc: "අද දවස ඔබට සුවිශේෂී දවසක්! ඔබගේ කැපවීම සාර්ථක වී ඇත.",
+                target_placeholder: "ඉලක්කගත මුදල (උදා: 100000)", target_remaining: "ඉලක්කයට තව:", target_achieved_msg: "සුභපැතුම්! ඔබ ඔබේ ඉලක්කය සම්පූර්ණ කර ඇත!", win_note_desc: "අද දවස ඔබට සුවිශේෂී දවසක්! ඔබගේ කැපවීම සාර්ථක වී ඇත.",
                 new_target_btn: "නව ඉලක්කයක් යොදන්න", target_lock_msg: "ඔබට ඉලක්කය වෙනස් කිරීමට තව දින {days} ක් ඉතිරිව ඇත.", no_target_title: "කිසිදු ඉලක්කයක් යොදා නැත", js_enter_all: "කරුණාකර සියලුම විස්තර පුරවන්න!",
                 js_enter_name: "කරුණාකර ඔබගේ නම ඇතුළත් කරන්න!", js_auth_success: "සාර්ථකව ලොග් විය!", js_auth_error: "ඇතුළත් කළ විස්තර වැරදියි. නැවත උත්සාහ කරන්න.", js_completed: "අද සම්පූර්ණයි",
                 js_spinning: "කරකවමින්...", js_no_articles: "දැනට ලිපි කිසිවක් නොමැත.", js_read_more: "තවත් කියවන්න", js_today: "අද", js_start_greet: "අභියෝගය අරඹමු!",
                 popup_blocked: "බ්‍රව්සර් එකෙන් Popup Block කර ඇත! කරුණාකර Email/Password මගින් ලොග් වන්න.",
                 forgot_password: "මුරපදය අමතකද?", current_password_placeholder: "පැරණි මුරපදය (Old Password)", enter_email_reset: "මුරපදය අලුත් කිරීමට කරුණාකර ඉහළ කොටුවේ ඔබගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.",
                 reset_link_sent: "මුරපදය අලුත් කිරීමේ ලින්ක් එක ඔබගේ ඊමේල් එකට යැව්වා!", wrong_old_password: "ඔබ ලබා දුන් පැරණි මුරපදය වැරදියි!", local_acc_email: "Local ගිණුම (Email නැත)",
-                js_load_more: "තවත් ලිපි පෙන්වන්න", js_loading: "කරුණාකර රැඳී සිටින්න..."
+                js_load_more: "තවත් ලිපි පෙන්වන්න", js_loading: "කරුණාකර රැඳී සිටින්න...", currency_settings: "මුදල් ඒකකය (Currency)", currency_note: "සටහන: LKR හැර වෙනත් මුදල් ඒකකයක් තේරීමේදී භාෂාව ඉංග්‍රීසි වලට ස්වයංක්‍රීයව මාරු වේ.",
+                today_champions: "🎉 අද දවසේ ජයග්‍රාහකයින්:"
             }
         };
 
-        // =========================================
-        // 📌 CURRENCY DATABASE & LOGIC
-        // =========================================
-        const currencyDB = {
-            "LKR": { name: "Sri Lankan Rupee (LKR)", symbol: "Rs.", multOuter: 100, multInner: 10 },
-            "USD": { name: "US Dollar (USD)", symbol: "$", multOuter: 1, multInner: 0.1 },
-            "EUR": { name: "Euro (EUR)", symbol: "€", multOuter: 1, multInner: 0.1 },
-            "GBP": { name: "British Pound (GBP)", symbol: "£", multOuter: 1, multInner: 0.1 },
-            "AUD": { name: "Australian Dollar (AUD)", symbol: "A$", multOuter: 1, multInner: 0.1 },
-            "CAD": { name: "Canadian Dollar (CAD)", symbol: "C$", multOuter: 1, multInner: 0.1 },
-            "INR": { name: "Indian Rupee (INR)", symbol: "₹", multOuter: 10, multInner: 1 },
-            "AED": { name: "UAE Dirham (AED)", symbol: "د.إ", multOuter: 10, multInner: 1 }
-        };
+        const currencySymbols = { LKR: "Rs. ", USD: "$", EUR: "€", GBP: "£", AUD: "A$" };
+        let currentCurrencyCode = localStorage.getItem('dsc_currency') || 'LKR';
+        let currentLang = localStorage.getItem('dsc_lang') || 'en'; // Default to English now
 
-        let userCurrency = localStorage.getItem('dsc_currency') || null;
-        let currentLang = localStorage.getItem('dsc_lang') || 'en';
-        let currentBloggerLabel = currentLang === 'si' ? 'Sin' : 'En'; 
+        function getCurrency() { return currencySymbols[currentCurrencyCode] || "Rs. "; }
 
-        function formatAmount(amount) {
-            if (!currencyDB[userCurrency]) return amount;
-            let cData = currencyDB[userCurrency];
-            let isDecimal = cData.multInner < 1;
-            let numStr = isDecimal ? parseFloat(amount).toFixed(2) : Math.round(amount).toLocaleString();
-            return `${cData.symbol}${numStr}`;
-        }
+        function changeCurrency(selectEl) {
+            const code = selectEl.value;
+            localStorage.setItem('dsc_currency', code);
+            currentCurrencyCode = code;
 
-        async function initCurrencyAndLang() {
-            if (userCurrency) {
-                applyRegionalSettings();
-                return;
-            }
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                const data = await res.json();
-                userCurrency = currencyDB[data.currency] ? data.currency : 'USD';
-            } catch(e) {
-                userCurrency = 'USD';
-            }
-            applyRegionalSettings();
-        }
-
-        function applyRegionalSettings() {
-            const authLangToggle = document.getElementById('authLangToggleContainer');
-            const settingsLangToggle = document.getElementById('settingsLangContainer');
-            
-            // Force English if NOT LKR
-            if (userCurrency !== "LKR") {
-                currentLang = 'en';
-                if(authLangToggle) authLangToggle.style.display = 'none';
-                if(settingsLangToggle) settingsLangToggle.style.display = 'none';
+            if(code !== 'LKR') {
+                setLanguage('en');
+                document.querySelectorAll('.btn-si').forEach(btn => btn.style.display = 'none');
             } else {
-                if(authLangToggle) authLangToggle.style.display = 'block';
-                if(settingsLangToggle) settingsLangToggle.style.display = 'block';
+                document.querySelectorAll('.btn-si').forEach(btn => btn.style.display = 'inline-block');
             }
-
-            localStorage.setItem('dsc_currency', userCurrency);
-            localStorage.setItem('dsc_lang', currentLang);
             
-            populateCurrencyDropdown();
-            applyLanguageSettings();
+            if (currentUserData || isLocalMode) { renderCalendar(); checkTodaySpin(); renderTargetUI(); }
+            // Re-render recent champion if data exists
+            if (lastWinnerData) updateLastWinnerDisplay(lastWinnerData);
         }
 
-        function populateCurrencyDropdown() {
-            const curSelect = document.getElementById('currencySelect');
-            if(!curSelect) return;
-            curSelect.innerHTML = '';
-            Object.keys(currencyDB).forEach(key => {
-                curSelect.innerHTML += `<option value="${key}" ${key === userCurrency ? 'selected' : ''}>${currencyDB[key].name}</option>`;
-            });
-        }
-
-        function changeCurrencyManually() {
-            userCurrency = document.getElementById('currencySelect').value;
-            showNotification("Currency changed successfully!", "success");
-            applyRegionalSettings();
-        }
-
-        // Action when user clicks Si / En button
-        function changeLanguage(langCode) {
-            if (userCurrency !== "LKR" && langCode !== 'en') langCode = 'en';
-            if (localStorage.getItem('dsc_lang') !== langCode) {
-                localStorage.setItem('dsc_lang', langCode);
-                window.location.reload(); // Hard refresh to perfectly reload UI and Blog content
+        function setLanguage(lang) {
+            if(currentCurrencyCode !== 'LKR' && lang === 'si') {
+                lang = 'en'; // Force English if not LKR
             }
-        }
-
-        function applyLanguageSettings() {
-            // Apply active classes to buttons
-            document.querySelectorAll('.btn-si').forEach(btn => btn.classList.toggle('active', currentLang === 'si'));
-            document.querySelectorAll('.btn-en').forEach(btn => btn.classList.toggle('active', currentLang === 'en'));
+            currentLang = lang; localStorage.setItem('dsc_lang', lang);
+            document.querySelectorAll('.btn-si').forEach(btn => btn.classList.toggle('active', lang === 'si'));
+            document.querySelectorAll('.btn-en').forEach(btn => btn.classList.toggle('active', lang === 'en'));
             
-            // Update Text
             document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n'); 
-                if (translations[currentLang][key]) el.innerHTML = translations[currentLang][key];
+                const key = el.getAttribute('data-i18n'); if (translations[currentLang][key]) el.innerHTML = translations[currentLang][key]; // Using innerHTML to support <br>
             });
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
@@ -641,46 +503,35 @@
             const submitBtnText = document.getElementById('authSubmitText');
             if(submitBtnText) submitBtnText.innerText = translations[currentLang][authMode === 'login' ? 'tab_login' : 'tab_signup'];
 
-            // UI Fixes
             if (currentUserData || isLocalMode) { renderCalendar(); checkTodaySpin(); renderTargetUI(); }
-            
             const noArticles = document.getElementById('noArticlesMsg'); if (noArticles) noArticles.innerText = translations[currentLang].js_no_articles;
             const loadMoreBtn = document.getElementById('loadMoreBtnActual'); if (loadMoreBtn) loadMoreBtn.innerText = translations[currentLang].js_load_more;
+            
             document.querySelectorAll('.read-more-text').forEach(el => el.innerText = translations[currentLang].js_read_more);
 
-            buildWheelUI();
-            triggerGoogleTranslate(currentLang);
-            loadBloggerPosts(1);
-        }
-
-        let translateRetryCount = 0;
-        function triggerGoogleTranslate(langCode) {
-            const select = document.querySelector('.goog-te-combo');
-            if (select) {
-                select.value = langCode;
-                select.dispatchEvent(new Event('change'));
-            } else if (translateRetryCount < 10) {
-                translateRetryCount++;
-                setTimeout(() => triggerGoogleTranslate(langCode), 500); 
+            // Fetch Blogger posts based on new language
+            if (window.handleBloggerPosts) {
+                document.getElementById('blogGrid').innerHTML = '';
+                fetchedArticles = [];
+                currentStartIndex = 1;
+                loadBloggerPosts(1);
             }
-        }
-
-        function switchView(viewName, navElement) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + viewName).classList.add('active');
             
-            if(navElement) {
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                navElement.classList.add('active');
-            }
-            window.scrollTo(0,0);
+            fetchTargetAchievers(); // Refresh translated banners
         }
 
-        function togglePassword(inputId, iconElement) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") { input.type = "text"; iconElement.classList.remove('fa-eye'); iconElement.classList.add('fa-eye-slash'); } 
-            else { input.type = "password"; iconElement.classList.remove('fa-eye-slash'); iconElement.classList.add('fa-eye'); }
-        }
+        // Apply currency logic on startup
+        document.addEventListener("DOMContentLoaded", () => {
+            const select = document.getElementById('currencySelector');
+            if(select) select.value = currentCurrencyCode;
+            
+            if(currentCurrencyCode !== 'LKR') {
+                currentLang = 'en';
+                document.querySelectorAll('.btn-si').forEach(btn => btn.style.display = 'none');
+            }
+            setLanguage(currentLang);
+            initializeApp();
+        });
 
         // =========================================
         // 📌 FIREBASE LOGIC 
@@ -702,6 +553,7 @@
         let tempAvatarBase64 = null;
         let userTarget = { amount: 0, setDate: null, achievedDate: null };
         let localTargetData = JSON.parse(localStorage.getItem('dsc_target')) || null;
+        let lastWinnerData = null;
         if (localTargetData) userTarget = localTargetData;
 
         function syncLocalDataToCloud(user) {
@@ -746,21 +598,53 @@
                     document.getElementById('bottomNav').style.display = 'none';
                 }
             }
+            fetchTargetAchievers(); // Fetch daily achievers on auth resolve
         });
+
+        function updateLastWinnerDisplay(data) {
+            const winnerName = data.lastWinnerName || "-";
+            const winnerAmount = data.lastWinnerAmount || 0;
+            const winnerDisplay = document.getElementById('lastWinnerDisplay');
+            const winnerAmountDisplay = document.getElementById('lastWinnerAmountDisplay');
+            
+            if (winnerDisplay && winnerName !== "-") { 
+                winnerDisplay.innerText = winnerName; 
+            }
+            if (winnerAmountDisplay && winnerAmount > 0) {
+                winnerAmountDisplay.innerText = `${getCurrency()}${winnerAmount.toLocaleString()}`;
+            }
+        }
 
         database.ref('stats').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                globalSpinCount = data.totalSpins || 0; 
-                const winnerName = data.lastWinnerName || "-";
-                const winnerAmt = data.lastWinnerAmount || 0;
-                
-                const winnerDisplay = document.getElementById('lastWinnerDisplay');
-                if (winnerDisplay && winnerName !== "-") { 
-                    winnerDisplay.innerText = `${winnerName} (${formatAmount(winnerAmt)})`; 
-                }
+                globalSpinCount = data.totalSpins || 0;
+                lastWinnerData = data;
+                updateLastWinnerDisplay(data);
             }
         });
+
+        // 🏆 Fetch Today's Target Achievers
+        function fetchTargetAchievers() {
+            const todayStr = getTodayString();
+            database.ref('achievers/' + todayStr).on('value', snap => {
+                const data = snap.val();
+                const homeContainer = document.getElementById('homeAchievers');
+                const calContainer = document.getElementById('calAchievers');
+                
+                if(data && Object.keys(data).length > 0) {
+                    let html = `<div class="achiever-banner"><marquee>⭐ ${translations[currentLang].today_champions} `;
+                    Object.values(data).forEach(d => {
+                        html += `<b>${d.name}</b> (${getCurrency()}${d.amount.toLocaleString()}) &nbsp;&nbsp;&nbsp;&nbsp;⭐&nbsp;&nbsp;&nbsp;&nbsp;`;
+                    });
+                    html += '</marquee></div>';
+                    homeContainer.innerHTML = html; calContainer.innerHTML = html;
+                    homeContainer.style.display = 'block'; calContainer.style.display = 'block';
+                } else {
+                    homeContainer.style.display = 'none'; calContainer.style.display = 'none';
+                }
+            });
+        }
 
         let authMode = 'login'; 
         function switchAuthTab(mode) {
@@ -853,7 +737,7 @@
         }
 
         // =========================================
-        // 📌 BLOGGER (HEADLESS CMS)
+        // 📌 BLOGGER (HEADLESS CMS) - REFINED GRID & FILTER
         // =========================================
         const myBloggerURL = "https://dailysavingchallengelk.blogspot.com";
         let fetchedArticles = []; 
@@ -865,13 +749,10 @@
             if(isFetchingPosts) return;
             isFetchingPosts = true;
             
-            const oldScript = document.getElementById('bloggerFetchScript');
-            if(oldScript) oldScript.remove();
-
+            // Filter by Label: 'Sin' for Sinhala, 'En' for English
+            const label = currentLang === 'si' ? 'Sin' : 'En';
             const script = document.createElement('script');
-            script.id = 'bloggerFetchScript';
-            // Fetching posts using Blogger JSON feed based on the active label
-            script.src = `${myBloggerURL}/feeds/posts/default/-/${currentBloggerLabel}?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}&t=${new Date().getTime()}`;
+            script.src = `${myBloggerURL}/feeds/posts/default/-/${label}?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}`;
             document.body.appendChild(script);
         }
 
@@ -886,15 +767,11 @@
             const oldLoadCont = document.getElementById('loadMoreContainer');
             if(oldLoadCont) oldLoadCont.remove();
 
-            const entries = (data && data.feed && data.feed.entry) ? data.feed.entry : [];
+            const entries = data.feed.entry || [];
 
             if (entries.length === 0 && fetchedArticles.length === 0) { 
-                blogGrid.innerHTML = `<p id="noArticlesMsg" class="notranslate" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">${translations[currentLang].js_no_articles}</p>`; 
+                blogGrid.innerHTML = `<p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">${translations[currentLang].js_no_articles}</p>`; 
                 return; 
-            }
-
-            if (currentStartIndex === 1 && fetchedArticles.length === 0) {
-                blogGrid.innerHTML = '';
             }
 
             entries.forEach((entry) => {
@@ -904,7 +781,6 @@
                 const postId = entry.id.$t.split('post-')[1]; 
                 
                 let imgUrl = 'https://via.placeholder.com/400x250/1e293b/cbd5e1?text=Daily+Saving+Challenge'; 
-                
                 if (entry.media$thumbnail) {
                     imgUrl = entry.media$thumbnail.url.replace(/\/s72\-c\//, '/w400-h250-c/');
                 } else if (entry.content && entry.content.$t.match(/<img.+?src=["'](.*?)["']/)) {
@@ -919,7 +795,7 @@
                         <div class="article-info">
                             <h3 class="article-card-title">${title}</h3>
                             <div class="article-card-footer">
-                                <span class="read-more-btn"><span class="read-more-text notranslate">${translations[currentLang].js_read_more}</span> <i class="fas fa-arrow-right"></i></span>
+                                <span class="read-more-btn"><span class="read-more-text">${translations[currentLang].js_read_more}</span> <i class="fas fa-arrow-right"></i></span>
                             </div>
                         </div>
                     </div>`;
@@ -928,7 +804,7 @@
             if (entries.length === postsPerPage) {
                 blogGrid.innerHTML += `
                     <div id="loadMoreContainer" style="grid-column: 1 / -1; margin-top: 15px;">
-                        <button id="loadMoreBtnActual" class="load-more-btn notranslate" onclick="loadNextPosts()">
+                        <button id="loadMoreBtnActual" class="load-more-btn" onclick="loadNextPosts()">
                             ${translations[currentLang].js_load_more}
                         </button>
                     </div>`;
@@ -982,6 +858,23 @@
             if (urlParams.get('article')) { checkDirectArticleLink(); } else { switchView('hub', document.getElementById('nav-explore')); }
         });
 
+        function switchView(viewName, navElement) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewName).classList.add('active');
+            
+            if(navElement) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                navElement.classList.add('active');
+            }
+            window.scrollTo(0,0);
+        }
+
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") { input.type = "text"; iconElement.classList.remove('fa-eye'); iconElement.classList.add('fa-eye-slash'); } 
+            else { input.type = "password"; iconElement.classList.remove('fa-eye-slash'); iconElement.classList.add('fa-eye'); }
+        }
+
         // =========================================
         // 📌 APP INIT
         // =========================================
@@ -989,11 +882,11 @@
         function getTodayString() { const slDate = getSLDate(); return `${slDate.getFullYear()}-${String(slDate.getMonth()+1).padStart(2, '0')}-${String(slDate.getDate()).padStart(2, '0')}`; }
 
         function initializeApp() { 
-            initCurrencyAndLang(); 
+            buildWheel('outerWheel', outerVals, 150, false, false); buildWheel('innerWheel', innerVals, 85, false, true); 
+            // loadBloggerPosts is called via setLanguage in DOMContentLoaded
             setTimeout(checkDirectArticleLink, 500); 
         }
-        document.addEventListener("DOMContentLoaded", initializeApp);
-
+        
         function showMonthlyTotal() {
             const btn = document.getElementById('showTotalBtn'); const totalDisplay = document.getElementById('totalAmountContainer'); const downloadBtn = document.getElementById('calendarDownloadArea');
             btn.style.display = 'none'; totalDisplay.style.display = 'block';
@@ -1011,23 +904,21 @@
                 const dayStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 const card = document.createElement('div'); card.className = 'day-card'; let amountHtml = '-';
                 const isPastDay = dayStr < todayStr;
-                if (trackingData[dayStr]) { card.classList.add('completed'); amountHtml = formatAmount(trackingData[dayStr]); currentMonthTotal += trackingData[dayStr]; } 
+                if (trackingData[dayStr]) { card.classList.add('completed'); amountHtml = `${getCurrency()}${trackingData[dayStr]}`; currentMonthTotal += trackingData[dayStr]; } 
                 else if (dayStr === todayStr) { card.classList.add('today'); amountHtml = translations[currentLang].js_today; } 
                 else if (isPastDay) { card.classList.add('missed'); amountHtml = '<i class="fas fa-times"></i>'; }
                 card.innerHTML = `<div class="date">${i}</div><div class="amount">${amountHtml}</div>`; grid.appendChild(card);
             }
-            document.getElementById('monthTotalAmount').innerText = formatAmount(currentMonthTotal);
+            document.getElementById('monthTotalAmount').innerText = `${getCurrency()}${currentMonthTotal.toLocaleString()}`;
         }
 
         function checkTodaySpin() {
             const todayStr = getTodayString(); const spinBtn = document.getElementById('spinBtn');
             if (trackingData[todayStr]) {
-                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span class="notranslate">${translations[currentLang].js_completed}</span>`; document.getElementById('liveAmount').innerText = formatAmount(trackingData[todayStr]);
+                spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>${translations[currentLang].js_completed}</span>`; document.getElementById('liveAmount').innerText = `${getCurrency()}${trackingData[todayStr].toLocaleString()}`;
             } else {
-                spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText" class="notranslate">${translations[currentLang].spin_btn}</span>`; document.getElementById('liveAmount').innerText = formatAmount(0);
-                if (outerVals[outerVals.length - 1] !== 9 * currencyDB[userCurrency].multOuter || outerVals.length === 1) { 
-                    selectedMaxBase = 9; buildWheelUI();
-                }
+                spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText">${translations[currentLang].spin_btn}</span>`; document.getElementById('liveAmount').innerText = `${getCurrency()}0`;
+                if (outerVals[outerVals.length - 1] !== 900 || outerVals.length === 1) { outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; buildWheel('outerWheel', outerVals, 150, false, false); const slider = document.getElementById('wheelSlider'); if(slider) { slider.value = 900; updateSliderText(900); } }
             }
         }
 
@@ -1122,145 +1013,99 @@
 
         function renderTargetUI() {
             if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null };
-            
-            // Check tracking data robustly
-            let totalSaved = 0;
-            if (trackingData && typeof trackingData === 'object') {
-                totalSaved = Object.values(trackingData).reduce((sum, val) => sum + val, 0); 
-            }
-            
-            const today = getTodayString();
-            
+            const totalSaved = Object.values(trackingData).reduce((sum, val) => sum + val, 0); const today = getTodayString();
             let canEdit = false; let daysLeft = 0;
-            if (!userTarget.amount || (userTarget.amount > 0 && userTarget.achievedDate)) { 
-                canEdit = true; 
-            } else if (userTarget.setDate) {
+            if (!userTarget.amount || (userTarget.amount > 0 && userTarget.achievedDate)) { canEdit = true; } 
+            else if (userTarget.setDate) {
                 const diffDays = Math.floor((new Date(today).getTime() - new Date(userTarget.setDate).getTime()) / (1000 * 60 * 60 * 24));
                 if (diffDays >= 30) canEdit = true; else daysLeft = 30 - diffDays;
             }
-
+            if (userTarget.amount > 0 && userTarget.achievedDate === today) { document.body.classList.add('theme-gold'); const winNote = document.getElementById('homeTargetWinNote'); if(winNote) winNote.style.display = 'block'; } 
+            else { document.body.classList.remove('theme-gold'); const winNote = document.getElementById('homeTargetWinNote'); if(winNote) winNote.style.display = 'none'; }
             let html = '';
             if (userTarget.amount > 0) {
-                const remaining = Math.max(0, userTarget.amount - totalSaved); 
-                const progress = Math.min(100, (totalSaved / userTarget.amount) * 100);
-                
-                html += `<h3><i class="fas fa-bullseye"></i> <span class="notranslate">${translations[currentLang].my_target}</span></h3>`; 
-                html += `<div class="target-amount-display notranslate">${formatAmount(userTarget.amount)}</div>`;
-                
-                if (remaining > 0) { 
-                    html += `<p><span class="notranslate">${translations[currentLang].target_remaining}</span> <strong class="notranslate">${formatAmount(remaining)}</strong></p>`; 
-                    html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; 
-                } else { 
-                    html += `<p class="target-achieved-text"><i class="fas fa-trophy"></i> <span class="notranslate">${translations[currentLang].target_achieved_msg}</span></p>`; 
-                }
-                
-                if (canEdit) { 
-                    html += `<button class="action-btn secondary mt-15 notranslate" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span>${translations[currentLang].target_edit_btn}</span></button>`; 
-                } else { 
-                    html += `<p class="target-lock-text"><i class="fas fa-lock"></i> <span class="notranslate">${translations[currentLang].target_lock_msg.replace('{days}', daysLeft)}</span></p>`; 
-                }
-            } else { 
-                html += `<h3><i class="fas fa-bullseye"></i> <span class="notranslate">${translations[currentLang].no_target_title}</span></h3>`; 
-                html += `<button class="action-btn highlighted-btn mt-15 notranslate" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span>${translations[currentLang].target_add_btn}</span></button>`; 
-            }
-            
-            // Render Target exactly under Calendar and on Settings
-            const calCont = document.getElementById('targetDisplayCalendar'); 
-            const setCont = document.getElementById('targetDisplaySettings');
-            if(calCont) calCont.innerHTML = html; 
-            if(setCont) setCont.innerHTML = html;
+                const remaining = Math.max(0, userTarget.amount - totalSaved); const progress = Math.min(100, (totalSaved / userTarget.amount) * 100);
+                html += `<h3><i class="fas fa-bullseye"></i> <span data-i18n="my_target">${translations[currentLang].my_target}</span></h3>`; html += `<div class="target-amount-display">${getCurrency()}${userTarget.amount.toLocaleString()}</div>`;
+                if (remaining > 0) { html += `<p><span data-i18n="target_remaining">${translations[currentLang].target_remaining}</span> <strong>${getCurrency()}${remaining.toLocaleString()}</strong></p>`; html += `<div class="progress-bar-container"><div class="progress-fill" style="width: ${progress}%"></div></div>`; } 
+                else { html += `<p class="target-achieved-text"><i class="fas fa-trophy"></i> <span data-i18n="target_achieved_msg">${translations[currentLang].target_achieved_msg}</span></p>`; }
+                if (canEdit) { html += `<button class="action-btn secondary mt-15" onclick="openTargetModal()"><i class="fas fa-edit"></i> <span data-i18n="target_edit_btn">${translations[currentLang].target_edit_btn}</span></button>`; } 
+                else { html += `<p class="target-lock-text"><i class="fas fa-lock"></i> <span>${translations[currentLang].target_lock_msg.replace('{days}', daysLeft)}</span></p>`; }
+            } else { html += `<h3><i class="fas fa-bullseye"></i> <span data-i18n="no_target_title">${translations[currentLang].no_target_title}</span></h3>`; html += `<button class="action-btn highlighted-btn mt-15" onclick="openTargetModal()"><i class="fas fa-plus"></i> <span data-i18n="target_add_btn">${translations[currentLang].target_add_btn}</span></button>`; }
+            const calCont = document.getElementById('targetDisplayCalendar'); const setCont = document.getElementById('targetDisplaySettings');
+            if(calCont) calCont.innerHTML = html; if(setCont) setCont.innerHTML = html;
         }
 
-        // =========================================
-        // 📌 DYNAMIC WHEEL BUILDER
-        // =========================================
-        let baseOuter = [1, 2, 3, 4, 5, 6, 7, 8, 9]; 
-        const baseInner = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const outerColors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6']; 
-        const innerColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#1dd1a1', '#ff9f43'];
+        let outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; const innerVals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+        const outerColors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6']; const innerColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#1dd1a1', '#ff9f43'];
         let outerDeg = 0; let innerDeg = 0; let isSpinning = false;
-        let selectedMaxBase = 9;
-
-        function buildWheelUI() {
-            if(!userCurrency || !currencyDB[userCurrency]) return;
-            let cData = currencyDB[userCurrency];
-            let outerVals = baseOuter.map(v => v * cData.multOuter);
-            let innerVals = baseInner.map(v => v * cData.multInner);
-            buildWheelHTML('outerWheel', outerVals, 150, outerColors, cData); 
-            buildWheelHTML('innerWheel', innerVals, 85, innerColors, cData);
-            
-            const wSlider = document.getElementById('wheelSlider');
-            if(wSlider) { wSlider.max = 9; wSlider.value = selectedMaxBase; }
-            const sValDisplay = document.getElementById('sliderValDisplay');
-            if(sValDisplay) { sValDisplay.innerText = selectedMaxBase * cData.multOuter; }
-        }
-
-        function buildWheelHTML(id, values, textOffset, colors, cData) {
-            const wheel = document.getElementById(id); if(!wheel || values.length === 0) return; wheel.innerHTML = ''; 
+        function buildWheel(id, values, textOffset, isZeroMode = false, isInner = false) {
+            const wheel = document.getElementById(id); if(!wheel) return; wheel.innerHTML = ''; const colors = isInner ? innerColors : outerColors;
+            if(isZeroMode && id === 'outerWheel') { wheel.style.background = `conic-gradient(${colors[0]}, ${colors[1]}, ${colors[2]}, ${colors[3]}, ${colors[4]}, ${colors[5]}, ${colors[6]}, ${colors[7]}, ${colors[0]})`; return; }
             const sliceAngle = 360 / values.length; const offsetAngle = sliceAngle / 2; let gradient = `conic-gradient(from -${offsetAngle}deg, `;
             for(let i = 0; i < values.length; i++) {
                 const startAngle = i * sliceAngle; const endAngle = startAngle + sliceAngle;
                 gradient += `${colors[i % colors.length]} ${startAngle}deg ${endAngle}deg${i === values.length - 1 ? '' : ', '}`;
-                const span = document.createElement('span'); span.className = 'slice-text notranslate'; 
-                let isInnerDecimal = cData.multInner < 1 && id === 'innerWheel';
-                span.innerText = isInnerDecimal ? parseFloat(values[i]).toFixed(1) : Math.round(values[i]); 
-                span.style.transform = `translate(-50%, -50%) rotate(${startAngle}deg) translateY(-${textOffset}px)`; wheel.appendChild(span);
+                const span = document.createElement('span'); span.className = 'slice-text'; span.innerText = values[i]; span.style.transform = `translate(-50%, -50%) rotate(${startAngle}deg) translateY(-${textOffset}px)`; wheel.appendChild(span);
             }
             gradient += ')'; wheel.style.background = gradient;
         }
 
         function openCustom() { document.getElementById('customModal').classList.add('active'); }
-        function updateSliderText(val) { document.getElementById('sliderValDisplay').innerText = val * currencyDB[userCurrency].multOuter; }
+        function updateSliderText(val) { document.getElementById('sliderValDisplay').innerText = val; }
         function closeCustom() { document.getElementById('customModal').classList.remove('active'); }
         function saveCustom() {
-            selectedMaxBase = parseInt(document.getElementById('wheelSlider').value); 
-            baseOuter = [];
-            for(let i = 1; i <= selectedMaxBase; i++) { baseOuter.push(i); }
-            buildWheelUI(); 
-            closeCustom(); 
-            resetWheelAngles();
+            const maxVal = parseInt(document.getElementById('wheelSlider').value); outerVals = []; let isZero = false;
+            if (maxVal === 0) { outerVals = [0]; isZero = true; } else { for(let i = 100; i <= maxVal; i += 100) { outerVals.push(i); } }
+            buildWheel('outerWheel', outerVals, 150, isZero, false); closeCustom(); document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none';
+            void document.getElementById('outerWheel').offsetWidth; document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0;
         }
 
-        function resetWheelAngles() {
-            document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none';
-            void document.getElementById('outerWheel').offsetWidth; 
-            document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0;
+        function generateAvatar(name) {
+            const bgColors = ['#6366f1', '#ec4899', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#84cc16']; const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)]; const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : '👤';
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" fill="${randomBg}" rx="50" /><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#ffffff">${initial}</text></svg>`;
+            return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
         }
 
         function spin() {
             if (isSpinning) return; if (!currentUser && !isLocalMode) { showNotification("Please login or use local mode.", "warning"); return; }
             isSpinning = true; const spinDuration = Math.floor(Math.random() * 5000) + 10000;  const spinBtn = document.getElementById('spinBtn');
-            spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span class="notranslate">${translations[currentLang].js_spinning}</span>`; document.getElementById('liveAmount').innerText = translations[currentLang].js_spinning;
-            const outIndex = Math.floor(Math.random() * baseOuter.length); const inIndex = Math.floor(Math.random() * baseInner.length);
-            const outTarget = 360 - (outIndex * (360 / baseOuter.length)); const inTarget = 360 - (inIndex * (360 / baseInner.length));
+            spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${translations[currentLang].js_spinning}</span>`; document.getElementById('liveAmount').innerText = translations[currentLang].js_spinning;
+            const outIndex = Math.floor(Math.random() * outerVals.length); const inIndex = Math.floor(Math.random() * innerVals.length);
+            const outTarget = 360 - (outIndex * (360 / outerVals.length)); const inTarget = 360 - (inIndex * (360 / innerVals.length));
             outerDeg += 3600 + outTarget - (outerDeg % 360); innerDeg += 5040 + inTarget - (innerDeg % 360);
             const outerWheel = document.getElementById('outerWheel'); const innerWheel = document.getElementById('innerWheel');
             outerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; innerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; outerWheel.style.transform = `rotate(${outerDeg}deg)`; innerWheel.style.transform = `rotate(${innerDeg}deg)`;
             setTimeout(() => {
-                let cData = currencyDB[userCurrency];
-                const total = (baseOuter[outIndex] * cData.multOuter) + (baseInner[inIndex] * cData.multInner); 
-                const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = localUserName || (currentUserData ? currentUserData.name : "User"); let photoToDisplay = "";
+                const total = outerVals[outIndex] + innerVals[inIndex]; const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = "User"; let photoToDisplay = "";
                 if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null }; const totalSavedNow = Object.values(trackingData).reduce((sum, val) => sum + val, 0);
                 
-                if (isLocalMode) { localStorage.setItem('dsc_tracking', JSON.stringify(trackingData)); localStorage.setItem('dsc_target', JSON.stringify(userTarget)); photoToDisplay = localStorage.getItem('dsc_avatar') || generateAvatar(localUserName); } 
-                else if (currentUser && currentUserData) { database.ref('users/' + currentUser.uid + '/trackingData/' + todayStr).set(total); database.ref('users/' + currentUser.uid + '/targetData').set(userTarget); photoToDisplay = currentUserData.photoURL || currentUser.photoURL || generateAvatar(userNameToDisplay); }
+                let justAchievedTarget = false;
+                if (userTarget.amount > 0 && totalSavedNow >= userTarget.amount && !userTarget.achievedDate) { 
+                    userTarget.achievedDate = todayStr; 
+                    justAchievedTarget = true;
+                }
                 
-                renderCalendar(); checkTodaySpin(); renderTargetUI(); 
-                document.getElementById('cardName').innerText = `${translations[currentLang].hi_text} ${userNameToDisplay}`; 
-                document.getElementById('cardTotal').innerText = formatAmount(total);
+                if (isLocalMode) { localStorage.setItem('dsc_tracking', JSON.stringify(trackingData)); localStorage.setItem('dsc_target', JSON.stringify(userTarget)); userNameToDisplay = localUserName; photoToDisplay = localStorage.getItem('dsc_avatar') || generateAvatar(localUserName); } 
+                else if (currentUser && currentUserData) { database.ref('users/' + currentUser.uid + '/trackingData/' + todayStr).set(total); database.ref('users/' + currentUser.uid + '/targetData').set(userTarget); userNameToDisplay = currentUserData.name || "User"; photoToDisplay = currentUserData.photoURL || currentUser.photoURL || generateAvatar(userNameToDisplay); }
+                
+                // Add to public achievers list if target was hit today
+                if (justAchievedTarget && !isLocalMode && currentUser) {
+                    database.ref('achievers/' + todayStr).push({
+                        name: userNameToDisplay,
+                        amount: userTarget.amount
+                    });
+                }
+
+                renderCalendar(); checkTodaySpin(); renderTargetUI(); document.getElementById('cardName').innerText = `${translations[currentLang].hi_text} ${userNameToDisplay}`; document.getElementById('cardTotal').innerText = `${getCurrency()}${total.toLocaleString()}`;
                 const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' }; document.getElementById('captureDate').innerText = new Date().toLocaleString('en-US', dateOptions); document.getElementById('popupAvatar').src = photoToDisplay;
-                
-                database.ref('stats').set({ totalSpins: globalSpinCount + 1, lastWinnerName: userNameToDisplay, lastWinnerAmount: total }); const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }); database.ref('spinHistory').push({ userId: currentUser ? currentUser.uid : "local_guest", userName: userNameToDisplay, wonAmount: total, playedTime: currentTime });
-                
+                database.ref('stats').update({ totalSpins: globalSpinCount + 1, lastWinnerName: userNameToDisplay, lastWinnerAmount: total }); const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }); database.ref('spinHistory').push({ userId: currentUser ? currentUser.uid : "local_guest", userName: userNameToDisplay, wonAmount: total, playedTime: currentTime });
                 document.getElementById('resultModal').classList.add('active'); createConfetti(); isSpinning = false;
             }, spinDuration);
         }
 
         function closeModal() { 
-            document.getElementById('resultModal').classList.remove('active'); 
-            resetWheelAngles(); 
-            const slider = document.getElementById('wheelSlider'); 
-            if(slider) { slider.value = 9; updateSliderText(9); selectedMaxBase = 9; buildWheelUI(); }
+            document.getElementById('resultModal').classList.remove('active'); outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; buildWheel('outerWheel', outerVals, 150, false, false);
+            document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none'; document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0; const slider = document.getElementById('wheelSlider'); if(slider) { slider.value = 900; updateSliderText(900); }
         }
 
         function downloadCalendar() {
