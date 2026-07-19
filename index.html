@@ -10,6 +10,7 @@
     <meta name="description" content="DSCSaving - Daily Saving Challenge. Build your saving habit daily and achieve your financial goals effortlessly.">
     <meta name="keywords" content="DSCSaving, Daily Saving Challenge, save money, financial goals, Sri Lanka saving app, money management">
     <meta name="author" content="DSCSaving">
+    <meta name="description" content="Cultivate the habit of saving a small amount daily to secure your future. Join the Daily Saving Challenge to track and grow your savings securely.">
     <link rel="icon" type="image/png" href="dsc_logo.png">
     <link rel="apple-touch-icon" href="dsc_logo.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -21,6 +22,17 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+        
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ZGDSMXY3R"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-0ZGDSMXY3R');
+    </script>
+    
 </head>
 <body>
 
@@ -30,6 +42,7 @@
         <i class="fas fa-spinner fa-spin fa-3x"></i>
     </div>
 
+    <!-- 📌 FIREBASE AUTHENTICATION -->
     <div id="authModal" class="my-modal">
         <div class="my-modal-content">
             <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
@@ -110,6 +123,7 @@
         </div>
     </div>
 
+    <!-- 📌 TARGET SETTING MODAL -->
     <div id="targetModal" class="my-modal">
         <div class="my-modal-content">
             <h2 style="font-size: 1.4rem; margin-bottom:10px; color: var(--primary-light);"><i class="fas fa-bullseye"></i> <span data-i18n="target_title">Set a Target</span></h2>
@@ -166,7 +180,8 @@
                     <button id="spinBtn" class="spin-btn" onclick="spin()">
                         <i class="fas fa-sync-alt"></i> <span id="spinBtnText" data-i18n="spin_btn">Spin Wheel</span>
                     </button>
-                    <button class="custom-btn" onclick="openCustom()">
+                    <!-- Custom Wheel Button is now always visible -->
+                    <button id="customWheelBtn" class="custom-btn" onclick="openCustom()">
                         <i class="fas fa-cog"></i> <span data-i18n="change_wheel_btn">Change Outer Wheel Values</span>
                     </button>
                 </div>
@@ -266,16 +281,12 @@
             <!-- 🔹 TAB 5: SETTINGS -->
             <div id="view-settings" class="view-section">
 
-                <!-- 🌐 Currency Selector -->
+                <!-- 🌐 Currency Selector (Now Fetching All from Database) -->
                 <div class="settings-card">
                     <h3><i class="fas fa-coins" style="margin-right:8px; color:#f59e0b;"></i> <span data-i18n="currency_settings">Currency / මුදල් ඒකකය</span></h3>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;" data-i18n="currency_note">Note: Non-LKR currencies will force the app language to English.</p>
-                    <select id="currencySelector" class="auth-input" style="padding-left: 20px; font-weight: 600; cursor: pointer;" onchange="changeCurrency(this)">
-                        <option value="LKR">LKR - Sri Lankan Rupee (Rs.)</option>
-                        <option value="USD">USD - US Dollar ($)</option>
-                        <option value="EUR">EUR - Euro (€)</option>
-                        <option value="GBP">GBP - British Pound (£)</option>
-                        <option value="AUD">AUD - Australian Dollar (A$)</option>
+                    <select id="currencySelector" class="auth-input" style="padding-left: 20px; font-weight: 600; cursor: pointer; height: 50px; overflow-y: auto;" onchange="changeCurrency(this)">
+                        <!-- Currencies will be populated by JS dynamically -->
                     </select>
                 </div>
 
@@ -363,6 +374,9 @@
         <div class="nav-item" onclick="switchView('calendar', this)">
             <i class="fas fa-calendar-alt"></i><span data-i18n="nav_calendar">Calendar</span>
         </div>
+        <div class="nav-item" onclick="window.location.href='news.html'">
+            <i class="fas fa-newspaper"></i><span data-i18n="nav_news">News</span>
+        </div>
         <div class="nav-item" id="nav-explore" onclick="switchView('hub', this)">
             <i class="fas fa-book-open"></i><span data-i18n="nav_explore">Explore</span>
         </div>
@@ -380,6 +394,7 @@
             <h2 style="font-size: 1.2rem; margin-bottom:5px;" data-i18n="modal_setup_title">Setup Wheel</h2>
             <p style="font-size: 0.9rem; color: var(--text-muted);" data-i18n="modal_setup_sub">Select Max Value (0 - 900)</p>
             <div class="slider-container">
+                <!-- Max value updated dynamically based on base -->
                 <input type="range" id="wheelSlider" min="0" max="900" step="100" value="900" oninput="updateSliderText(this.value)">
                 <div class="slider-value" id="sliderValDisplay">900</div>
             </div>
@@ -405,7 +420,38 @@
 
     <script>
         // =========================================
-        // 📌 TRANSLATIONS & CURRENCY LOGIC
+        // 📌 FIREBASE LOGIC & DB INIT
+        // =========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDo_Z1pawT4IB_KaoLdo0Yl2YV5gt27S3U", authDomain: "dailysavingchallenge-b7f58.firebaseapp.com",
+            projectId: "dailysavingchallenge-b7f58", storageBucket: "dailysavingchallenge-b7f58.firebasestorage.app",
+            messagingSenderId: "936731731201", appId: "1:936731731201:web:bb3e841e7664b805102700",
+            databaseURL: "https://dailysavingchallenge-b7f58-default-rtdb.firebaseio.com" 
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); const database = firebase.database();
+
+        // =========================================
+        // 📌 GLOBALS & STATE
+        // =========================================
+        let globalSpinCount = 0; let currentUser = null; let currentUserData = null; let trackingData = {};
+        let isLocalMode = localStorage.getItem('dsc_local_session') === 'true';
+        let localUserName = localStorage.getItem('dsc_userName') || '';
+        let localTrackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
+        let tempAvatarBase64 = null;
+        let userTarget = { amount: 0, setDate: null, achievedDate: null };
+        let localTargetData = JSON.parse(localStorage.getItem('dsc_target')) || null;
+        let lastWinnerData = null;
+        if (localTargetData) userTarget = localTargetData;
+
+        // Default wheel values (will be overwritten by DB)
+        let outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; 
+        let innerVals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+        let currentCurrencyBase = 100; // Default base
+
+        // =========================================
+        // 📌 TRANSLATIONS
         // =========================================
         const translations = {
             en: {
@@ -420,8 +466,8 @@
                 purpose_desc: "Building financial discipline is often the hardest part of achieving wealth. The Daily Saving Challenge gamifies this process to make saving a seamless and exciting part of your daily routine. Instead of burdening yourself with saving a large fixed amount every month—which can feel overwhelming and is easy to give up on—this challenge breaks it down into small, randomized daily tasks. The spinning wheel removes the monotony, introducing a fun element of surprise that tricks your brain into enjoying the process of putting money aside. Whether it's a small amount or a larger one, consistency is the true secret. Over time, these daily micro-savings compound significantly, helping you build an emergency fund, save for a dream vacation, or simply develop a healthier relationship with money. By committing to this challenge, you are not just saving currency; you are investing in your future peace of mind, breaking bad spending habits, and taking a confident step toward true financial freedom.",
                 advice_main_title: "Master Your Money",
                 advice_desc: "Navigating the complex world of personal finance does not have to be an intimidating or complicated process. Welcome to our Financial Advice Hub, a dedicated space designed to provide you with clear, actionable, and user-friendly insights to help you completely master your money. We firmly believe that financial literacy is the essential cornerstone of a secure, stress-free future. Our ultimate goal is to empower you with the comprehensive knowledge and practical tools necessary to make informed, confident decisions about your wealth, no matter where you currently stand on your financial journey.<br><br>A fundamental pillar of achieving and maintaining financial health is the creation of a realistic, sustainable budget. We often recommend starting with the widely recognized 50/30/20 rule. This straightforward framework suggests allocating 50% of your net income to essential needs like housing, groceries, and utilities; 30% to wants and lifestyle choices such as dining out and entertainment; and a critical 20% dedicated entirely to savings and debt repayment. Implementing this simple structure ensures that you consistently live within your means while still enjoying your life today and actively preparing for whatever tomorrow may bring.<br><br>Alongside diligent budgeting, building a robust emergency fund is absolutely crucial. Life is inherently unpredictable, bringing unexpected medical bills, urgent home repairs, or sudden changes in employment. Having three to six months' worth of living expenses safely set aside in an accessible account can be the critical difference between experiencing a minor temporary setback and falling into a major, stressful financial crisis. An emergency fund is your personal financial shock absorber.<br><br>Beyond the act of saving, understanding the profound difference between saving and investing is key to long-term wealth building. While saving protects your money from loss and keeps it liquid, investing is what actually grows your wealth and protects your purchasing power against inflation. In our articles below, we provide clear introductory guides on how to make your money work tirelessly for you. We explore various low-risk investment avenues suitable for beginners, explaining concepts like compound interest, diversification, and long-term market trends in simple, plain language.<br><br>Additionally, we delve deeply into the psychology of spending. We understand that personal finance is often more about behavior than math. We offer practical, real-world tips on how to curb impulsive buying habits, how to accurately differentiate between true necessities and fleeting wants, and how to cultivate a resilient mindset of abundance and intentionality. By aligning your daily spending habits with your deepest values and long-term goals, you create a financial life that brings you genuine satisfaction.<br><br>Whether you are a complete beginner just starting your financial journey, someone looking to aggressively pay down high-interest debt, or an advanced saver aiming to accelerate your wealth accumulation and achieve early retirement, our carefully curated selection of articles is here to guide you every single step of the way. Remember, financial independence is not an overnight achievement; it is a marathon that requires patience, discipline, and continuous learning. Make it a habit to revisit your financial goals regularly, track your net worth, and celebrate the small milestones along the way. Every dollar saved and invested is a step closer to the freedom to live life on your own terms. Explore our articles below and equip yourself with the knowledge to thrive.",
-                blog_title: "Financial Advice & Articles", view_all: "View All Articles", nav_about: "About Us",
-                footer_rights: "All Rights Reserved.", modal_setup_title: "Setup Wheel", modal_setup_sub: "Select Max Value (0 - 900)", modal_save: "Save", modal_cancel: "Cancel",
+                blog_title: "Financial Advice & Articles", view_all: "View All Articles", nav_about: "About Us", nav_news: "News",
+                footer_rights: "All Rights Reserved.", modal_setup_title: "Setup Wheel", modal_setup_sub: "Select Max Value", modal_save: "Save", modal_cancel: "Cancel",
                 card_subtitle: "Amount to save today", card_close: "Close", nav_home: "Home", nav_calendar: "Calendar", nav_explore: "Explore", nav_settings: "Settings",
                 target_title: "Set a Target", my_target: "My Savings Target", target_add_btn: "Set a Target", target_edit_btn: "Edit Target", target_warning: "Important: You can only change this amount after 30 days.",
                 target_placeholder: "Target Amount (e.g. 100000)", target_remaining: "Remaining for Target:", target_achieved_msg: "Congratulations! You've achieved your target!", win_note_desc: "Today is a special day! Your dedication has paid off.",
@@ -442,12 +488,12 @@
                 logout_btn: "ඉවත් වෙන්න (Logout)", start_btn: "ආරම්භ කරමු", save_label: "ඉතුරු කරමු:", spin_btn: "කරකවමු", change_wheel_btn: "ලොකු රවුමේ අගයන් වෙනස් කරමු",
                 wheel_settings: "රෝදයේ සැකසුම්", profile_settings: "ගිණුමේ සැකසුම් (Profile)", new_password_placeholder: "අලුත් මුරපදය (New Password)", save_profile: "සුරකින්න",
                 calendar_title: "මගේ ඉතිරි කිරීමේ සටහන", month_total_title: "මේ මාසයේ මුළු ඉතිරිය", show_total_btn: "මේ මාසයේ මුළු ඉතිරිය පෙන්වන්න", download_calendar: "මේ මාසේ සටහන ඩවුන්ලෝඩ් කරගමු",
-                recent_champ: "අවසන් ඉතුරුම්කරු", purpose_title: "අභියෝගයේ අරමුන", 
+                recent_champ: "අවසන් ඉතුරුම්කරු", purpose_title: "අභියෝගයේ අරමුන", nav_news: "පුවත්",
                 purpose_desc: "මූල්‍ය විනයක් ගොඩනගා ගැනීම යනු බොහෝ දෙනෙකුට අසීරු කාර්යයකි. Daily Saving Challenge මගින් ඉතිරි කිරීමේ ක්‍රියාවලිය දිනපතා කළ හැකි විනෝදජනක පුරුද්දක් බවට පත් කරයි. සෑම මසකම විශාල මුදලක් එකවර ඉතිරි කිරීමට උත්සාහ කිරීම වෙනුවට (එය බොහෝවිට අපහසු වන අතර මඟහැරී යා හැක), මෙම අභියෝගය එය කුඩා, අහඹු දෛනික ඉලක්ක බවට බිඳ දමයි. මෙහි ඇති කැරකෙන රෝදය (Wheel) එකම මුදලක් දිගටම ඉතිරි කිරීමේ ඒකාකාරී බව මකා දමා, කුඩා විනෝදයක් එක් කරමින් දිනපතා මුදල් වෙන් කිරීමට ඔබගේ මනස හුරු කරවයි. මුදල කුඩා වුවත් විශාල වුවත්, මෙහි සැබෑ රහස අඛණ්ඩතාවයයි (Consistency). කාලයත් සමඟ මෙම කුඩා ඉතුරුම් එකතු වී විශාල අරමුදලක් බවට පත්වන අතර, එය ඔබගේ හදිසි අවශ්‍යතාවයකට, සිහින චාරිකාවකට හෝ සරලවම මුදල් සමඟ වඩා හොඳ සම්බන්ධතාවයක් ගොඩනගා ගැනීමට උපකාරී වනු ඇත. මෙම අභියෝගයට එක්වීමෙන් ඔබ හුදෙක් මුදල් ඉතිරි කරනවා පමණක් නොව, ඔබගේ අනාගත මූල්‍ය නිදහස වෙනුවෙන් සාර්ථක පියවරක් තබයි.",
                 advice_main_title: "මූල්‍ය කළමනාකරණය",
                 advice_desc: "පුද්ගලික මූල්‍ය කළමනාකරණය යනු සංකීර්ණ හෝ බියගන්වනසුලු ක්‍රියාවලියක් විය යුතු නැත. ඔබේ මුදල් නිවැරදිව කළමනාකරණය කිරීමට අවශ්‍ය පැහැදිලි, ප්‍රායෝගික සහ පරිශීලක-හිතකාමී මඟපෙන්වීමක් ලබාදෙන අපගේ මූල්‍ය උපදේශන මධ්‍යස්ථානයට (Financial Advice Hub) ඔබව සාදරයෙන් පිළිගනිමු. මූල්‍ය සාක්ෂරතාවය (financial literacy) යනු ආරක්ෂිත සහ ආතතියෙන් තොර අනාගතයක ප්‍රධානතම පදනම බව අපි තරයේ විශ්වාස කරමු. ඔබගේ මූල්‍ය ගමනේ ඔබ දැනට සිටින්නේ කුමන තත්ත්වයක වුවද, ඔබේ ධනය පිළිබඳව නිවැරදි සහ විශ්වාසදායක තීරණ ගැනීමට අවශ්‍ය පූර්ණ දැනුම හා ප්‍රායෝගික මෙවලම් ඔබට ලබාදීම අපගේ ප්‍රධාන අරමුණයි.<br><br>යහපත් මූල්‍ය සෞඛ්‍යයක් ගොඩනගා ගැනීමේ මූලික පියවරක් වන්නේ යථාර්ථවාදී සහ ප්‍රායෝගික අයවැයක් (Budget) නිර්මාණය කිරීමයි. මේ සඳහා ලොව පුරා පිළිගත් 50/30/20 නීතිය භාවිතා කිරීම අපි නිර්දේශ කරමු. මෙම සරල ක්‍රමවේදයට අනුව, ඔබේ ශුද්ධ ආදායමෙන් 50%ක් නිවාස, ආහාර සහ බිල්පත් වැනි අත්‍යවශ්‍ය දෑ සඳහාද, 30%ක් විනෝදාස්වාදය, ආපනශාලා වලින් ආහාර ගැනීම වැනි ඔබේ කැමැත්තන් සඳහාද, ඉතිරි 20% අනිවාර්යයෙන්ම ඉතුරුම් සහ ණය පියවීම සඳහාද වෙන් කළ යුතුය. මෙම ක්‍රමය තුළින් ඔබට වර්තමානය සතුටින් ගත කරන අතරම අනාගතයටත් සාර්ථකව මුහුණ දීමට හැකි මනා මූල්‍ය විනයක් ගොඩනැගේ.<br><br>නිසි අයවැයකරණයට අමතරව ශක්තිමත් හදිසි අරමුදලක් (Emergency fund) ගොඩනගා ගැනීමද අතිශයින්ම වැදගත්ය. ජීවිතය අනපේක්ෂිතය. හදිසි වෛද්‍ය ප්‍රතිකාර, නිවාස අලුත්වැඩියාවන් හෝ හදිසියේ රැකියාව අහිමිවීම් වැනි ඕනෑම දෙයක් සිදුවිය හැක. අවම වශයෙන් මාස 3ත් 6ත් අතර කාලයක ඔබේ ජීවන වියදම් පියවාගත හැකි මුදලක් පහසුවෙන් ලබාගත හැකි ගිණුමක තැන්පත් කර තිබීම, සුළු මූල්‍ය ගැටලුවක් විශාල අර්බුදයක් දක්වා වර්ධනය වීම වළක්වයි. ඔබේ හදිසි අරමුදල යනු ඔබේ ජීවිතයේ මූල්‍ය කම්පන අවශෝෂකයයි.<br><br>මුදල් ඉතිරි කිරීමට අමතරව, ඉතිරි කිරීම (Saving) සහ ආයෝජනය කිරීම (Investing) අතර ඇති පැහැදිලි වෙනස අවබෝධ කරගැනීම දිගුකාලීන ධනය ගොඩනැගීමේ රහසයි. ඉතිරි කිරීම මගින් ඔබේ මුදල් ආරක්ෂිතව සහ ද්‍රවශීලව තබාගන්නා අතර, ආයෝජනය කිරීම මගින් ඔබේ ධනය වර්ධනය කරමින් උද්ධමනයෙන් ඔබේ මුදලේ වටිනාකම අඩුවීම වළක්වයි. සංයුක්ත පොලිය (Compound interest), විවිධාංගීකරණය සහ වෙළඳපල ප්‍රවණතා වැනි සංකල්ප සරලව පැහැදිලි කරමින්, අඩු අවදානම් සහගත ආයෝජන අවස්ථා පිළිබඳව අපගේ පහත ලිපි මගින් ඔබට මඟපෙන්වනු ඇත.<br><br>එසේම, වියදම් කිරීම පිටුපස ඇති මනෝවිද්‍යාව පිළිබඳවත් අපි අවධානය යොමු කරමු. බොහෝවිට පුද්ගලික මූල්‍ය කළමනාකරණය රඳා පවතින්නේ ගණිතයට වඩා අපගේ හැසිරීම් මතය. ආවේගශීලීව මුදල් වියදම් කිරීම පාලනය කරගන්නා ආකාරය, සැබෑ අවශ්‍යතා සහ ක්ෂණික ආශාවන් වෙන්කර හඳුනාගන්නා ආකාරය පිළිබඳව ප්‍රායෝගික උපදෙස් අපි ඔබට ලබා දෙමු. ඔබේ දෛනික වියදම් ඔබේ දිගුකාලීන ඉලක්ක සමඟ පෙළගැස්වීමෙන් ඔබට සැබෑ තෘප්තියක් ගෙනදෙන මූල්‍ය ජීවිතයක් නිර්මාණය කරගත හැක.<br><br>ඔබ මූල්‍ය ලෝකයට නවකයෙකු වුවද, ඉහළ පොලී සහිත ණය ඉක්මනින් ගෙවා දැමීමට උත්සාහ කරන්නෙකු වුවද, නැතහොත් ඉක්මන් විශ්‍රාම ගැන්වීමක් අපේක්ෂාවෙන් ධනය ගොඩනගන අයෙකු වුවද, අපගේ මෙම ලිපි පෙළ ඔබට සෑම පියවරකදීම මඟ පෙන්වනු ඇත. මතක තබාගන්න, මූල්‍ය ස්වාධීනත්වය යනු එක රැයකින් ළඟා කරගත හැකි දෙයක් නොවේ. එය ඉවසීම, විනය සහ අඛණ්ඩ ඉගෙනීම අවශ්‍ය වන දිගු ගමනකි. ඔබ ඉතිරි කරන සහ ආයෝජනය කරන සෑම රුපියලක්ම, ඔබේම නීති යටතේ නිදහසේ ජීවත් වීමට ඔබට ලබාදෙන ශක්තියකි. පහත ලිපි කියවා සාර්ථක මූල්‍ය අනාගතයකට අවශ්‍ය දැනුමෙන් සන්නද්ධ වන්න.",
                 blog_title: "මූල්‍ය උපදෙස් සහ ලිපි", view_all: "සියලුම ලිපි බලන්න", nav_about: "අපි ගැන",
-                footer_rights: "සියලුම හිමිකම් ඇවිරිණි.", modal_setup_title: "ලොකු රවුම සකසන්න", modal_setup_sub: "උපරිම අගය තෝරා ගන්න (0 - 900)", modal_save: "සුරකින්න", modal_cancel: "අවලංගු කරන්න",
+                footer_rights: "සියලුම හිමිකම් ඇවිරිණි.", modal_setup_title: "ලොකු රවුම සකසන්න", modal_setup_sub: "උපරිම අගය තෝරා ගන්න", modal_save: "සුරකින්න", modal_cancel: "අවලංගු කරන්න",
                 card_subtitle: "අද ඔයාට ඉතුරු කරනන් වෙන මුදල", card_close: "වසන්න", nav_home: "මුල් පිටුව", nav_calendar: "දින දර්ශනය", nav_explore: "තොරතුරු", nav_settings: "සැකසුම්",
                 target_title: "ඉලක්කයක් සකසමු", my_target: "මගේ ඉතිරුම් ඉලක්කය", target_add_btn: "නව ඉලක්කයක් යොදන්න", target_edit_btn: "ඉලක්කය වෙනස් කරන්න", target_warning: "වැදගත්: මෙම අගය නැවත වෙනස් කළ හැක්කේ දින 30 කට පසුව පමණි.",
                 target_placeholder: "ඉලක්කගත මුදල (උදා: 100000)", target_remaining: "ඉලක්කයට තව:", target_achieved_msg: "සුභපැතුම්! ඔබ ඔබේ ඉලක්කය සම්පූර්ණ කර ඇත!", win_note_desc: "අද දවස ඔබට සුවිශේෂී දවසක්! ඔබගේ කැපවීම සාර්ථක වී ඇත.",
@@ -462,11 +508,87 @@
             }
         };
 
-        const currencySymbols = { LKR: "Rs. ", USD: "$", EUR: "€", GBP: "£", AUD: "A$" };
+        // Complete list of currencies
+        const currencySymbols = { 
+            LKR: "Rs. ", USD: "$", EUR: "€", GBP: "£", AUD: "A$", CAD: "C$", JPY: "¥", INR: "₹", AED: "AED ",
+            SGD: "S$", NZD: "NZ$", CHF: "CHF", MYR: "RM", BRL: "R$", CNY: "¥", ZAR: "R", HKD: "HK$", SEK: "kr",
+            NOK: "kr", DKK: "kr", TRY: "₺", THB: "฿", IDR: "Rp", PHP: "₱", MXN: "$", KWD: "KD", OMR: "OMR",
+            QAR: "QR", SAR: "SR", BHD: "BD", EGP: "E£", NGN: "₦", KES: "KSh", TZS: "TSh", UGX: "USh",
+            RUB: "₽", PLN: "zł", CZK: "Kč", HUF: "Ft", RON: "lei", BGN: "лв", HRK: "kn", DZD: "DA",
+            MAD: "DH", TND: "DT", ILS: "₪", JOD: "JD", LBP: "LL", IQD: "ID", PKR: "Rs", BDT: "৳",
+            NPR: "Rs", AFN: "؋", LAK: "SM", MMK: "K", KHR: "K", VND: "₫", COP: "$", ARS: "$",
+            CLP: "$", PEN: "S/", UYU: "$U", PYG: "₲", BOB: "Bs.", VEF: "Bs.", GTQ: "Q", CRC: "₡",
+            HNL: "Q", NIO: "C$", PAB: "B/.", DOP: "RD$", JMD: "J$", TTD: "TT$", BBD: "Bds$", BSD: "B$",
+            CUP: "₱", HTG: "G", KYD: "CI$", MUR: "Rs", SCR: "£", MZN: "MT", ETB: "Br", SDG: "£",
+            SOS: "S", DJF: "Fdj", KMF: "CF", RWF: "FRw", BIF: "FBu", GNF: "FG", SLL: "Le", LRD: "L$",
+            GMD: "D", CVE: "Esc", STD: "Db", ZMW: "ZK", MWK: "MK", BWP: "P", NAD: "N$", SZL: "L",
+            LSL: "L", XAF: "CFA", XOF: "CFA", XPF: "CFP", WST: "WS$", TOP: "T$", VUV: "VT", SBD: "SI$",
+            PGK: "K", FJD: "FJ$", BND: "B$", MOP: "P", AWG: "ƒ", ANG: "ƒ", SHP: "£", FKP: "£",
+            GIP: "£", GGP: "£", JEP: "£", IMP: "£", IMP: "£", TVD: "$", MVR: "Rf"
+        };
+        
         let currentCurrencyCode = localStorage.getItem('dsc_currency') || 'LKR';
         let currentLang = localStorage.getItem('dsc_lang') || 'en'; // Default to English now
 
         function getCurrency() { return currencySymbols[currentCurrencyCode] || "Rs. "; }
+
+        function populateCurrencyDropdown() {
+            const select = document.getElementById('currencySelector');
+            if(!select) return;
+            select.innerHTML = '';
+            
+            // Add LKR first
+            const lkrOpt = document.createElement('option');
+            lkrOpt.value = "LKR";
+            lkrOpt.innerText = `LKR - Sri Lankan Rupee (Rs. )`;
+            select.appendChild(lkrOpt);
+
+            // Sort other currencies alphabetically
+            const sortedCodes = Object.keys(currencySymbols).sort();
+            sortedCodes.forEach(code => {
+                if(code !== "LKR") {
+                    const opt = document.createElement('option');
+                    opt.value = code;
+                    opt.innerText = `${code} (${currencySymbols[code]})`;
+                    select.appendChild(opt);
+                }
+            });
+            select.value = currentCurrencyCode;
+        }
+
+        // Fetch values from Firebase
+        function fetchCurrencyDataFromFirebase(code) {
+            database.ref('currencies/' + code).once('value').then(snapshot => {
+                const data = snapshot.val();
+                if(data) {
+                    outerVals = data.outer;
+                    innerVals = data.inner;
+                    currentCurrencyBase = data.base;
+                    
+                    // Update Wheel
+                    buildWheel('outerWheel', outerVals, 150, false, false);
+                    buildWheel('innerWheel', innerVals, 85, false, true);
+                    
+                    // Update Slider limits and values
+                    const slider = document.getElementById('wheelSlider');
+                    if(slider) {
+                        slider.min = 0;
+                        slider.max = currentCurrencyBase * 9;
+                        slider.step = currentCurrencyBase;
+                        slider.value = currentCurrencyBase * 9;
+                        updateSliderText(slider.value);
+                    }
+                } else {
+                    console.error("No data found for currency: " + code);
+                    // Fallback to basic 100 based if missing
+                    outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+                    innerVals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+                    currentCurrencyBase = 100;
+                    buildWheel('outerWheel', outerVals, 150, false, false);
+                    buildWheel('innerWheel', innerVals, 85, false, true);
+                }
+            });
+        }
 
         function changeCurrency(selectEl) {
             const code = selectEl.value;
@@ -480,8 +602,10 @@
                 document.querySelectorAll('.btn-si').forEach(btn => btn.style.display = 'inline-block');
             }
             
+            // Fetch updated wheel values from DB
+            fetchCurrencyDataFromFirebase(code);
+            
             if (currentUserData || isLocalMode) { renderCalendar(); checkTodaySpin(); renderTargetUI(); }
-            // Re-render recent champion if data exists
             if (lastWinnerData) updateLastWinnerDisplay(lastWinnerData);
         }
 
@@ -522,8 +646,7 @@
 
         // Apply currency logic on startup
         document.addEventListener("DOMContentLoaded", () => {
-            const select = document.getElementById('currencySelector');
-            if(select) select.value = currentCurrencyCode;
+            populateCurrencyDropdown();
             
             if(currentCurrencyCode !== 'LKR') {
                 currentLang = 'en';
@@ -531,331 +654,6 @@
             }
             setLanguage(currentLang);
             initializeApp();
-        });
-
-        // =========================================
-        // 📌 FIREBASE LOGIC 
-        // =========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyDo_Z1pawT4IB_KaoLdo0Yl2YV5gt27S3U", authDomain: "dailysavingchallenge-b7f58.firebaseapp.com",
-            projectId: "dailysavingchallenge-b7f58", storageBucket: "dailysavingchallenge-b7f58.firebasestorage.app",
-            messagingSenderId: "936731731201", appId: "1:936731731201:web:bb3e841e7664b805102700",
-            databaseURL: "https://dailysavingchallenge-b7f58-default-rtdb.firebaseio.com" 
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const database = firebase.database();
-
-        let globalSpinCount = 0; let currentUser = null; let currentUserData = null; let trackingData = {};
-        let isLocalMode = localStorage.getItem('dsc_local_session') === 'true';
-        let localUserName = localStorage.getItem('dsc_userName') || '';
-        let localTrackingData = JSON.parse(localStorage.getItem('dsc_tracking')) || {};
-        let tempAvatarBase64 = null;
-        let userTarget = { amount: 0, setDate: null, achievedDate: null };
-        let localTargetData = JSON.parse(localStorage.getItem('dsc_target')) || null;
-        let lastWinnerData = null;
-        if (localTargetData) userTarget = localTargetData;
-
-        function syncLocalDataToCloud(user) {
-            const localTracking = JSON.parse(localStorage.getItem('dsc_tracking')) || {}; const localTarget = JSON.parse(localStorage.getItem('dsc_target')) || null;
-            if (Object.keys(localTracking).length > 0 || localTarget) {
-                database.ref('users/' + user.uid).once('value').then(snapshot => {
-                    const cloudData = snapshot.val() || {}; const cloudTracking = cloudData.trackingData || {}; const cloudTarget = cloudData.targetData || { amount: 0, setDate: null, achievedDate: null };
-                    const mergedTracking = { ...cloudTracking, ...localTracking }; const mergedTarget = localTarget ? localTarget : cloudTarget;
-                    database.ref('users/' + user.uid).update({ trackingData: mergedTracking, targetData: mergedTarget }).then(() => {
-                        localStorage.removeItem('dsc_tracking'); localStorage.removeItem('dsc_target'); localStorage.setItem('dsc_local_session', 'false');
-                    });
-                });
-            }
-        }
-
-        function launchApp() {
-            document.getElementById('authModal').classList.remove('active'); document.getElementById('app-wrapper').style.display = 'flex'; document.getElementById('bottomNav').style.display = 'flex';
-        }
-
-        auth.onAuthStateChanged((user) => {
-            const loader = document.getElementById('initialLoader');
-            if(loader) loader.style.display = 'none';
-
-            if (user) {
-                isLocalMode = false; localStorage.setItem('dsc_local_session', 'false');
-                currentUser = user; launchApp(); loadUserData(user.uid);
-            } else {
-                currentUser = null; currentUserData = null;
-                if (isLocalMode && localUserName) {
-                    trackingData = localTrackingData; if(localTargetData) userTarget = localTargetData;
-                    launchApp(); document.getElementById('displayUserName').innerText = localUserName;
-                    const savedAvatar = localStorage.getItem('dsc_avatar') || generateAvatar(localUserName);
-                    document.getElementById('headerProfilePic').src = savedAvatar; document.getElementById('settingsAvatarPreview').src = savedAvatar;
-                    document.getElementById('settingsName').value = localUserName; 
-                    document.getElementById('settingsPasswordSection').style.display = 'none';
-                    document.getElementById('settingsEmailWrapper').style.display = 'block';
-                    document.getElementById('settingsEmail').value = translations[currentLang].local_acc_email;
-                    renderCalendar(); checkTodaySpin(); renderTargetUI();
-                } else {
-                    document.getElementById('authModal').classList.add('active'); 
-                    document.getElementById('app-wrapper').style.display = 'none'; 
-                    document.getElementById('bottomNav').style.display = 'none';
-                }
-            }
-            fetchTargetAchievers(); // Fetch daily achievers on auth resolve
-        });
-
-        function updateLastWinnerDisplay(data) {
-            const winnerName = data.lastWinnerName || "-";
-            const winnerAmount = data.lastWinnerAmount || 0;
-            const winnerDisplay = document.getElementById('lastWinnerDisplay');
-            const winnerAmountDisplay = document.getElementById('lastWinnerAmountDisplay');
-            
-            if (winnerDisplay && winnerName !== "-") { 
-                winnerDisplay.innerText = winnerName; 
-            }
-            if (winnerAmountDisplay && winnerAmount > 0) {
-                winnerAmountDisplay.innerText = `${getCurrency()}${winnerAmount.toLocaleString()}`;
-            }
-        }
-
-        database.ref('stats').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                globalSpinCount = data.totalSpins || 0;
-                lastWinnerData = data;
-                updateLastWinnerDisplay(data);
-            }
-        });
-
-        // 🏆 Fetch Today's Target Achievers
-        function fetchTargetAchievers() {
-            const todayStr = getTodayString();
-            database.ref('achievers/' + todayStr).on('value', snap => {
-                const data = snap.val();
-                const homeContainer = document.getElementById('homeAchievers');
-                const calContainer = document.getElementById('calAchievers');
-                
-                if(data && Object.keys(data).length > 0) {
-                    let html = `<div class="achiever-banner"><marquee>⭐ ${translations[currentLang].today_champions} `;
-                    Object.values(data).forEach(d => {
-                        html += `<b>${d.name}</b> (${getCurrency()}${d.amount.toLocaleString()}) &nbsp;&nbsp;&nbsp;&nbsp;⭐&nbsp;&nbsp;&nbsp;&nbsp;`;
-                    });
-                    html += '</marquee></div>';
-                    homeContainer.innerHTML = html; calContainer.innerHTML = html;
-                    homeContainer.style.display = 'block'; calContainer.style.display = 'block';
-                } else {
-                    homeContainer.style.display = 'none'; calContainer.style.display = 'none';
-                }
-            });
-        }
-
-        let authMode = 'login'; 
-        function switchAuthTab(mode) {
-            authMode = mode; 
-            document.getElementById('tabLogin').classList.toggle('active', mode === 'login'); 
-            document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
-            document.getElementById('authSignupFields').style.display = mode === 'signup' ? 'block' : 'none'; 
-            
-            const forgotPwd = document.getElementById('loginForgotPwdWrapper');
-            if(forgotPwd) forgotPwd.style.display = mode === 'login' ? 'block' : 'none';
-
-            document.getElementById('authSubmitText').innerText = translations[currentLang][mode === 'login' ? 'tab_login' : 'tab_signup'];
-        }
-
-        function showGuestUI() { document.getElementById('authMainUI').style.display = 'none'; document.getElementById('guestUI').style.display = 'block'; }
-        function hideGuestUI() { document.getElementById('guestUI').style.display = 'none'; document.getElementById('authMainUI').style.display = 'block'; }
-
-        function handleGuestSubmit() {
-            const name = document.getElementById('guestNameInput').value.trim();
-            if(!name) { showNotification(translations[currentLang].js_enter_name, "warning"); return; }
-            localStorage.setItem('dsc_userName', name); localStorage.setItem('dsc_local_session', 'true');
-            isLocalMode = true; localUserName = name; trackingData = localTrackingData; if(localTargetData) userTarget = localTargetData;
-            const avatar = generateAvatar(localUserName); localStorage.setItem('dsc_avatar', avatar);
-            launchApp(); document.getElementById('displayUserName').innerText = localUserName; document.getElementById('headerProfilePic').src = avatar; document.getElementById('settingsAvatarPreview').src = avatar;
-            document.getElementById('settingsName').value = localUserName; 
-            document.getElementById('settingsPasswordSection').style.display = 'none';
-            document.getElementById('settingsEmailWrapper').style.display = 'block';
-            document.getElementById('settingsEmail').value = translations[currentLang].local_acc_email;
-            renderCalendar(); checkTodaySpin(); renderTargetUI(); showNotification(`${translations[currentLang].hi_text} ${localUserName}, ${translations[currentLang].js_start_greet}`, "success");
-        }
-
-        function loginWithGoogle() {
-            const btn = document.getElementById('googleLoginBtn');
-            const originalHTML = btn.innerHTML;
-            if(btn) {
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span data-i18n="google_login">Connecting...</span>`;
-                btn.disabled = true;
-            }
-            
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then((result) => {
-                const user = result.user;
-                database.ref('users/' + user.uid).update({ name: user.displayName, email: user.email, photoURL: user.photoURL, joinedAt: new Date().toISOString() });
-                syncLocalDataToCloud(user); 
-                showNotification(translations[currentLang].js_auth_success, "success");
-                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
-            }).catch(error => { 
-                console.error("Auth Error:", error);
-                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
-                if(error.code === 'auth/popup-blocked') {
-                    showNotification(translations[currentLang].popup_blocked, "error");
-                } else if(error.code !== 'auth/popup-closed-by-user') {
-                    showNotification(error.message, "error"); 
-                }
-            });
-        }
-
-        function handleAuthSubmit() {
-            const email = document.getElementById('authEmail').value.trim(); const password = document.getElementById('authPassword').value; const name = document.getElementById('authName').value.trim();
-            if (!email || !password || (authMode === 'signup' && !name)) { showNotification(translations[currentLang].js_enter_all, "warning"); return; }
-            const btn = document.getElementById('authSubmitBtn'); const originalText = btn.innerHTML; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`; btn.disabled = true;
-
-            if (authMode === 'login') {
-                auth.signInWithEmailAndPassword(email, password).then((userCredential) => { 
-                    syncLocalDataToCloud(userCredential.user); showNotification(translations[currentLang].js_auth_success, "success"); btn.disabled = false; btn.innerHTML = originalText; 
-                }).catch(() => { showNotification(translations[currentLang].js_auth_error, "error"); btn.disabled = false; btn.innerHTML = originalText; });
-            } else {
-                auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
-                    database.ref('users/' + userCredential.user.uid).set({ name: name, email: email, joinedAt: new Date().toISOString() }).then(() => { 
-                        syncLocalDataToCloud(userCredential.user); showNotification(translations[currentLang].js_auth_success, "success"); btn.disabled = false; btn.innerHTML = originalText; 
-                    });
-                }).catch((error) => { showNotification(error.message, "error"); btn.disabled = false; btn.innerHTML = originalText; });
-            }
-        }
-
-        function handleForgotPassword(fromSettings = false) {
-            let email = "";
-            if (fromSettings) {
-                email = currentUser ? currentUser.email : "";
-            } else {
-                email = document.getElementById('authEmail').value.trim();
-            }
-
-            if (!email) { showNotification(translations[currentLang].enter_email_reset, "warning"); return; }
-            auth.sendPasswordResetEmail(email).then(() => { showNotification(translations[currentLang].reset_link_sent, "success"); }).catch((error) => { showNotification(error.message, "error"); });
-        }
-
-        function logoutUser() {
-            if (isLocalMode) { localStorage.setItem('dsc_local_session', 'false'); isLocalMode = false; window.location.reload(); } else { auth.signOut().then(() => { window.location.reload(); }); }
-        }
-
-        // =========================================
-        // 📌 BLOGGER (HEADLESS CMS) - REFINED GRID & FILTER
-        // =========================================
-        const myBloggerURL = "https://dailysavingchallengelk.blogspot.com";
-        let fetchedArticles = []; 
-        let currentStartIndex = 1;
-        const postsPerPage = 10;
-        let isFetchingPosts = false;
-
-        function loadBloggerPosts(startIndex = 1) {
-            if(isFetchingPosts) return;
-            isFetchingPosts = true;
-            
-            // Filter by Label: 'Sin' for Sinhala, 'En' for English
-            const label = currentLang === 'si' ? 'Sin' : 'En';
-            const script = document.createElement('script');
-            script.src = `${myBloggerURL}/feeds/posts/default/-/${label}?alt=json-in-script&callback=handleBloggerPosts&start-index=${startIndex}&max-results=${postsPerPage}`;
-            document.body.appendChild(script);
-        }
-
-        window.handleBloggerPosts = function(data) {
-            isFetchingPosts = false;
-            const blogGrid = document.getElementById('blogGrid'); 
-            if(!blogGrid) return;
-            
-            const noMsg = document.getElementById('noArticlesMsg');
-            if(noMsg) noMsg.remove();
-
-            const oldLoadCont = document.getElementById('loadMoreContainer');
-            if(oldLoadCont) oldLoadCont.remove();
-
-            const entries = data.feed.entry || [];
-
-            if (entries.length === 0 && fetchedArticles.length === 0) { 
-                blogGrid.innerHTML = `<p id="noArticlesMsg" style="text-align:center; color:var(--text-muted); padding: 20px; grid-column: 1 / -1;">${translations[currentLang].js_no_articles}</p>`; 
-                return; 
-            }
-
-            entries.forEach((entry) => {
-                const globalIndex = fetchedArticles.length;
-                fetchedArticles.push(entry);
-                const title = entry.title.$t;
-                const postId = entry.id.$t.split('post-')[1]; 
-                
-                let imgUrl = 'https://via.placeholder.com/400x250/1e293b/cbd5e1?text=Daily+Saving+Challenge'; 
-                if (entry.media$thumbnail) {
-                    imgUrl = entry.media$thumbnail.url.replace(/\/s72\-c\//, '/w400-h250-c/');
-                } else if (entry.content && entry.content.$t.match(/<img.+?src=["'](.*?)["']/)) {
-                    imgUrl = entry.content.$t.match(/<img.+?src=["'](.*?)["']/)[1];
-                } else if (entry.summary && entry.summary.$t.match(/<img.+?src=["'](.*?)["']/)) {
-                    imgUrl = entry.summary.$t.match(/<img.+?src=["'](.*?)["']/)[1];
-                }
-
-                blogGrid.innerHTML += `
-                    <div class="article-card" onclick="openArticle('${postId}', ${globalIndex})">
-                        <div class="article-thumb" style="background-image: url('${imgUrl}');"></div>
-                        <div class="article-info">
-                            <h3 class="article-card-title">${title}</h3>
-                            <div class="article-card-footer">
-                                <span class="read-more-btn"><span class="read-more-text">${translations[currentLang].js_read_more}</span> <i class="fas fa-arrow-right"></i></span>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-
-            if (entries.length === postsPerPage) {
-                blogGrid.innerHTML += `
-                    <div id="loadMoreContainer" style="grid-column: 1 / -1; margin-top: 15px;">
-                        <button id="loadMoreBtnActual" class="load-more-btn" onclick="loadNextPosts()">
-                            ${translations[currentLang].js_load_more}
-                        </button>
-                    </div>`;
-            }
-        };
-
-        window.loadNextPosts = function() {
-            const btn = document.getElementById('loadMoreBtnActual');
-            if(btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang].js_loading}`;
-            currentStartIndex += postsPerPage;
-            loadBloggerPosts(currentStartIndex);
-        }
-
-        window.openArticle = function(postId, index) {
-            if (!fetchedArticles[index]) return;
-            const entry = fetchedArticles[index];
-            window.history.pushState({articleId: postId}, entry.title.$t, '?article=' + postId);
-            
-            document.getElementById('fullArticleTitle').innerText = entry.title.$t;
-            document.getElementById('fullArticleContent').innerHTML = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : "");
-            switchView('article', document.getElementById('nav-explore'));
-        }
-
-        window.closeArticleView = function() {
-            window.history.pushState({}, document.title, window.location.pathname);
-            switchView('hub', document.getElementById('nav-explore'));
-        }
-
-        function checkDirectArticleLink() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const articleId = urlParams.get('article');
-            if (articleId) {
-                document.getElementById('fullArticleTitle').innerText = "Loading Article...";
-                switchView('article', document.getElementById('nav-explore'));
-                const script = document.createElement('script');
-                script.src = `${myBloggerURL}/feeds/posts/default/${articleId}?alt=json-in-script&callback=handleSinglePost`;
-                document.body.appendChild(script);
-            }
-        }
-
-        window.handleSinglePost = function(data) {
-            const entry = data.entry;
-            if(entry) {
-                document.getElementById('fullArticleTitle').innerText = entry.title.$t;
-                document.getElementById('fullArticleContent').innerHTML = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : "");
-            }
-        };
-
-        window.addEventListener('popstate', function(event) {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('article')) { checkDirectArticleLink(); } else { switchView('hub', document.getElementById('nav-explore')); }
         });
 
         function switchView(viewName, navElement) {
@@ -882,8 +680,8 @@
         function getTodayString() { const slDate = getSLDate(); return `${slDate.getFullYear()}-${String(slDate.getMonth()+1).padStart(2, '0')}-${String(slDate.getDate()).padStart(2, '0')}`; }
 
         function initializeApp() { 
-            buildWheel('outerWheel', outerVals, 150, false, false); buildWheel('innerWheel', innerVals, 85, false, true); 
-            // loadBloggerPosts is called via setLanguage in DOMContentLoaded
+            // Fetch correct data from Firebase on load
+            fetchCurrencyDataFromFirebase(currentCurrencyCode);
             setTimeout(checkDirectArticleLink, 500); 
         }
         
@@ -918,7 +716,11 @@
                 spinBtn.disabled = true; spinBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>${translations[currentLang].js_completed}</span>`; document.getElementById('liveAmount').innerText = `${getCurrency()}${trackingData[todayStr].toLocaleString()}`;
             } else {
                 spinBtn.disabled = false; spinBtn.innerHTML = `<i class="fas fa-sync-alt"></i> <span id="spinBtnText">${translations[currentLang].spin_btn}</span>`; document.getElementById('liveAmount').innerText = `${getCurrency()}0`;
-                if (outerVals[outerVals.length - 1] !== 900 || outerVals.length === 1) { outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; buildWheel('outerWheel', outerVals, 150, false, false); const slider = document.getElementById('wheelSlider'); if(slider) { slider.value = 900; updateSliderText(900); } }
+                
+                // Rebuild to default Max if altered previously
+                if (outerVals[outerVals.length - 1] !== (currentCurrencyBase * 9) || outerVals.length === 1) { 
+                    fetchCurrencyDataFromFirebase(currentCurrencyCode); 
+                }
             }
         }
 
@@ -1035,9 +837,9 @@
             if(calCont) calCont.innerHTML = html; if(setCont) setCont.innerHTML = html;
         }
 
-        let outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; const innerVals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
         const outerColors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6']; const innerColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#1dd1a1', '#ff9f43'];
         let outerDeg = 0; let innerDeg = 0; let isSpinning = false;
+        
         function buildWheel(id, values, textOffset, isZeroMode = false, isInner = false) {
             const wheel = document.getElementById(id); if(!wheel) return; wheel.innerHTML = ''; const colors = isInner ? innerColors : outerColors;
             if(isZeroMode && id === 'outerWheel') { wheel.style.background = `conic-gradient(${colors[0]}, ${colors[1]}, ${colors[2]}, ${colors[3]}, ${colors[4]}, ${colors[5]}, ${colors[6]}, ${colors[7]}, ${colors[0]})`; return; }
@@ -1053,17 +855,30 @@
         function openCustom() { document.getElementById('customModal').classList.add('active'); }
         function updateSliderText(val) { document.getElementById('sliderValDisplay').innerText = val; }
         function closeCustom() { document.getElementById('customModal').classList.remove('active'); }
+        
         function saveCustom() {
-            const maxVal = parseInt(document.getElementById('wheelSlider').value); outerVals = []; let isZero = false;
-            if (maxVal === 0) { outerVals = [0]; isZero = true; } else { for(let i = 100; i <= maxVal; i += 100) { outerVals.push(i); } }
-            buildWheel('outerWheel', outerVals, 150, isZero, false); closeCustom(); document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none';
-            void document.getElementById('outerWheel').offsetWidth; document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0;
-        }
-
-        function generateAvatar(name) {
-            const bgColors = ['#6366f1', '#ec4899', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#84cc16']; const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)]; const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : '👤';
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" fill="${randomBg}" rx="50" /><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#ffffff">${initial}</text></svg>`;
-            return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+            // Updated save logic to use dynamic base
+            const maxVal = parseFloat(document.getElementById('wheelSlider').value); 
+            outerVals = []; 
+            let isZero = false;
+            
+            if (maxVal === 0) { 
+                outerVals = [0]; 
+                isZero = true; 
+            } else { 
+                for(let i = currentCurrencyBase; i <= maxVal; i += currentCurrencyBase) { 
+                    // To prevent floating point issues like 0.30000004
+                    outerVals.push(Number(i.toFixed(2))); 
+                } 
+            }
+            buildWheel('outerWheel', outerVals, 150, isZero, false); 
+            closeCustom(); 
+            document.getElementById('outerWheel').style.transition = 'none'; 
+            document.getElementById('innerWheel').style.transition = 'none';
+            void document.getElementById('outerWheel').offsetWidth; 
+            document.getElementById('outerWheel').style.transform = `rotate(0deg)`; 
+            document.getElementById('innerWheel').style.transform = `rotate(0deg)`; 
+            outerDeg = 0; innerDeg = 0;
         }
 
         function spin() {
@@ -1076,7 +891,10 @@
             const outerWheel = document.getElementById('outerWheel'); const innerWheel = document.getElementById('innerWheel');
             outerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; innerWheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.1, 1)`; outerWheel.style.transform = `rotate(${outerDeg}deg)`; innerWheel.style.transform = `rotate(${innerDeg}deg)`;
             setTimeout(() => {
-                const total = outerVals[outIndex] + innerVals[inIndex]; const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = "User"; let photoToDisplay = "";
+                // Add numbers cleanly
+                let total = Number((outerVals[outIndex] + innerVals[inIndex]).toFixed(2)); 
+                
+                const todayStr = getTodayString(); trackingData[todayStr] = total; let userNameToDisplay = "User"; let photoToDisplay = "";
                 if (!userTarget) userTarget = { amount: 0, setDate: null, achievedDate: null }; const totalSavedNow = Object.values(trackingData).reduce((sum, val) => sum + val, 0);
                 
                 let justAchievedTarget = false;
@@ -1104,8 +922,12 @@
         }
 
         function closeModal() { 
-            document.getElementById('resultModal').classList.remove('active'); outerVals = [100, 200, 300, 400, 500, 600, 700, 800, 900]; buildWheel('outerWheel', outerVals, 150, false, false);
-            document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none'; document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0; const slider = document.getElementById('wheelSlider'); if(slider) { slider.value = 900; updateSliderText(900); }
+            document.getElementById('resultModal').classList.remove('active'); 
+            
+            // Rebuild properly using DB values
+            fetchCurrencyDataFromFirebase(currentCurrencyCode);
+            
+            document.getElementById('outerWheel').style.transition = 'none'; document.getElementById('innerWheel').style.transition = 'none'; document.getElementById('outerWheel').style.transform = `rotate(0deg)`; document.getElementById('innerWheel').style.transform = `rotate(0deg)`; outerDeg = 0; innerDeg = 0; 
         }
 
         function downloadCalendar() {
